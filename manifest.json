@@ -1,0 +1,16 @@
+{
+  "name": "सातारा जॉब्स",
+  "short_name": "सातारा जॉब्स",
+  "description": "सातारा शहरातील नोकरी शोधणारे आणि देणारे यांच्यासाठी स्मार्ट जॉब पोर्टल",
+  "start_url": "home.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#003366",
+  "icons": [
+    {
+      "src": "1778817504151.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

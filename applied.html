@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>माझे अर्ज - सातारा जॉब्स</title>
+    <!-- manifest link -->
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --primary-light: #004080;
+            --secondary: #1e88e5;
+            --bg: #f0f4f8;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --premium: #ffb300;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --glass: rgba(255, 255, 255, 0.6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: radial-gradient(circle at 50% 0%, #e8f0fe, #f0f4f8); color: var(--text); padding-bottom: 95px; overflow-x: hidden; min-height: 100vh; }
+        .header { background: linear-gradient(135deg, #001a33 0%, #002b55 50%, #003366 100%); padding: 18px 20px; color: var(--white); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 8px 30px rgba(0,30,61,0.25); backdrop-filter: blur(10px); }
+        .header h1 { font-size: 17px; color: var(--white); margin: 0; font-weight: 800; letter-spacing: 0.3px; }
+        .back-icon-btn { cursor: pointer; color: var(--white); font-size: 19px; transition: 0.3s; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(255,255,255,0.1); }
+        .back-icon-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.93); }
+        .container { padding: 20px 15px; }
+        .page-title { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); padding: 12px 16px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,0.9); }
+        .page-title i { color: var(--secondary); font-size: 18px; }
+        .status-card { background: var(--white); padding: 18px 16px; border-radius: 18px; margin-bottom: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(226,232,240,0.6); position: relative; overflow: hidden; transition: all 0.3s; cursor: pointer; backdrop-filter: blur(8px); background: rgba(255,255,255,0.95); }
+        .status-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+        .status-card:active { transform: scale(0.985); }
+        .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; position: relative; z-index: 1; }
+        .job-title { font-size: 16px; font-weight: 800; color: var(--primary); flex: 1; line-height: 1.4; letter-spacing: -0.2px; }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; display: flex; align-items: center; gap: 5px; position: relative; z-index: 1; backdrop-filter: blur(4px); }
+        .status-badge.pending { background: #fffbeb; color: #d97706; border: 1.5px solid #fde68a; }
+        .status-badge.shortlisted { background: #f0fdf4; color: #16a34a; border: 1.5px solid #bbf7d0; animation: glowGreen 2s infinite; }
+        .status-badge.rejected { background: #fef2f2; color: #ef4444; border: 1.5px solid #fecaca; }
+        @keyframes glowGreen { 0%,100%{ box-shadow: 0 2px 8px rgba(22,163,74,0.12); } 50%{ box-shadow: 0 4px 16px rgba(22,163,74,0.25); } }
+        .company-info { font-size: 13px; color: var(--secondary); font-weight: 700; display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+        .apply-date { font-size: 11px; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+        .status-msg { margin-top: 6px; padding-top: 12px; border-top: 1.5px dashed #e2e8f0; font-size: 11px; font-weight: 600; color: #64748b; position: relative; z-index: 1; line-height: 1.5; display: flex; align-items: flex-start; gap: 6px; }
+        .confirm-hire-btn { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .confirm-hire-btn:active { transform: scale(0.95); }
+        .confirm-hire-btn:disabled { background: #a7f3d0; cursor: default; }
+        .empty-state { text-align: center; padding: 70px 20px; background: rgba(255,255,255,0.7); border-radius: 24px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 8px 25px rgba(0,0,0,0.04); }
+        .empty-state .empty-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #e2e8f0, #f1f5f9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #94a3b8; }
+        .empty-state h3 { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        .empty-state p { color: var(--muted); font-weight: 500; font-size: 13px; margin-bottom: 20px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: white; padding: 13px 28px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 13px; display: inline-block; box-shadow: 0 6px 18px rgba(0,51,102,0.25); border: none; cursor: pointer; }
+        .btn-primary:active { transform: scale(0.95); }
+        .loader-box { text-align: center; padding: 80px 20px; }
+        .loader-box .loader-circle { width: 55px; height: 55px; margin: 0 auto 20px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 10px 0 12px; box-shadow: 0 -8px 30px rgba(0,0,0,0.06); z-index: 1000; border-top: 1px solid rgba(241,245,249,0.8); }
+        .nav-link { text-decoration: none; text-align: center; color: #94a3b8; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 12px; }
+        .nav-link i { display: block; font-size: 19px; margin-bottom: 4px; }
+        .nav-link.active { color: var(--primary); }
+        .hidden-links { position: fixed; bottom: -200px; left: -200px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; z-index: -999; }
+        .hidden-links a { display: block; font-size: 1px; color: transparent; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<!-- लपवलेल्या लिंक्स (APK पॅकेजिंग साठी) -->
+<a href="index.html" style="display:none;">लॉगिन</a>
+<a href="home.html" style="display:none;">होम</a>
+<a href="company.html" style="display:none;">कंपनी</a>
+<a href="admin.html" style="display:none;">ॲडमिन</a>
+<a href="jobs.html" style="display:none;">जॉब्स</a>
+<a href="saved.html" style="display:none;">सेव्ह</a>
+<a href="profile.html" style="display:none;">प्रोफाइल</a>
+<a href="notifications.html" style="display:none;">नोटिफिकेशन</a>
+<a href="about.html" style="display:none;">अबाउट</a>
+<a href="job-details.html" style="display:none;">जॉब डिटेल</a>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left back-icon-btn" onclick="window.location.href='home.html'"></i>
+    <h1>माझे अर्ज (Applications)</h1>
+</div>
+
+<div class="container">
+    <div class="page-title">
+        <i class="fa-solid fa-clipboard-list"></i> अर्जांचे स्टेटस ट्रॅकर
+    </div>
+    <div id="applications-container">
+        <div class="loader-box">
+            <div class="loader-circle"></div>
+            <p>तुमचे अर्ज तपासत आहे...</p>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="jobs.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Jobs</a>
+    <a href="applied.html" class="nav-link active"><i class="fa-solid fa-clipboard-check"></i> Applied</a>
+    <a href="profile.html" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+</div>
+
+<!-- लपलेल्या लिंक -->
+<div class="hidden-links">
+    <a href="https://mahabharti.in">महाभरती सरकारी नोकरी भरती पोर्टल</a>
+    <a href="https://www.majhinaukri.in">माझी नोकरी लेटेस्ट जॉब अपडेट्स</a>
+    <a href="https://mahasarkar.co.in">महासरकार महाराष्ट्र शासन भरती</a>
+    <a href="https://mpsc.gov.in">MPSC अधिकृत वेबसाइट</a>
+    <a href="https://mahajobs.maharashtra.gov.in">MahaJobs महाराष्ट्र सरकार</a>
+    <a href="https://mahaswayam.gov.in">महास्वयंम रोजगार पोर्टल</a>
+    <a href="https://ssc.nic.in">SSC स्टाफ सिलेक्शन कमिशन भरती</a>
+    <a href="https://satarajobs.com">सातारा जॉब्स सरकारी नोकरी</a>
+    <a href="https://www.satarajobs.com/applied">सातारा जॉब्स माझे अर्ज</a>
+    <a href="https://www.satarajobs.com/home">सातारा जॉब्स होम पेज</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
+        authDomain: "satara-jobs-ed6ab.firebaseapp.com",
+        projectId: "satara-jobs-ed6ab",
+        storageBucket: "satara-jobs-ed6ab.appspot.com",
+        messagingSenderId: "688594836150",
+        appId: "1:688594836150:web:a59ecda1d87b599862a417"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const container = document.getElementById('applications-container');
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            fetchMyApplications(user);
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fa-solid fa-user-lock"></i></div>
+                    <h3>सुरक्षित प्रवेश आवश्यक</h3>
+                    <p>तुम्ही केलेले अर्ज पाहण्यासाठी कृपया लॉगिन करा.</p>
+                    <a href="index.html" class="btn-primary"><i class="fa-solid fa-right-to-bracket"></i> लॉगिन करा</a>
+                </div>`;
+        }
+    });
+
+    function fetchMyApplications(user) {
+        const phone = localStorage.getItem("user_phone") || '';
+
+        db.collection("applications")
+            .where("applicantUid", "==", user.uid)
+            .onSnapshot(snap => {
+                let apps = [];
+                snap.forEach(doc => apps.push({ id: doc.id, ...doc.data() }));
+
+                if (phone) {
+                    db.collection("applications")
+                        .where("applicantPhone", "==", phone)
+                        .onSnapshot(snap2 => {
+                            snap2.forEach(doc => {
+                                if (!apps.find(a => a.id === doc.id)) apps.push({ id: doc.id, ...doc.data() });
+                            });
+                            apps.sort((a, b) => {
+                                let ta = a.appliedAt ? a.appliedAt.toMillis() : 0;
+                                let tb = b.appliedAt ? b.appliedAt.toMillis() : 0;
+                                return tb - ta;
+                            });
+                            renderApplications(apps);
+                        });
+                } else {
+                    apps.sort((a, b) => {
+                        let ta = a.appliedAt ? a.appliedAt.toMillis() : 0;
+                        let tb = b.appliedAt ? b.appliedAt.toMillis() : 0;
+                        return tb - ta;
+                    });
+                    renderApplications(apps);
+                }
+            }, error => {
+                console.error(error);
+                container.innerHTML = '<p style="text-align:center;color:#ef4444;font-weight:600;padding:30px;">डेटा लोड करताना त्रुटी.</p>';
+            });
+    }
+
+    async function confirmGotJob(appId, jobId) {
+        if (!confirm("तुम्हाला खरंच ही नोकरी मिळाली आहे का? हे कन्फर्म केल्यावर अर्ज 'निवडले' म्हणून मार्क होईल.")) return;
+        try {
+            await db.collection("applications").doc(appId).update({
+                candidateConfirmed: true,
+                candidateConfirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                status: 'selected'
+            });
+            if (jobId) {
+                await db.collection("jobs").doc(jobId).update({
+                    status: 'closed',
+                    closedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    closedReason: 'hired',
+                    closedBy: 'candidate'
+                });
+            }
+            const appDoc = await db.collection("applications").doc(appId).get();
+            const app = appDoc.data();
+            if (app && app.referrerPhone) {
+                const badgeDoc = await db.collection("settings").doc("badges").get();
+                const bonus = badgeDoc.exists ? (badgeDoc.data().hiringBonus || 200) : 200;
+                await db.collection("referrals").add({
+                    referrerPhone: app.referrerPhone,
+                    applicantPhone: app.applicantPhone,
+                    jobId: app.jobId,
+                    jobTitle: app.jobTitle,
+                    companyName: app.companyName,
+                    commissionAmount: bonus,
+                    paid: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            if (app && app.applicantPhone) {
+                await db.collection("notifications").add({
+                    recipientPhone: app.applicantPhone,
+                    recipientRole: 'seeker',
+                    type: 'hired',
+                    title: 'नोकरी कन्फर्म! 🎉',
+                    message: `तुमची '${app.jobTitle || 'नोकरी'}' साठी निवड झाली आहे. अभिनंदन!`,
+                    isRead: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            alert("✅ अभिनंदन! तुमची नोकरी कन्फर्म झाली. रेफरर असल्यास बक्षीस पाठवले जाईल.");
+        } catch (e) {
+            alert("त्रुटी: " + e.message);
+        }
+    }
+
+    function renderApplications(apps) {
+        if (!apps.length) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                    <h3>अजून एकही अर्ज नाही</h3>
+                    <p>तुम्ही अद्याप कोणत्याही नोकरीसाठी अर्ज केलेला नाही. नवीन संधी शोधा आणि लगेच अप्लाय करा!</p>
+                    <a href="home.html" class="btn-primary"><i class="fa-solid fa-magnifying-glass"></i> नवीन नोकऱ्या शोधा</a>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        apps.forEach(app => {
+            const status = app.status || 'Pending';
+            let badgeClass, badgeIcon, statusText, helperMsg, borderLeftColor;
+            let showConfirmButton = false;
+
+            if (status === 'Shortlisted' || status === 'selected') {
+                badgeClass = 'shortlisted'; badgeIcon = 'fa-solid fa-circle-check'; statusText = 'Shortlisted';
+                helperMsg = '<span style="color:#15803d;"><i class="fa-solid fa-party-horn"></i> अभिनंदन! कंपनी लवकरच तुमच्याशी संपर्क करेल.</span>';
+                borderLeftColor = '#16a34a';
+                if (!app.candidateConfirmed) showConfirmButton = true;
+            } else if (status === 'Rejected') {
+                badgeClass = 'rejected'; badgeIcon = 'fa-solid fa-circle-xmark'; statusText = 'Not Selected';
+                helperMsg = '<span style="color:#b91c1c;"><i class="fa-solid fa-circle-info"></i> क्षमस्व, या पदासाठी इतर उमेदवाराची निवड झाली.</span>';
+                borderLeftColor = '#ef4444';
+            } else {
+                badgeClass = 'pending'; badgeIcon = 'fa-solid fa-hourglass-half'; statusText = 'Pending';
+                helperMsg = '<span style="color:#64748b;"><i class="fa-solid fa-clock"></i> HR तुमचा बायोडाटा तपासत आहेत.</span>';
+                borderLeftColor = '#f59e0b';
+                showConfirmButton = true;
+            }
+
+            let dateStr = 'तारीख उपलब्ध नाही';
+            if (app.appliedAt) {
+                dateStr = app.appliedAt.toDate().toLocaleDateString('mr-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            const confirmBtnHtml = showConfirmButton
+                ? `<button class="confirm-hire-btn" onclick="event.stopPropagation(); confirmGotJob('${app.id}', '${app.jobId || ''}')"><i class="fa-solid fa-check-circle"></i> मला ही नोकरी मिळाली</button>`
+                : (app.candidateConfirmed ? '<span style="color:#16a34a; font-size:11px; font-weight:700;"><i class="fa-solid fa-check-double"></i> तुम्ही कन्फर्म केले आहे</span>' : '');
+
+            html += `
+            <div class="status-card" style="border-left:5px solid ${borderLeftColor};" onclick="location.href='job-details.html?id=${app.jobId}'">
+                <div class="card-header-row">
+                    <div class="job-title">${app.jobTitle || 'नोकरीचे नाव'}</div>
+                    <span class="status-badge ${badgeClass}"><i class="${badgeIcon}"></i> ${statusText}</span>
+                </div>
+                <div class="company-info"><i class="fa-solid fa-building"></i> ${app.companyName || 'Verified Company'}</div>
+                <div class="apply-date"><i class="fa-solid fa-calendar-check"></i> अर्ज केल्याची तारीख: ${dateStr}</div>
+                <div class="status-msg">${helperMsg}</div>
+                ${confirmBtnHtml}
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+</script>
+</body>
+</html>

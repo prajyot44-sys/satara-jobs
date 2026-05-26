@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Notifications - सातारा जॉब्स</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #1e88e5;
+            --bg: #f4f6f9;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --premium: #f59e0b;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: radial-gradient(circle at 30% 10%, #e9f0ff, var(--bg));
+            color: var(--text);
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+
+        /* ── हेडर ── */
+        .header {
+            background: linear-gradient(135deg, #001a33, #002b4d);
+            padding: 18px 18px;
+            color: white;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .back-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 17px;
+            transition: 0.3s;
+        }
+        .back-btn:active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(0.94);
+        }
+        .header-title h1 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+        .header-title p {
+            font-size: 11px;
+            opacity: 0.85;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .container {
+            padding: 20px 16px;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        /* ── सेक्शन टायटल ── */
+        .section-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── नोटिफिकेशन कार्ड ── */
+        .notify-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 5px solid var(--primary);
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .notify-card:active {
+            transform: scale(0.99);
+        }
+        .notify-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .notify-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.4;
+            flex: 1;
+        }
+        .notify-time {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 700;
+            white-space: nowrap;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .notify-message {
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.7;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .notify-btn {
+            border: 1px solid #bfdbfe;
+            background: rgba(239, 246, 255, 0.9);
+            color: var(--primary);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            backdrop-filter: blur(4px);
+        }
+        .notify-btn:active {
+            background: #dbeafe;
+            transform: scale(0.96);
+        }
+
+        .empty-box {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+        }
+        .empty-box i {
+            font-size: 55px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        .empty-box p {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ── बॉटम नेव्हिगेशन ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            border-top: 1px solid rgba(241, 245, 249, 0.8);
+        }
+        .nav-link {
+            text-decoration: none;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .nav-link i {
+            display: block;
+            font-size: 19px;
+            margin-bottom: 4px;
+        }
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        /* ────── लपलेल्या लिंक स्टाइल ────── */
+        .hidden-links {
+            position: fixed;
+            bottom: -200px;
+            left: -200px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -999;
+        }
+        .hidden-links a {
+            display: block;
+            font-size: 1px;
+            color: transparent;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-top">
+            <div class="back-btn" onclick="window.location.href='home.html'">
+                <i class="fa-solid fa-arrow-left"></i>
+            </div>
+            <div class="header-title">
+                <h1>जॉब अलर्ट्स</h1>
+                <p>लेटेस्ट नोकरी अपडेट्स</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-title">
+            <i class="fa-solid fa-bell"></i>
+            नवीन Notifications
+        </div>
+
+        <div id="notificationsContainer">
+            <div class="empty-box">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <p>डेटा लोड होत आहे...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="jobs.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Jobs</a>
+        <a href="notifications.html" class="nav-link active"><i class="fa-solid fa-bell"></i> Alerts</a>
+        <a href="profile.html" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+    </div>
+
+    <!-- लपलेल्या लिंक -->
+    <div class="hidden-links">
+        <a href="https://mahabharti.in">महाभरती सरकारी नोकरी भरती पोर्टल</a>
+        <a href="https://www.majhinaukri.in">माझी नोकरी लेटेस्ट जॉब अपडेट्स</a>
+        <a href="https://mahasarkar.co.in">महासरकार महाराष्ट्र शासन भरती</a>
+        <a href="https://mpsc.gov.in">MPSC अधिकृत वेबसाइट</a>
+        <a href="https://mahajobs.maharashtra.gov.in">MahaJobs महाराष्ट्र सरकार</a>
+        <a href="https://mahaswayam.gov.in">महास्वयंम रोजगार पोर्टल</a>
+        <a href="https://ssc.nic.in">SSC स्टाफ सिलेक्शन कमिशन भरती</a>
+        <a href="https://satarajobs.com">सातारा जॉब्स सरकारी नोकरी</a>
+        <a href="https://www.satarajobs.com/notifications">सातारा जॉब्स नोटिफिकेशन</a>
+        <a href="https://www.satarajobs.com/home">सातारा जॉब्स होम पेज</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
+            authDomain: "satara-jobs-ed6ab.firebaseapp.com",
+            projectId: "satara-jobs-ed6ab",
+            storageBucket: "satara-jobs-ed6ab.appspot.com",
+            messagingSenderId: "688594836150",
+            appId: "1:688594836150:web:a59ecda1d87b599862a417"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // ऑथ चेक
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loadNotifications();
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        /* ── नोटिफिकेशन लोड करा ── */
+        function loadNotifications(){
+            db.collection("notifications").orderBy("createdAt","desc").onSnapshot(snapshot => {
+                const container = document.getElementById('notificationsContainer');
+
+                if(snapshot.empty){
+                    container.innerHTML = `<div class="empty-box"><i class="fa-solid fa-bell-slash"></i><p>सध्या कोणतेही नवीन अपडेट्स नाहीत.</p></div>`;
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const createdTime = data.createdAt ? formatTime(data.createdAt.toDate()) : 'आत्ताच';
+
+                    html += `
+                        <div class="notify-card">
+                            <div class="notify-top">
+                                <div class="notify-title">${data.title || 'नवीन जॉब अपडेट'}</div>
+                                <div class="notify-time">${createdTime}</div>
+                            </div>
+                            <div class="notify-message">${data.message || 'नवीन नोकरी अपडेट उपलब्ध आहे.'}</div>
+                            ${data.jobId ? `<button class="notify-btn" onclick="openJob('${data.jobId}')"><i class="fa-solid fa-eye"></i> जॉब पहा</button>` : ''}
+                        </div>`;
+                });
+
+                container.innerHTML = html;
+            }, error => {
+                console.error("Error fetching notifications:", error);
+                document.getElementById('notificationsContainer').innerHTML = `<div class="empty-box"><p>एरर: डेटा लोड होऊ शकला नाही.</p></div>`;
+            });
+        }
+
+        /* ── वेळ फॉरमॅट ── */
+        function formatTime(date){
+            const diffMs = new Date() - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+
+            if(diffMin < 1) return 'आत्ताच';
+            if(diffMin < 60) return diffMin + ' मि. पूर्वी';
+            if(diffHour < 24) return diffHour + ' तासांपूर्वी';
+            if(diffDay === 1) return 'काल';
+            return diffDay + ' दिवसांपूर्वी';
+        }
+
+        function openJob(jobId){ window.location.href = 'job-details.html?id=' + jobId; }
+    </script>
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('SW registered'))
+          .catch(err => console.log('SW error', err));
+      }
+    </script>
+</body>
+</html>

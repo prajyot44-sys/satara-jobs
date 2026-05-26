@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Panel - सातारा जॉब्स | पूर्ण नियंत्रण</title>
+    <!-- manifest link -->
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+    <style>
+        :root {
+            --primary-dark: #0B1E33;
+            --primary-light: #14273E;
+            --accent: #00A3FF;
+            --accent2: #0077CC;
+            --bg: #F3F6FC;
+            --card-bg: #FFFFFF;
+            --text: #1A1F36;
+            --text-secondary: #5B667A;
+            --text-muted: #94A3B8;
+            --border: #E7ECF3;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --premium: #F59E0B;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --shadow-lg: 0 16px 40px rgba(0,0,0,0.08);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        body { background:var(--bg); color:var(--text); height:100vh; overflow:hidden; }
+
+        /* Lock Screen */
+        #adminAuthLockOverlay {
+            position:fixed; inset:0; background:var(--primary-dark); z-index:999999;
+            display:flex; align-items:center; justify-content:center; padding:20px;
+        }
+        .lock-card {
+            background:var(--card-bg); padding:40px 30px; border-radius:var(--radius);
+            width:100%; max-width:420px; text-align:center; box-shadow:var(--shadow-lg);
+        }
+        .lock-card h2 { font-size:22px; font-weight:800; color:var(--primary-dark); margin-bottom:6px; }
+        .lock-card p { font-size:13px; color:var(--text-secondary); margin-bottom:24px; }
+
+        /* Admin Wrapper */
+        .admin-wrapper { display:flex; height:100vh; width:100%; }
+        .sidebar {
+            width:280px; background:var(--primary-dark); height:100vh; color:white;
+            display:flex; flex-direction:column; position:fixed; left:-280px; top:0; z-index:1001;
+            transition:var(--transition); box-shadow:4px 0 30px rgba(0,0,0,0.15);
+        }
+        .sidebar.active { left:0; }
+        .sidebar-overlay {
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4);
+            z-index:1000; backdrop-filter:blur(4px);
+        }
+        .sidebar-overlay.active { display:block; }
+        .sidebar-logo {
+            padding:24px 20px; font-size:20px; font-weight:800;
+            border-bottom:1px solid rgba(255,255,255,0.06); display:flex;
+            justify-content:space-between; align-items:center;
+        }
+        .sidebar-logo span { color:var(--accent); }
+        .sidebar-menu { flex:1; overflow-y:auto; padding:16px 0; }
+        .tab-btn {
+            display:flex; align-items:center; width:92%; margin:6px auto; padding:14px 16px;
+            border:none; background:transparent; font-size:13px; font-weight:600;
+            color:#CBD5E1; cursor:pointer; border-radius:12px; gap:12px;
+            transition:var(--transition); text-align:left;
+        }
+        .tab-btn:hover { background:rgba(255,255,255,0.06); color:white; }
+        .tab-btn.active { background:linear-gradient(135deg,var(--accent),var(--accent2))!important; color:white!important; font-weight:700; }
+        .tab-btn .badge {
+            background:var(--danger); color:white; border-radius:20px;
+            padding:2px 8px; font-size:10px; font-weight:700; margin-left:auto;
+        }
+
+        .main-content { flex:1; height:100vh; overflow-y:auto; background:var(--bg); }
+        .content-header {
+            background:var(--card-bg); padding:16px 24px; border-bottom:1px solid var(--border);
+            display:flex; align-items:center; justify-content:space-between;
+            position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm);
+        }
+        .header-left { display:flex; align-items:center; gap:16px; }
+        .menu-trigger {
+            background:#F1F5F9; border:none; width:44px; height:44px;
+            border-radius:12px; color:var(--primary-dark); font-size:20px;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+        }
+        .header-title h1 { font-size:16px; font-weight:800; color:var(--primary-dark); }
+
+        .analytics-grid {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:16px; padding:20px 24px;
+        }
+        .counter-card {
+            background:var(--card-bg); border-radius:var(--radius-sm); padding:20px;
+            display:flex; align-items:center; justify-content:space-between;
+            box-shadow:var(--shadow-sm); border-bottom:4px solid var(--border);
+        }
+        .counter-card h3 { font-size:28px; font-weight:800; }
+        .counter-card p { font-size:12px; color:var(--text-secondary); font-weight:600; }
+        .counter-card.blue { border-color:#3B82F6; } .counter-card.green { border-color:var(--success); }
+        .counter-card.purple { border-color:#8B5CF6; } .counter-card.orange { border-color:var(--warning); }
+
+        .container { padding:10px 24px 60px; }
+        .main-card {
+            background:var(--card-bg); border-radius:var(--radius); padding:24px;
+            box-shadow:var(--shadow-sm); margin-bottom:20px; border:1px solid var(--border);
+        }
+        .section-header-card {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border);
+            flex-wrap:wrap; gap:12px;
+        }
+        .section-title { font-size:16px; font-weight:800; color:var(--primary-dark); }
+        .search-box {
+            display:flex; align-items:center; gap:8px; background:#F1F5F9;
+            border-radius:12px; padding:10px 16px; max-width:260px; width:100%;
+        }
+        .search-box input { border:none; background:transparent; outline:none; font-size:13px; width:100%; }
+        .form-input-admin {
+            width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--border);
+            font-size:14px; margin-bottom:14px; outline:none; background:var(--card-bg);
+            transition:var(--transition);
+        }
+        .form-input-admin:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,163,255,0.1); }
+        textarea.form-input-admin { resize:vertical; min-height:80px; }
+
+        .admin-save-btn {
+            background:linear-gradient(135deg,var(--accent),var(--accent2));
+            color:white; border:none; padding:12px 28px; border-radius:12px;
+            font-weight:700; cursor:pointer; font-size:14px; transition:var(--transition);
+        }
+        .admin-save-btn:active { transform:scale(0.97); }
+        .admin-save-btn:disabled { opacity:0.6; pointer-events:none; }
+        .admin-logout-btn {
+            background:#FEE2E2; border:none; padding:8px 18px; border-radius:30px;
+            font-weight:700; font-size:12px; color:var(--danger); cursor:pointer;
+        }
+        .csv-download-btn {
+            background:var(--success); color:white; border:none; padding:8px 14px;
+            border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;
+            display:inline-flex; align-items:center; gap:6px; transition:var(--transition);
+            white-space:nowrap;
+        }
+        .csv-download-btn:active { transform:scale(0.96); }
+
+        .table-responsive { width:100%; overflow-x:auto; border-radius:var(--radius-sm); }
+        table { width:100%; border-collapse:collapse; font-size:13px; min-width:600px; }
+        th {
+            background:#F8FAFC; padding:14px 12px; font-weight:700; text-align:left;
+            color:var(--primary-dark); border-bottom:2px solid var(--border);
+        }
+        td { padding:12px; border-bottom:1px solid #F1F5F9; color:var(--text-secondary); }
+        .action-btn {
+            padding:6px 12px; border:none; border-radius:8px; font-size:11px;
+            font-weight:700; cursor:pointer; color:white; margin-right:4px; transition:var(--transition);
+        }
+        .btn-approve { background:var(--success); } .btn-delete { background:var(--danger); }
+        .btn-warning { background:var(--warning); color:#5d4300; }
+        .status-badge {
+            padding:4px 8px; border-radius:6px; font-weight:700; font-size:10px;
+            text-transform:uppercase; display:inline-block;
+        }
+        .empty-text { text-align:center; padding:30px!important; color:var(--text-muted); font-weight:600; }
+        .user-clear-card { background:#fef9e6; border-left:6px solid var(--danger); padding:15px; border-radius:14px; margin-top:12px; }
+
+        .rates-grid-wrapper { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+        .rate-sub-card {
+            background:#F8FAFC; padding:18px; border-radius:var(--radius-sm);
+            border:1px solid var(--border);
+        }
+        .size-info-text {
+            font-size:10px; color:var(--danger); font-weight:700; margin-bottom:12px;
+            display:inline-block; background:#FEE2E2; padding:4px 8px; border-radius:6px;
+        }
+        .flex-between { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+        .text-sm { font-size:12px; }
+        .filter-bar { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+        .filter-chip { padding:8px 16px; border-radius:20px; border:1.5px solid var(--border); background:var(--card-bg); font-size:12px; font-weight:700; cursor:pointer; transition:var(--transition); }
+        .filter-chip.active { background:var(--primary-dark); color:white; border-color:var(--primary-dark); }
+
+        /* Notification Modal */
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+        .modal-content { background:white; width:95%; max-width:600px; max-height:85vh; border-radius:20px; padding:25px; overflow-y:auto; position:relative; box-shadow:0 16px 40px rgba(0,0,0,0.08); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; position:sticky; top:-25px; background:white; z-index:10; margin-top:-10px; padding-top:10px; }
+        .modal-header h3 { font-size:18px; color:var(--primary-dark); font-weight:800; }
+        .close-modal { background:#fee2e2; border:none; font-size:18px; width:35px; height:35px; border-radius:50%; color:var(--danger); cursor:pointer; transition:0.2s; }
+        .close-modal:hover { background:var(--danger); color:white; transform:rotate(90deg); }
+        #notifModal .modal-content { max-width:450px; }
+        .notif-item { padding:12px; border-bottom:1px solid #f1f5f9; cursor:pointer; transition:background 0.2s; }
+        .notif-item:hover { background:#f8fafc; }
+        .notif-item.unread { background:#eff6ff; font-weight:700; }
+        .notif-item .time { font-size:10px; color:var(--muted); margin-top:4px; }
+
+        /* Crop Modal */
+        #cropModal .modal-content { max-width:90%; max-height:90vh; }
+        #cropImageContainer { max-height:70vh; overflow:hidden; }
+        #cropImageContainer img { max-width:100%; display:block; }
+        .crop-actions { margin-top:15px; display:flex; gap:10px; justify-content:flex-end; }
+
+        @media (max-width:768px) {
+            .analytics-grid { grid-template-columns:1fr 1fr; }
+            .content-header { padding:12px 16px; }
+            .container { padding:10px 12px 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- लपवलेल्या लिंक्स (APK पॅकेजिंग साठी) -->
+<a href="index.html" style="display:none;">लॉगिन</a>
+<a href="home.html" style="display:none;">होम</a>
+<a href="company.html" style="display:none;">कंपनी</a>
+<a href="about.html" style="display:none;">अबाउट</a>
+<a href="notifications.html" style="display:none;">नोटिफिकेशन</a>
+
+<div id="adminAuthLockOverlay">
+    <div class="lock-card">
+        <div style="width:80px;height:80px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
+            <img src="1778817504151.png" style="width:100%;height:100%;object-fit:contain;">
+        </div>
+        <h2>ॲडमीन कंट्रोल पॅनल</h2>
+        <p>अधिकृत नंबर व पासवर्ड टाका.</p>
+        <div style="text-align:left;">
+            <label style="font-size:11px;font-weight:700;color:var(--text-secondary);">ॲडमीन मोबाईल नंबर *</label>
+            <input type="tel" id="adminAuthPhone" class="form-input-admin" placeholder="9579535290" maxlength="10" value="9579535290" style="text-align:center;font-weight:600;">
+            <label style="font-size:11px;font-weight:700;color:var(--text-secondary);">६ अंकी सिक्रेट पासवर्ड *</label>
+            <input type="password" id="adminAuthPassword" class="form-input-admin" placeholder="******" value="210890" style="text-align:center;font-weight:600;">
+        </div>
+        <button class="admin-save-btn" id="adminUnlockBtn" style="width:100%;margin-top:16px;padding:14px;border-radius:12px;" onclick="unlockAdminControlDashboard()">
+            <i class="fa-solid fa-lock-open"></i> डॅशबोर्ड अनलॉक करा
+        </button>
+        <p id="loginError" style="color:var(--danger); font-size:12px; margin-top:10px; display:none;"></p>
+        <span onclick="triggerAdminForgotPassword()" style="display:block;margin-top:18px;font-size:12px;color:var(--accent);font-weight:700;cursor:pointer;"><i class="fa-solid fa-key"></i> पासवर्ड विसरलात?</span>
+    </div>
+</div>
+
+<div class="admin-wrapper" id="mainDashboardUI" style="display:none;">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="mainSidebar">
+        <div class="sidebar-logo">
+            <div>SATARA <span>JOBS</span></div>
+            <button onclick="toggleSidebar()" style="background:transparent;border:none;color:white;font-size:22px;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="sidebar-menu">
+            <button class="tab-btn active" id="tabEmpBtn" onclick="handleMenuClick('employers')"><i class="fa-solid fa-building-circle-check"></i><span>१. मालक/ HR मंजुरी</span><span class="badge" id="badgeEmp" style="display:none;">0</span></button>
+            <button class="tab-btn" id="tabPremiumBtn" onclick="handleMenuClick('premium')"><i class="fa-solid fa-star"></i><span>२. प्रीमियम नोकऱ्या</span><span class="badge" id="badgePremium" style="display:none;">0</span></button>
+            <button class="tab-btn" id="tabAddJobBtn" onclick="handleMenuClick('add_job')"><i class="fa-solid fa-briefcase"></i><span>३. नवीन जॉब पोस्ट करा</span></button>
+            <button class="tab-btn" id="tabUploadAdsBtn" onclick="handleMenuClick('upload_ads')"><i class="fa-solid fa-rectangle-ad"></i><span>४. जाहिरात बुकिंग</span><span class="badge" id="badgeAds" style="display:none;">0</span></button>
+            <button class="tab-btn" id="tabRatesBtn" onclick="handleMenuClick('rates')"><i class="fa-solid fa-indian-rupee-sign"></i><span>५. दर व्यवस्थापन</span></button>
+            <button class="tab-btn" id="tabPinCampaignsBtn" onclick="handleMenuClick('pin_campaigns')"><i class="fa-solid fa-thumbtack"></i><span>६. पिन कॅम्पेन</span></button>
+            <button class="tab-btn" id="tabPaymentVerificationBtn" onclick="handleMenuClick('payment_verification')"><i class="fa-solid fa-check-double"></i><span>७. पेमेंट व्हेरिफिकेशन</span><span class="badge" id="badgePayment" style="display:none;">0</span></button>
+            <button class="tab-btn" id="tabUpiSettingsBtn" onclick="handleMenuClick('upi_settings')"><i class="fa-solid fa-qrcode"></i><span>८. UPI सेटिंग्ज</span></button>
+            <button class="tab-btn" id="tabInquiriesBtn" onclick="handleMenuClick('inquiries')"><i class="fa-solid fa-message"></i><span>९. इन्क्वायरीज</span></button>
+            <button class="tab-btn" id="tabFeedbackBtn" onclick="handleMenuClick('feedback')"><i class="fa-solid fa-comments"></i><span>१०. ॲप अभिप्राय</span></button>
+            <button class="tab-btn" id="tabPopupMsgBtn" onclick="handleMenuClick('popup_message')"><i class="fa-solid fa-bullhorn"></i><span>११. पॉपअप मेसेज</span></button>
+            <button class="tab-btn" id="tabBiAnalyticsBtn" onclick="handleMenuClick('bi_analytics')"><i class="fa-solid fa-chart-line"></i><span>१२. बिझनेस इंटेलिजन्स</span></button>
+            <button class="tab-btn" id="tabHiringTrackerBtn" onclick="handleMenuClick('hiring_tracker')"><i class="fa-solid fa-magnifying-glass-chart"></i><span>१३. हायरिंग ट्रॅकर</span></button>
+            <button class="tab-btn" id="tabMembershipRequestsBtn" onclick="handleMenuClick('membership_requests')"><i class="fa-solid fa-arrow-up-from-bracket"></i><span>१४. मेंबरशिप विनंत्या</span><span class="badge" id="badgeMembership" style="display:none;">0</span></button>
+            <button class="tab-btn" id="tabBadgeSettingsBtn" onclick="handleMenuClick('badge_settings')"><i class="fa-solid fa-award"></i><span>१५. बॅज सेटिंग्ज</span></button>
+            <button class="tab-btn" id="tabMembershipSettingsBtn" onclick="handleMenuClick('membership_settings')"><i class="fa-solid fa-sliders"></i><span>१६. मेंबरशिप सेटिंग्ज</span></button>
+            <button class="tab-btn" id="tabReferralPaymentTrackerBtn" onclick="handleMenuClick('referral_payment_tracker')"><i class="fa-solid fa-hand-holding-dollar"></i><span>१७. रेफरल पेमेंट ट्रॅकर</span></button>
+            <button class="tab-btn" id="tabAllMembershipBtn" onclick="handleMenuClick('all_membership')"><i class="fa-solid fa-id-card"></i><span>१८. सर्व मेंबरशिप स्टेटस</span></button>
+            <button class="tab-btn" id="tabAllEmpBtn" onclick="handleMenuClick('all_employers')"><i class="fa-solid fa-list"></i><span>सर्व मालक यादी</span></button>
+            <button class="tab-btn" id="tabAllSeekersBtn" onclick="handleMenuClick('all_seekers')"><i class="fa-solid fa-users"></i><span>सर्व उमेदवार यादी</span></button>
+            <button class="tab-btn" id="tabClearMobileBtn" onclick="handleMenuClick('clear_mobile')"><i class="fa-solid fa-eraser"></i><span>🔍 मोबाईल क्लियर करा</span></button>
+            <button class="tab-btn" id="tabAllJobsBtn" onclick="handleMenuClick('all_jobs')"><i class="fa-solid fa-briefcase"></i><span>📋 सर्व जॉब्स (डिलीट)</span></button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-header">
+            <div class="header-left">
+                <button class="menu-trigger" onclick="toggleSidebar()"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <div class="header-title"><h1>सातारा जॉब्स — ॲडमीन कंट्रोल रूम</h1></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="position:relative; cursor:pointer; font-size:22px; color:var(--primary-dark);" onclick="openNotificationModal()">
+                    <i class="fa-solid fa-bell"></i>
+                    <span id="totalNotifCount" style="position:absolute; top:-6px; right:-6px; background:var(--danger); color:white; border-radius:50%; width:18px; height:18px; font-size:10px; font-weight:700; display:none; align-items:center; justify-content:center;">0</span>
+                </div>
+                <button class="admin-logout-btn" onclick="adminLogout()"><i class="fa-solid fa-sign-out-alt"></i> लॉगआउट</button>
+                <span style="font-size:11px;font-weight:700;color:var(--success);background:#ECFDF5;padding:5px 12px;border-radius:20px;"><i class="fa-solid fa-circle fa-spin" style="font-size:8px;"></i> LIVE</span>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="counter-card blue"><div><h3 id="countSeekers">0</h3><p>एकूण उमेदवार</p></div></div>
+            <div class="counter-card purple"><div><h3 id="countEmployers">0</h3><p>एकूण मालक</p></div></div>
+            <div class="counter-card green"><div><h3 id="countLiveJobs">0</h3><p>लाईव्ह नोकऱ्या</p></div></div>
+            <div class="counter-card orange"><div><h3 id="countPending">0</h3><p>प्रलंबित मंजुरी</p></div></div>
+        </div>
+
+        <div class="container">
+            <div id="employerTabSection" class="main-card">
+                <div class="section-header-card"><div class="section-title">प्रलंबित मालक पडताळणी</div><div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchEmp" placeholder="मोबाईल नंबर शोधा..." oninput="filterTable('employer')"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('employerTableBody','employer_pending')"><i class="fa-solid fa-download"></i> CSV</button></div></div>
+                <div class="table-responsive"><table><thead><tr><th>नाव</th><th>मोबाईल</th><th>कागदपत्र</th><th>विवरण</th><th>पुरावा</th><th>कृती</th></tr></thead><tbody id="employerTableBody"></tbody></table></div>
+            </div>
+
+            <div id="premiumTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title">प्रलंबित प्रीमियम जॉब्स</div><div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchPremium" placeholder="कंपनी / मोबाईल शोधा..." oninput="filterTable('premium')"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('premiumTableBody','premium_pending')"><i class="fa-solid fa-download"></i> CSV</button></div></div>
+                <div class="table-responsive" style="margin-bottom: 30px;"><table><thead><tr><th>कंपनी</th><th>पद</th><th>पगार</th><th>प्लॅन</th><th>कृती</th></tr></thead><tbody id="premiumTableBody"></tbody></table></div>
+                <div class="section-header-card"><div class="section-title" style="color:var(--success);">सध्या चालू असलेले (Active) प्रीमियम जॉब्स</div><button class="csv-download-btn" onclick="downloadTableAsCSV('activePremiumTableBody','premium_active')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>पद</th><th>पगार</th><th>प्लॅन</th><th>कृती</th></tr></thead><tbody id="activePremiumTableBody"></tbody></table></div>
+            </div>
+
+            <div id="addJobTabSection" class="main-card" style="display:none;">
+                <div class="section-title">ॲडमिन कडून नवीन जॉब पोस्ट करा</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div><label style="font-size:11px;font-weight:700;">पद *</label><input id="adminJobTitle" class="form-input-admin" placeholder="Job Title"></div>
+                    <div><label style="font-size:11px;font-weight:700;">कंपनी *</label><input id="adminJobCompany" class="form-input-admin" placeholder="Company"></div>
+                    <div><label style="font-size:11px;font-weight:700;">लोकेशन *</label><input id="adminJobLocation" class="form-input-admin" placeholder="Location"></div>
+                    <div><label style="font-size:11px;font-weight:700;">पगार</label><input id="adminJobSalary" class="form-input-admin" placeholder="Salary"></div>
+                    <div><label style="font-size:11px;font-weight:700;">शिक्षण *</label><input id="adminJobQualification" class="form-input-admin" placeholder="Qualification"></div>
+                    <div><label style="font-size:11px;font-weight:700;">अनुभव *</label><input id="adminJobExperience" class="form-input-admin" placeholder="Experience"></div>
+                    <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;">वर्णन *</label><textarea id="adminJobDescription" class="form-input-admin"></textarea></div>
+                    <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;">टॅग</label><select id="adminJobTag" class="form-input-admin"><option value="none">नाही</option><option value="premium">🌟 Premium</option><option value="urgent">⚡ Urgent</option></select></div>
+                </div>
+                <button class="admin-save-btn" onclick="adminPostJob()" style="margin-top:16px;">थेट लाईव्ह पोस्ट करा</button>
+            </div>
+
+            <div id="uploadAdsTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-rectangle-ad"></i> जाहिरात बुकिंग व्यवस्थापन</div><button class="csv-download-btn" onclick="downloadTableAsCSV('adminAdBookingsList','ad_bookings')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <button onclick="loadAdminAdBookings('pending')" class="tab-btn active" id="btnPendingAds" style="width:auto;">⏳ प्रलंबित</button>
+                    <button onclick="loadAdminAdBookings('approved')" class="tab-btn" id="btnApprovedAds" style="width:auto;">✅ मंजूर</button>
+                    <button onclick="loadAdminAdBookings('all')" class="tab-btn" id="btnAllAds" style="width:auto;">📋 सर्व</button>
+                </div>
+                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>संपर्क</th><th>प्रकार</th><th>दिवस</th><th>स्टेटस</th><th>मीडिया</th><th>कृती</th></tr></thead><tbody id="adminAdBookingsList"></tbody></table></div>
+            </div>
+
+            <div id="ratesTabSection" class="main-card" style="display:none;">
+                <div class="section-title">जाहिरात दर</div>
+                <div class="rates-grid-wrapper">
+                    <div class="rate-sub-card"><div class="size-info-text">Splash</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valSplash" class="form-input-admin" placeholder="₹"><input id="valSplashDays" class="form-input-admin" placeholder="दिवस"></div></div>
+                    <div class="rate-sub-card"><div class="size-info-text">Sticky</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valSticky" class="form-input-admin" placeholder="₹"><input id="valStickyDays" class="form-input-admin" placeholder="दिवस"></div></div>
+                    <div class="rate-sub-card"><div class="size-info-text">Category</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valCategory" class="form-input-admin" placeholder="₹"><input id="valCategoryDays" class="form-input-admin" placeholder="दिवस"></div></div>
+                    <div class="rate-sub-card"><div class="size-info-text">Urgent</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valUrgent" class="form-input-admin" placeholder="₹"><input id="valUrgentDays" class="form-input-admin" placeholder="दिवस"></div></div>
+                    <div class="rate-sub-card"><div class="size-info-text">Video</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valVideoRate" class="form-input-admin" placeholder="₹"><input id="valVideoDays" class="form-input-admin" placeholder="दिवस"></div></div>
+                </div>
+                <div class="section-title" style="margin-top: 30px;">प्रीमियम जॉब प्लॅन दर (कंपनी पेज)</div>
+                <div class="rates-grid-wrapper">
+                    <div class="rate-sub-card"><div class="size-info-text" style="background:#FEF3C7; color:#D97706;">प्लॅन 1</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valPremiumPlan1Price" class="form-input-admin" placeholder="₹"><input id="valPremiumPlan1Days" class="form-input-admin" placeholder="दिवस"></div></div>
+                    <div class="rate-sub-card"><div class="size-info-text" style="background:#FEF3C7; color:#D97706;">प्लॅन 2</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valPremiumPlan2Price" class="form-input-admin" placeholder="₹"><input id="valPremiumPlan2Days" class="form-input-admin" placeholder="दिवस"></div></div>
+                    <div class="rate-sub-card"><div class="size-info-text" style="background:#FEF3C7; color:#D97706;">प्लॅन 3</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valPremiumPlan3Price" class="form-input-admin" placeholder="₹"><input id="valPremiumPlan3Days" class="form-input-admin" placeholder="दिवस"></div></div>
+                </div>
+                <button class="admin-save-btn" onclick="saveAdRates()" style="margin-top:20px;width:100%;">सर्व दर सेव्ह करा</button>
+            </div>
+
+            <div id="pinCampaignsTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-thumbtack"></i> पिन कॅम्पेन व्यवस्थापन</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">इथून तुम्ही ऑफर कॅम्पेन सेट करू शकता.</p>
+                <div style="background:#f8fafc; border-radius:12px; padding:16px; margin-bottom:15px; border:1px solid #e2e8f0;">
+                    <div style="font-size:13px; font-weight:800; color:var(--primary-dark); margin-bottom:12px;"><i class="fa-solid fa-plus-circle"></i> नवीन कॅम्पेन तयार करा</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div><label style="font-size:11px; font-weight:700;">पिन दिवस (Paid Days) *</label><input type="number" id="campPaidDays" class="form-input-admin" placeholder="उदा. 3" min="1"></div>
+                        <div><label style="font-size:11px; font-weight:700;">फ्री दिवस (Free Days) *</label><input type="number" id="campFreeDays" class="form-input-admin" placeholder="उदा. 2" min="1"></div>
+                        <div><label style="font-size:11px; font-weight:700;">किंमत (₹) *</label><input type="number" id="campPrice" class="form-input-admin" placeholder="उदा. 299"></div>
+                        <div><label style="font-size:11px; font-weight:700;">कॅम्पेन नाव</label><input type="text" id="campName" class="form-input-admin" placeholder="उदा. दिवाळी ऑफर"></div>
+                        <div><label style="font-size:11px; font-weight:700;">फाईल अटॅचमेंट (इमेज)</label><input type="file" id="campMediaFile" class="form-input-admin" accept="image/*"></div>
+                    </div>
+                    <button class="admin-save-btn" onclick="savePinCampaign()" style="margin-top:10px;">कॅम्पेन सेव्ह करा</button>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:var(--primary-dark); margin-bottom:10px;"><i class="fa-solid fa-list"></i> सध्याचे कॅम्पेन</div>
+                <div style="display:flex; justify-content:flex-end; margin-bottom:10px;"><button class="csv-download-btn" onclick="downloadTableAsCSV('pinCampaignsTableBody','pin_campaigns')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>कॅम्पेन नाव</th><th>पिन दिवस</th><th>फ्री दिवस</th><th>एकूण दिवस</th><th>किंमत (₹)</th><th>मीडिया</th><th>कृती</th></tr></thead><tbody id="pinCampaignsTableBody"><tr><td colspan="7" class="empty-text">अजून कोणतेही कॅम्पेन नाही.</td></tr></tbody></table></div>
+            </div>
+
+            <div id="paymentVerificationTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-check-double"></i> पेमेंट व्हेरिफिकेशन</div><button class="csv-download-btn" onclick="downloadTableAsCSV('paymentVerificationBody','payment_verification')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>प्रकार</th><th>कंपनी</th><th>मोबाईल</th><th>रक्कम (₹)</th><th>स्क्रीनशॉट</th><th>कृती</th></tr></thead><tbody id="paymentVerificationBody"></tbody></table></div>
+            </div>
+
+            <div id="upiSettingsTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-qrcode"></i> UPI पेमेंट सेटिंग्ज</div>
+                <div class="input-group"><label>UPI ID *</label><input type="text" id="upiIdInput" class="form-input-admin" placeholder="उदा. 9579535290@jupiteraxis"></div>
+                <button class="admin-save-btn" onclick="saveUpiId()" style="margin-top:10px;">UPI ID सेव्ह करा</button>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">ही ID सगळ्या पेमेंट लिंक्समध्ये वापरली जाईल.</p>
+            </div>
+
+            <div id="inquiriesTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title">इन्क्वायरीज</div><button class="csv-download-btn" onclick="downloadTableAsCSV('inquiriesTableBody','inquiries')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>तारीख</th><th>मोबाईल</th><th>प्रकार</th><th>माहिती</th><th>कृती</th></tr></thead><tbody id="inquiriesTableBody"></tbody></table></div>
+            </div>
+
+            <div id="feedbackTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title">ॲप अभिप्राय</div><button class="csv-download-btn" onclick="downloadTableAsCSV('appFeedbackTableBody','feedback')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>तारीख</th><th>मोबाईल</th><th>रोल</th><th>रेटिंग</th><th>फीडबॅक</th></tr></thead><tbody id="appFeedbackTableBody"></tbody></table></div>
+            </div>
+
+            <div id="popupMessageTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-bullhorn"></i> पॉपअप मेसेज (ब्रॉडकास्ट)</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">हा मेसेज कंपनी / युजर पॅनलवर पॉपअप म्हणून दिसेल. तुम्ही फाईल/इमेज देखील अटॅच करू शकता.</p>
+                <div style="background:#f8fafc; border-radius:12px; padding:16px; margin-bottom:15px; border:1px solid #e2e8f0;">
+                    <div style="font-size:13px; font-weight:800; color:var(--primary-dark); margin-bottom:12px;"><i class="fa-solid fa-plus-circle"></i> नवीन मेसेज तयार करा</div>
+                    <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+                        <div><label style="font-size:11px; font-weight:700;">शीर्षक *</label><input type="text" id="popupTitle" class="form-input-admin" placeholder="उदा. विशेष ऑफर"></div>
+                        <div><label style="font-size:11px; font-weight:700;">मेसेज *</label><textarea id="popupMessage" class="form-input-admin" placeholder="मेसेज लिहा..."></textarea></div>
+                        <div><label style="font-size:11px; font-weight:700;">फाईल अटॅचमेंट (इमेज) - पूर्ण स्क्रीन दिसेल</label>
+                            <input type="file" id="popupMediaFile" accept="image/*" onchange="handlePopupMediaSelect(event)" style="display:none;">
+                            <label for="popupMediaFile" style="display:block; border:2px dashed var(--border); border-radius:12px; padding:16px; text-align:center; cursor:pointer; color:var(--text-secondary);">
+                                <i class="fa-solid fa-cloud-arrow-up fa-2x"></i>
+                                <p id="popupFileNameText" style="font-size:12px; margin-top:8px;">इमेज निवडा (optional)</p>
+                            </label>
+                            <div id="popupCropPreview" style="margin-top:10px; display:none; text-align:center;">
+                                <img id="popupPreviewImg" style="max-width:150px; max-height:150px; border-radius:10px; border:2px solid var(--border);">
+                                <p style="font-size:11px; color:green; margin-top:5px;">✅ क्रॉप केलेली इमेज</p>
+                            </div>
+                        </div>
+                        <div><label style="font-size:11px; font-weight:700;">कोणाला दाखवायचे? *</label>
+                            <select id="popupTarget" class="form-input-admin">
+                                <option value="all">सर्व (कंपनी + युजर)</option>
+                                <option value="employer">फक्त कंपनी</option>
+                                <option value="seeker">फक्त युजर</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="admin-save-btn" onclick="savePopupMessage()" style="margin-top:10px;">मेसेज पाठवा</button>
+                </div>
+                <div style="font-size:13px; font-weight:800; color:var(--primary-dark); margin-bottom:10px;"><i class="fa-solid fa-list"></i> पाठवलेले मेसेज</div>
+                <div style="display:flex; justify-content:flex-end; margin-bottom:10px;"><button class="csv-download-btn" onclick="downloadTableAsCSV('popupMessagesTableBody','popup_messages')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>शीर्षक</th><th>मेसेज</th><th>टार्गेट</th><th>मीडिया</th><th>वेळ</th><th>कृती</th></tr></thead><tbody id="popupMessagesTableBody"><tr><td colspan="6" class="empty-text">अजून कोणताही मेसेज नाही.</td></tr></tbody></table></div>
+            </div>
+
+            <div id="biAnalyticsTabSection" class="main-card" style="display:none;">
+                <div class="section-title">बिझनेस इंटेलिजन्स</div><p>AI अंदाज आणि मेट्रिक्स लवकरच...</p>
+            </div>
+
+            <!-- १३. हायरिंग ट्रॅकर -->
+            <div id="hiringTrackerTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-magnifying-glass-chart"></i> हायरिंग ट्रॅकर</div><button class="csv-download-btn" onclick="downloadTableAsCSV('hiringTrackerBody','hiring_tracker')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="filter-bar">
+                    <button class="filter-chip active" onclick="filterHiringTracker('all',this)">सर्व</button>
+                    <button class="filter-chip" onclick="filterHiringTracker('pending',this)">⏳ पेंडिंग</button>
+                    <button class="filter-chip" onclick="filterHiringTracker('hired',this)">✅ हायर्ड</button>
+                    <button class="filter-chip" onclick="filterHiringTracker('followup',this)">📞 फॉलो-अप (७+ दिवस)</button>
+                </div>
+                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>पद</th><th>उमेदवार</th><th>अर्ज तारीख</th><th>स्टेटस</th><th>कमिशन</th><th>कृती</th></tr></thead><tbody id="hiringTrackerBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+            </div>
+
+            <!-- १४. मेंबरशिप अपग्रेड विनंत्या -->
+            <div id="membershipRequestsTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-arrow-up-from-bracket"></i> मेंबरशिप अपग्रेड विनंत्या</div><button class="csv-download-btn" onclick="downloadTableAsCSV('membershipRequestsBody','membership_requests')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>मोबाईल</th><th>सध्याचा प्लॅन</th><th>विनंती प्लॅन</th><th>स्क्रीनशॉट</th><th>तारीख</th><th>कृती</th></tr></thead><tbody id="membershipRequestsBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+            </div>
+
+            <!-- १५. बॅज सेटिंग्ज -->
+            <div id="badgeSettingsTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-award"></i> बॅज सेटिंग्ज</div>
+                <div class="rates-grid-wrapper">
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#E0F2FE;color:#0284C7;">📤 शेअर बॅज</div>
+                        <label style="font-size:11px;font-weight:700;">शेअरर (शेअर्स)</label><input id="badgeShare1" class="form-input-admin" placeholder="1">
+                        <label style="font-size:11px;font-weight:700;">सुपर शेअरर (शेअर्स)</label><input id="badgeShare10" class="form-input-admin" placeholder="10">
+                        <label style="font-size:11px;font-weight:700;">स्टार शेअरर (शेअर्स)</label><input id="badgeShare50" class="form-input-admin" placeholder="50">
+                    </div>
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#FEF3C7;color:#D97706;">🔗 अर्ज बॅज</div>
+                        <label style="font-size:11px;font-weight:700;">कनेक्टर (अर्ज)</label><input id="badgeApp1" class="form-input-admin" placeholder="1">
+                        <label style="font-size:11px;font-weight:700;">टॉप कनेक्टर (अर्ज)</label><input id="badgeApp5" class="form-input-admin" placeholder="5">
+                    </div>
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#ECFDF5;color:#065F46;">🎯 हायरिंग बॅज</div>
+                        <label style="font-size:11px;font-weight:700;">हायरिंग हिरो (हायरिंग)</label><input id="badgeHire1" class="form-input-admin" placeholder="1">
+                        <label style="font-size:11px;font-weight:700;">हायरिंग चॅम्पियन (हायरिंग)</label><input id="badgeHire5" class="form-input-admin" placeholder="5">
+                    </div>
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#FCE7F3;color:#9D174D;">💰 बक्षीस</div>
+                        <label style="font-size:11px;font-weight:700;">हायरिंग बोनस (₹)</label><input id="badgeHiringBonus" class="form-input-admin" placeholder="200">
+                    </div>
+                </div>
+                <button class="admin-save-btn" onclick="saveBadgeSettings()" style="margin-top:20px;width:100%;">बॅज सेटिंग्ज सेव्ह करा</button>
+            </div>
+
+            <!-- १६. मेंबरशिप सेटिंग्ज -->
+            <div id="membershipSettingsTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-sliders"></i> मेंबरशिप सेटिंग्ज</div>
+                <div class="section-title" style="margin-top:10px; background:#E0F2FE; border-left-color:#0284C7;">👤 उमेदवार (Seeker) प्लॅन</div>
+                <div class="rates-grid-wrapper">
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#E0F2FE;color:#0284C7;">🥈 सिल्वर</div>
+                        <label style="font-size:11px;font-weight:700;">किंमत (₹/महिना)</label><input id="seekerSilverPrice" class="form-input-admin" placeholder="49">
+                        <label style="font-size:11px;font-weight:700;">दररोज अर्ज मर्यादा</label><input id="seekerSilverDailyApps" class="form-input-admin" placeholder="15">
+                    </div>
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#FEF3C7;color:#D97706;">🥇 गोल्ड</div>
+                        <label style="font-size:11px;font-weight:700;">किंमत (₹/महिना)</label><input id="seekerGoldPrice" class="form-input-admin" placeholder="99">
+                        <label style="font-size:11px;font-weight:700;">दररोज अर्ज मर्यादा</label><input id="seekerGoldDailyApps" class="form-input-admin" placeholder="999">
+                    </div>
+                </div>
+                <div class="section-title" style="margin-top:20px; background:#FEF3C7; border-left-color:#D97706;">🏢 कंपनी (Employer) प्लॅन</div>
+                <div class="rates-grid-wrapper">
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#E0F2FE;color:#0284C7;">🥈 सिल्वर</div>
+                        <label style="font-size:11px;font-weight:700;">किंमत (₹/महिना)</label><input id="employerSilverPrice" class="form-input-admin" placeholder="99">
+                        <label style="font-size:11px;font-weight:700;">जॉब पोस्ट मर्यादा</label><input id="employerSilverJobPosts" class="form-input-admin" placeholder="5">
+                        <label style="font-size:11px;font-weight:700;">अर्ज व्ह्यू मर्यादा</label><input id="employerSilverAppViews" class="form-input-admin" placeholder="50">
+                        <label style="font-size:11px;font-weight:700;">जॉब व्हॅलिडिटी (दिवस)</label><input id="employerSilverValidity" class="form-input-admin" placeholder="60">
+                    </div>
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#FEF3C7;color:#D97706;">🥇 गोल्ड</div>
+                        <label style="font-size:11px;font-weight:700;">किंमत (₹/महिना)</label><input id="employerGoldPrice" class="form-input-admin" placeholder="199">
+                        <label style="font-size:11px;font-weight:700;">जॉब पोस्ट मर्यादा</label><input id="employerGoldJobPosts" class="form-input-admin" placeholder="999">
+                        <label style="font-size:11px;font-weight:700;">अर्ज व्ह्यू मर्यादा</label><input id="employerGoldAppViews" class="form-input-admin" placeholder="999">
+                        <label style="font-size:11px;font-weight:700;">जॉब व्हॅलिडिटी (दिवस)</label><input id="employerGoldValidity" class="form-input-admin" placeholder="90">
+                    </div>
+                </div>
+                <div class="rates-grid-wrapper" style="margin-top:15px;">
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#F1F5F9;color:#475569;">🆓 फ्री प्लॅन</div>
+                        <label style="font-size:11px;font-weight:700;">उमेदवार दररोज अर्ज</label><input id="freeSeekerDailyApps" class="form-input-admin" placeholder="5">
+                        <label style="font-size:11px;font-weight:700;">कंपनी जॉब पोस्ट</label><input id="freeEmployerJobPosts" class="form-input-admin" placeholder="1">
+                        <label style="font-size:11px;font-weight:700;">कंपनी अर्ज व्ह्यू</label><input id="freeEmployerAppViews" class="form-input-admin" placeholder="20">
+                        <label style="font-size:11px;font-weight:700;">कंपनी जॉब व्हॅलिडिटी (दिवस)</label><input id="freeEmployerValidity" class="form-input-admin" placeholder="30">
+                    </div>
+                </div>
+                <button class="admin-save-btn" onclick="saveMembershipSettings()" style="margin-top:20px;width:100%;">मेंबरशिप सेटिंग्ज सेव्ह करा</button>
+            </div>
+
+            <!-- १७. रेफरल पेमेंट ट्रॅकर -->
+            <div id="referralPaymentTrackerTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-hand-holding-dollar"></i> रेफरल पेमेंट ट्रॅकर</div><button class="csv-download-btn" onclick="downloadTableAsCSV('referralPaymentBody','referral_payments')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="filter-bar">
+                    <button class="filter-chip active" onclick="filterReferralPayments('all',this)">सर्व</button>
+                    <button class="filter-chip" onclick="filterReferralPayments('unpaid',this)">❌ अनपेड</button>
+                    <button class="filter-chip" onclick="filterReferralPayments('paid',this)">✅ पेड</button>
+                </div>
+                <div class="table-responsive"><table><thead><tr><th>रेफरर</th><th>उमेदवार</th><th>जॉब</th><th>कंपनी</th><th>बक्षीस (₹)</th><th>स्टेटस</th><th>कृती</th></tr></thead><tbody id="referralPaymentBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+            </div>
+
+            <!-- १८. सर्व मेंबरशिप स्टेटस -->
+            <div id="allMembershipTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-id-card"></i> सर्व यूजर्सची मेंबरशिप स्टेटस</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allMembershipTableBody','all_membership')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>मोबाईल</th><th>नाव / कंपनी</th><th>रोल</th><th>प्लॅन</th><th>एक्सपायरी</th><th>स्टेटस</th></tr></thead><tbody id="allMembershipTableBody"><tr><td colspan="6" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+            </div>
+
+            <div id="allEmployersTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title">सर्व मालक</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allEmployersTableBody','all_employers')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>नाव</th><th>मोबाईल</th><th>कंपनी</th><th>स्टेटस</th><th>कृती</th></tr></thead><tbody id="allEmployersTableBody"></tbody></table></div>
+            </div>
+
+            <div id="allSeekersTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card"><div class="section-title">सर्व उमेदवार</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allSeekersTableBody','all_seekers')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                <div class="table-responsive"><table><thead><tr><th>नाव</th><th>ईमेल</th><th>मोबाईल</th><th>कृती</th></tr></thead><tbody id="allSeekersTableBody"></tbody></table></div>
+            </div>
+
+            <div id="clearMobileTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-user-slash"></i> मोबाईल नंबर क्लियर करा (पुन्हा नोंदणी करू शकतो)</div>
+                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+                    <input type="tel" id="clearMobileInput" class="form-input-admin" placeholder="10 अंकी मोबाईल नंबर टाका" maxlength="10" style="flex:1; margin:0;">
+                    <button class="admin-save-btn" onclick="searchMobileForClear()"><i class="fa-solid fa-search"></i> शोधा</button>
+                </div>
+                <div id="mobileSearchResult" style="background:#f8fafc; border-radius:14px; padding:0; display:none;"></div>
+                <p class="text-sm" style="margin-top:12px; color:#64748b;"><i class="fa-solid fa-info-circle"></i> कोणताही वापरकर्ता पूर्णपणे डिलीट करा.</p>
+            </div>
+
+            <div id="allJobsTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card">
+                    <div class="section-title"><i class="fa-solid fa-briefcase"></i> सर्व नोकऱ्या (एकूण: <span id="totalJobsCount">0</span>)</div>
+                    <div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchAllJobs" placeholder="कंपनी / पद / मोबाईल शोधा..." oninput="filterAllJobsTable()"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('allJobsTableBody','all_jobs')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>कंपनी</th><th>पद</th><th>लोकेशन</th><th>पगार</th><th>मोबाईल</th><th>स्टेटस</th><th>प्रीमियम?</th><th>कृती</th></tr></thead>
+                        <tbody id="allJobsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Crop Modal -->
+<div class="modal-overlay" id="cropModal">
+    <div class="modal-content" style="max-width:90%;">
+        <div class="modal-header"><h3><i class="fa-solid fa-crop"></i> इमेज क्रॉप करा</h3><button class="close-modal" onclick="closeCropModal()"><i class="fa-solid fa-xmark"></i></button></div>
+        <div id="cropImageContainer"><img id="cropImage" src="" alt="Crop me"></div>
+        <div class="crop-actions"><button class="admin-save-btn" style="width:auto; padding:10px 25px;" onclick="cropAndConfirmPopup()">✅ क्रॉप करा आणि सेव्ह करा</button></div>
+    </div>
+</div>
+
+<!-- Notification Modal -->
+<div class="modal-overlay" id="notifModal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>🔔 सूचना</h3><button class="close-modal" onclick="closeNotificationModal()"><i class="fa-solid fa-xmark"></i></button></div>
+        <div id="notifList" style="max-height:60vh; overflow-y:auto;"></div>
+        <button class="submit-btn" onclick="window.location.href='notifications.html'" style="margin-top:10px;">सर्व सूचना पहा</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<!-- Cropper.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
+        authDomain: "satara-jobs-ed6ab.firebaseapp.com",
+        projectId: "satara-jobs-ed6ab",
+        storageBucket: "satara-jobs-ed6ab.appspot.com",
+        messagingSenderId: "688594836150",
+        appId: "1:688594836150:web:a59ecda1d87b599862a417"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .catch(err => console.error("Persistence error:", err));
+
+    let currentTab = 'employers';
+    let allEmployerRows = [], allPremiumRows = [], allJobsArray = [];
+    let allHiringTrackerRows = [];
+    let allReferralPaymentRows = [];
+    let hiringFilter = 'all';
+    let referralFilter = 'all';
+
+    // Cropper variables
+    let popupCropper = null;
+    let popupMediaFile = null;
+    let finalPopupCroppedFile = null;
+
+    // ---- CSV डाउनलोड फंक्शन ----
+    function downloadTableAsCSV(tableId, filename) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        let csv = [];
+        for (let row of table.rows) {
+            let cols = [];
+            for (let cell of row.cells) {
+                let text = cell.innerText.replace(/"/g, '""');
+                cols.push('"' + text + '"');
+            }
+            csv.push(cols.join(','));
+        }
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename + '_' + new Date().toLocaleDateString('mr-IN').replace(/\//g,'-') + '.csv';
+        link.click();
+    }
+
+    // ---- NOTIFICATION FUNCTIONS ----
+    function addNotification(recipientPhone, recipientRole, type, title, message, relatedId = '') {
+        return db.collection("notifications").add({
+            recipientPhone, recipientRole, type, title, message, relatedId,
+            isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }
+
+    function openNotificationModal() {
+        db.collection("notifications")
+          .orderBy("createdAt", "desc")
+          .limit(30).get().then(snap => {
+              const list = document.getElementById('notifList');
+              list.innerHTML = '';
+              if (snap.empty) {
+                  list.innerHTML = '<p style="text-align:center; padding:20px;">कोणतीही सूचना नाही</p>';
+              } else {
+                  snap.forEach(doc => {
+                      const n = doc.data();
+                      const div = document.createElement('div');
+                      div.className = `notif-item ${n.isRead ? '' : 'unread'}`;
+                      div.innerHTML = `<strong>${n.title}</strong><p style="font-size:12px;">${n.message}</p><span class="time">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleTimeString('mr-IN') : ''}</span>`;
+                      div.onclick = () => {
+                          db.collection("notifications").doc(doc.id).update({ isRead: true });
+                          div.classList.remove('unread');
+                      };
+                      list.appendChild(div);
+                  });
+              }
+              document.getElementById('notifModal').style.display = 'flex';
+          }).catch(err => {
+              document.getElementById('notifList').innerHTML = '<p>त्रुटी: ' + err.message + '</p>';
+              document.getElementById('notifModal').style.display = 'flex';
+          });
+    }
+
+    function closeNotificationModal() {
+        document.getElementById('notifModal').style.display = 'none';
+    }
+
+    // ================== सुधारित लॉगिन ==================
+    async function unlockAdminControlDashboard() {
+        const phone = document.getElementById("adminAuthPhone").value.trim();
+        const pass = document.getElementById("adminAuthPassword").value.trim();
+        const errorEl = document.getElementById("loginError");
+        const btn = document.getElementById("adminUnlockBtn");
+
+        errorEl.style.display = "none";
+        if (phone !== "9579535290") {
+            errorEl.innerText = "कृपया योग्य ॲडमिन नंबर टाका.";
+            errorEl.style.display = "block";
+            return;
+        }
+        if (pass.length < 6) {
+            errorEl.innerText = "पासवर्ड ६ अंकी असावा.";
+            errorEl.style.display = "block";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> लॉगिन होत आहे...";
+        const email = `${phone}@satara-jobs.com`;
+
+        try {
+            await auth.signInWithEmailAndPassword(email, pass);
+        } catch (e) {
+            if (e.code === "auth/user-not-found" && pass === "210890") {
+                try {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.collection("users").doc(phone).set({
+                        name: "Super Admin", phone, role: "admin",
+                        isVerified: "true",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (createError) {
+                    if (createError.code === "auth/email-already-in-use") {
+                        errorEl.innerText = "हे खाते आधीपासून आहे पण पासवर्ड जुळत नाही. Firebase Console मधून ते खाते डिलीट करा आणि पुन्हा प्रयत्न करा.";
+                    } else {
+                        errorEl.innerText = "खाते तयार करताना त्रुटी: " + createError.message;
+                    }
+                    errorEl.style.display = "block";
+                    btn.disabled = false;
+                    btn.innerHTML = "<i class='fa-solid fa-lock-open'></i> डॅशबोर्ड अनलॉक करा";
+                    return;
+                }
+            } else {
+                let msg = "लॉगिन अयशस्वी. ";
+                if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential") msg += "चुकीचा पासवर्ड. Firebase Console मधून खाते डिलीट करून पुन्हा प्रयत्न करा.";
+                else msg += e.message;
+                errorEl.innerText = msg;
+                errorEl.style.display = "block";
+                btn.disabled = false;
+                btn.innerHTML = "<i class='fa-solid fa-lock-open'></i> डॅशबोर्ड अनलॉक करा";
+                return;
+            }
+        }
+
+        document.getElementById("adminAuthLockOverlay").style.display = "none";
+        document.getElementById("mainDashboardUI").style.display = "flex";
+        startAdminDashboardServices();
+    }
+
+    function triggerAdminForgotPassword() {
+        alert("डिफॉल्ट पासवर्ड: 210890\nजर बदलला असेल तर Firebase Console मधून रिसेट करा.");
+    }
+
+    function adminLogout() {
+        auth.signOut().then(() => {
+            document.getElementById("adminAuthLockOverlay").style.display = "flex";
+            document.getElementById("mainDashboardUI").style.display = "none";
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            let phone = "";
+            if (user.email) phone = user.email.split("@")[0].trim();
+            if (phone === "9579535290") {
+                document.getElementById("adminAuthLockOverlay").style.display = "none";
+                document.getElementById("mainDashboardUI").style.display = "flex";
+                startAdminDashboardServices();
+            } else {
+                document.getElementById("adminAuthLockOverlay").style.display = "flex";
+                document.getElementById("mainDashboardUI").style.display = "none";
+            }
+        } else {
+            document.getElementById("adminAuthLockOverlay").style.display = "flex";
+            document.getElementById("mainDashboardUI").style.display = "none";
+        }
+    });
+
+    function startAdminDashboardServices() {
+        loadAnalytics();
+        listenEmployers();
+        listenPremium();
+        listenActivePremiumJobs();
+        listenAllEmployers();
+        listenAllSeekers();
+        listenAdRates();
+        listenInquiries();
+        listenFeedback();
+        listenPinCampaigns();
+        listenPaymentVerification();
+        listenPopupMessages();
+        listenMembershipRequests();
+        listenBadgeSettings();
+        listenMembershipSettings();
+        loadUpiId();
+        loadAllJobs();
+        loadAdminAdBookings('pending');
+        loadHiringTracker();
+        loadReferralPayments();
+        loadAllMembershipStatus();
+    }
+
+    function toggleSidebar() {
+        document.getElementById('mainSidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function handleMenuClick(type) {
+        currentTab = type;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        const btnMap = {
+            employers:'tabEmpBtn', premium:'tabPremiumBtn', add_job:'tabAddJobBtn',
+            upload_ads:'tabUploadAdsBtn', rates:'tabRatesBtn', pin_campaigns:'tabPinCampaignsBtn',
+            payment_verification:'tabPaymentVerificationBtn', upi_settings:'tabUpiSettingsBtn',
+            inquiries:'tabInquiriesBtn', feedback:'tabFeedbackBtn', popup_message:'tabPopupMsgBtn',
+            bi_analytics:'tabBiAnalyticsBtn', hiring_tracker:'tabHiringTrackerBtn',
+            membership_requests:'tabMembershipRequestsBtn', badge_settings:'tabBadgeSettingsBtn',
+            membership_settings:'tabMembershipSettingsBtn', referral_payment_tracker:'tabReferralPaymentTrackerBtn',
+            all_membership:'tabAllMembershipBtn',
+            all_employers:'tabAllEmpBtn', all_seekers:'tabAllSeekersBtn',
+            clear_mobile:'tabClearMobileBtn', all_jobs:'tabAllJobsBtn'
+        };
+        if(btnMap[type]) document.getElementById(btnMap[type]).classList.add('active');
+
+        const sections = [
+            'employerTabSection','premiumTabSection','addJobTabSection','uploadAdsTabSection',
+            'ratesTabSection','pinCampaignsTabSection','paymentVerificationTabSection',
+            'upiSettingsTabSection','inquiriesTabSection','feedbackTabSection','popupMessageTabSection',
+            'biAnalyticsTabSection','hiringTrackerTabSection','membershipRequestsTabSection',
+            'badgeSettingsTabSection','membershipSettingsTabSection','referralPaymentTrackerTabSection',
+            'allMembershipTabSection',
+            'allEmployersTabSection','allSeekersTabSection','clearMobileTabSection','allJobsTabSection'
+        ];
+        sections.forEach(id => document.getElementById(id).style.display = 'none');
+
+        const sectionMap = {
+            employers:'employerTabSection', premium:'premiumTabSection', add_job:'addJobTabSection',
+            upload_ads:'uploadAdsTabSection', rates:'ratesTabSection', pin_campaigns:'pinCampaignsTabSection',
+            payment_verification:'paymentVerificationTabSection', upi_settings:'upiSettingsTabSection',
+            inquiries:'inquiriesTabSection', feedback:'feedbackTabSection', popup_message:'popupMessageTabSection',
+            bi_analytics:'biAnalyticsTabSection', hiring_tracker:'hiringTrackerTabSection',
+            membership_requests:'membershipRequestsTabSection', badge_settings:'badgeSettingsTabSection',
+            membership_settings:'membershipSettingsTabSection', referral_payment_tracker:'referralPaymentTrackerTabSection',
+            all_membership:'allMembershipTabSection',
+            all_employers:'allEmployersTabSection', all_seekers:'allSeekersTabSection',
+            clear_mobile:'clearMobileTabSection', all_jobs:'allJobsTabSection'
+        };
+        if (sectionMap[type]) document.getElementById(sectionMap[type]).style.display = 'block';
+
+        if (type === 'upload_ads') loadAdminAdBookings('pending');
+        if (type === 'hiring_tracker') loadHiringTracker();
+        if (type === 'membership_requests') listenMembershipRequests();
+        if (type === 'badge_settings') listenBadgeSettings();
+        if (type === 'membership_settings') listenMembershipSettings();
+        if (type === 'referral_payment_tracker') loadReferralPayments();
+        if (type === 'all_membership') loadAllMembershipStatus();
+
+        toggleSidebar();
+    }
+
+    // ================== सर्व मेंबरशिप स्टेटस ==================
+    function loadAllMembershipStatus() {
+        db.collection("users").onSnapshot(snap => {
+            const tbody = document.getElementById("allMembershipTableBody");
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-text">कोणताही यूजर नाही.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = snap.docs.map(doc => {
+                const u = doc.data();
+                const plan = u.membershipPlan || 'free';
+                const expiry = u.membershipExpiry ? u.membershipExpiry.toDate().toLocaleDateString('mr-IN') : '—';
+                const status = u.membershipStatus || 'active';
+                const statusColor = status === 'pending_admin_approval' ? '#f59e0b' : '#10b981';
+                return `<tr>
+                    <td>${doc.id}</td>
+                    <td>${u.name || u.companyName || '-'}</td>
+                    <td>${u.role || '-'}</td>
+                    <td><strong>${plan}</strong></td>
+                    <td>${expiry}</td>
+                    <td><span class="status-badge" style="background:${statusColor};color:white;">${status}</span></td>
+                </tr>`;
+            }).join('');
+        });
+    }
+
+    // ================== हायरिंग ट्रॅकर ==================
+    function loadHiringTracker() {
+        db.collection("applications").orderBy("appliedAt","desc").onSnapshot(snap => {
+            allHiringTrackerRows = [];
+            snap.forEach(doc => allHiringTrackerRows.push({ id: doc.id, ...doc.data() }));
+            renderHiringTracker(allHiringTrackerRows);
+        });
+    }
+    function renderHiringTracker(rows) {
+        const tbody = document.getElementById("hiringTrackerBody");
+        let filtered = rows;
+        if (hiringFilter === 'hired') filtered = rows.filter(r => r.status === 'selected');
+        else if (hiringFilter === 'pending') filtered = rows.filter(r => r.status === 'pending' || r.status === 'Pending');
+        else if (hiringFilter === 'followup') {
+            const sevenDaysAgo = Date.now() - 7*24*60*60*1000;
+            filtered = rows.filter(r => {
+                const t = r.appliedAt ? r.appliedAt.toMillis() : 0;
+                return t < sevenDaysAgo && (r.status === 'pending' || r.status === 'Pending');
+            });
+        }
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-text">कोणतीही नोंद नाही.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(r => {
+            const st = r.status === 'selected' ? '<span class="status-badge" style="background:#10b981;color:white;">हायर्ड</span>' : '<span class="status-badge" style="background:#f59e0b;color:white;">पेंडिंग</span>';
+            const dt = r.appliedAt ? new Date(r.appliedAt.toMillis()).toLocaleDateString('mr-IN') : '-';
+            return `<tr>
+                <td>${r.companyName || '-'}</td>
+                <td>${r.jobTitle || '-'}</td>
+                <td>${r.applicantName || r.applicantPhone || '-'}</td>
+                <td>${dt}</td>
+                <td>${st}</td>
+                <td>${r.commissionAmount ? '₹'+r.commissionAmount : '-'}</td>
+                <td><button class="action-btn btn-approve" onclick="adminConfirmHiring('${r.id}')">✅ हायर कन्फर्म</button></td>
+            </tr>`;
+        }).join('');
+    }
+    function filterHiringTracker(f, btn) {
+        hiringFilter = f;
+        document.querySelectorAll('#hiringTrackerTabSection .filter-chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        renderHiringTracker(allHiringTrackerRows);
+    }
+    async function adminConfirmHiring(appId) {
+        if (!confirm("हायरिंग कन्फर्म करायची का?")) return;
+        try {
+            const appDoc = await db.collection("applications").doc(appId).get();
+            const app = appDoc.data();
+            await db.collection("applications").doc(appId).update({ status: 'selected', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            if (app && app.jobId) {
+                await db.collection("jobs").doc(app.jobId).update({ status: 'closed', closedAt: firebase.firestore.FieldValue.serverTimestamp(), closedReason: 'hired', closedBy: 'admin' });
+            }
+            if (app && app.referrerPhone) {
+                const badgeDoc = await db.collection("settings").doc("badges").get();
+                const bonus = badgeDoc.exists ? (badgeDoc.data().hiringBonus || 200) : 200;
+                await db.collection("referrals").add({
+                    referrerPhone: app.referrerPhone, applicantPhone: app.applicantPhone,
+                    jobId: app.jobId, jobTitle: app.jobTitle, companyName: app.companyName,
+                    commissionAmount: bonus, paid: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            if (app && app.applicantPhone) {
+                await db.collection("notifications").add({
+                    recipientPhone: app.applicantPhone, recipientRole: 'seeker', type: 'hired',
+                    title: 'नोकरी कन्फर्म! 🎉', message: `तुमची '${app.jobTitle || 'नोकरी'}' साठी निवड झाली आहे.`,
+                    relatedId: appId, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            alert("✅ हायरिंग कन्फर्म झाली!");
+            loadHiringTracker(); loadReferralPayments();
+        } catch (e) { alert("त्रुटी: " + e.message); }
+    }
+
+    // ================== मेंबरशिप विनंत्या ==================
+    function listenMembershipRequests() {
+        db.collection("users").where("membershipStatus","==","pending_admin_approval").onSnapshot(snap => {
+            const tbody = document.getElementById("membershipRequestsBody");
+            document.getElementById("badgeMembership").innerText = snap.size;
+            document.getElementById("badgeMembership").style.display = snap.size>0?'inline':'none';
+            updateTotalNotif();
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="7" class="empty-text">कोणतीही प्रलंबित विनंती नाही.</td></tr>'; return; }
+            tbody.innerHTML = snap.docs.map(doc => {
+                const u = doc.data();
+                const dt = u.membershipUpgradeRequestedAt ? new Date(u.membershipUpgradeRequestedAt.toMillis()).toLocaleDateString('mr-IN') : '-';
+                return `<tr>
+                    <td>${u.companyName || '-'}</td>
+                    <td>${doc.id}</td>
+                    <td>${u.membershipPlan || 'फ्री'}</td>
+                    <td><strong>${u.membershipUpgradeRequestedPlan || u.membershipPlan || '-'}</strong></td>
+                    <td>${u.membershipPaymentScreenshot ? `<a href="${u.membershipPaymentScreenshot}" target="_blank">पहा</a>` : '-'}</td>
+                    <td>${dt}</td>
+                    <td>
+                        <button class="action-btn btn-approve" onclick="approveMembershipUpgrade('${doc.id}')">✅ मंजूर</button>
+                        <button class="action-btn btn-delete" onclick="rejectMembershipUpgrade('${doc.id}')">❌ नाकारा</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        });
+    }
+    async function approveMembershipUpgrade(phone) {
+        if (!confirm("मेंबरशिप अपग्रेड मंजूर करायची?")) return;
+        const userDoc = await db.collection("users").doc(phone).get();
+        const user = userDoc.data();
+        const plan = user.membershipUpgradeRequestedPlan || 'silver';
+        const expiry = new Date(); expiry.setMonth(expiry.getMonth()+1);
+        await db.collection("users").doc(phone).update({
+            membershipPlan: plan,
+            membershipExpiry: firebase.firestore.Timestamp.fromDate(expiry),
+            membershipStatus: 'active',
+            membershipUpgradeRequestedPlan: firebase.firestore.FieldValue.delete()
+        });
+        await db.collection("notifications").add({
+            recipientPhone: phone, recipientRole: 'employer', type: 'membership_approved',
+            title: 'मेंबरशिप अपग्रेड मंजूर', message: `तुमची ${plan} मेंबरशिप मंजूर झाली आहे.`,
+            isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("✅ मेंबरशिप मंजूर!");
+    }
+    async function rejectMembershipUpgrade(phone) {
+        if (!confirm("मेंबरशिप विनंती नाकारायची?")) return;
+        await db.collection("users").doc(phone).update({
+            membershipStatus: 'active',
+            membershipUpgradeRequestedPlan: firebase.firestore.FieldValue.delete(),
+            membershipPaymentScreenshot: firebase.firestore.FieldValue.delete()
+        });
+        await db.collection("notifications").add({
+            recipientPhone: phone, recipientRole: 'employer', type: 'membership_rejected',
+            title: 'मेंबरशिप विनंती नाकारली', message: 'तुमची मेंबरशिप अपग्रेड विनंती नाकारण्यात आली.',
+            isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("नाकारली.");
+    }
+
+    // ================== बॅज सेटिंग्ज ==================
+    function listenBadgeSettings() {
+        db.collection("settings").doc("badges").onSnapshot(doc => {
+            if (doc.exists) {
+                const d = doc.data();
+                document.getElementById("badgeShare1").value = d.share1 || 1;
+                document.getElementById("badgeShare10").value = d.share10 || 10;
+                document.getElementById("badgeShare50").value = d.share50 || 50;
+                document.getElementById("badgeApp1").value = d.app1 || 1;
+                document.getElementById("badgeApp5").value = d.app5 || 5;
+                document.getElementById("badgeHire1").value = d.hire1 || 1;
+                document.getElementById("badgeHire5").value = d.hire5 || 5;
+                document.getElementById("badgeHiringBonus").value = d.hiringBonus || 200;
+            }
+        });
+    }
+    async function saveBadgeSettings() {
+        const data = {
+            share1: parseInt(document.getElementById("badgeShare1").value)||1,
+            share10: parseInt(document.getElementById("badgeShare10").value)||10,
+            share50: parseInt(document.getElementById("badgeShare50").value)||50,
+            app1: parseInt(document.getElementById("badgeApp1").value)||1,
+            app5: parseInt(document.getElementById("badgeApp5").value)||5,
+            hire1: parseInt(document.getElementById("badgeHire1").value)||1,
+            hire5: parseInt(document.getElementById("badgeHire5").value)||5,
+            hiringBonus: parseInt(document.getElementById("badgeHiringBonus").value)||200
+        };
+        await db.collection("settings").doc("badges").set(data, {merge:true});
+        alert("✅ बॅज सेटिंग्ज सेव्ह झाल्या!");
+    }
+
+    // ================== मेंबरशिप सेटिंग्ज ==================
+    function listenMembershipSettings() {
+        db.collection("settings").doc("membership").onSnapshot(doc => {
+            if (doc.exists) {
+                const d = doc.data();
+                document.getElementById("seekerSilverPrice").value = d.seekerSilverPrice || 49;
+                document.getElementById("seekerSilverDailyApps").value = d.seekerSilverDailyApps || 15;
+                document.getElementById("seekerGoldPrice").value = d.seekerGoldPrice || 99;
+                document.getElementById("seekerGoldDailyApps").value = d.seekerGoldDailyApps || 999;
+                document.getElementById("employerSilverPrice").value = d.employerSilverPrice || 99;
+                document.getElementById("employerSilverJobPosts").value = d.employerSilverJobPosts || 5;
+                document.getElementById("employerSilverAppViews").value = d.employerSilverAppViews || 50;
+                document.getElementById("employerSilverValidity").value = d.employerSilverValidity || 60;
+                document.getElementById("employerGoldPrice").value = d.employerGoldPrice || 199;
+                document.getElementById("employerGoldJobPosts").value = d.employerGoldJobPosts || 999;
+                document.getElementById("employerGoldAppViews").value = d.employerGoldAppViews || 999;
+                document.getElementById("employerGoldValidity").value = d.employerGoldValidity || 90;
+                document.getElementById("freeSeekerDailyApps").value = d.freeSeekerDailyApps || 5;
+                document.getElementById("freeEmployerJobPosts").value = d.freeEmployerJobPosts || 1;
+                document.getElementById("freeEmployerAppViews").value = d.freeEmployerAppViews || 20;
+                document.getElementById("freeEmployerValidity").value = d.freeEmployerValidity || 30;
+            }
+        });
+    }
+    async function saveMembershipSettings() {
+        const data = {
+            seekerSilverPrice: document.getElementById("seekerSilverPrice").value,
+            seekerSilverDailyApps: document.getElementById("seekerSilverDailyApps").value,
+            seekerGoldPrice: document.getElementById("seekerGoldPrice").value,
+            seekerGoldDailyApps: document.getElementById("seekerGoldDailyApps").value,
+            employerSilverPrice: document.getElementById("employerSilverPrice").value,
+            employerSilverJobPosts: document.getElementById("employerSilverJobPosts").value,
+            employerSilverAppViews: document.getElementById("employerSilverAppViews").value,
+            employerSilverValidity: document.getElementById("employerSilverValidity").value,
+            employerGoldPrice: document.getElementById("employerGoldPrice").value,
+            employerGoldJobPosts: document.getElementById("employerGoldJobPosts").value,
+            employerGoldAppViews: document.getElementById("employerGoldAppViews").value,
+            employerGoldValidity: document.getElementById("employerGoldValidity").value,
+            freeSeekerDailyApps: document.getElementById("freeSeekerDailyApps").value,
+            freeEmployerJobPosts: document.getElementById("freeEmployerJobPosts").value,
+            freeEmployerAppViews: document.getElementById("freeEmployerAppViews").value,
+            freeEmployerValidity: document.getElementById("freeEmployerValidity").value
+        };
+        await db.collection("settings").doc("membership").set(data, {merge:true});
+        alert("✅ मेंबरशिप सेटिंग्ज सेव्ह झाल्या!");
+    }
+
+    // ================== रेफरल पेमेंट ट्रॅकर ==================
+    function loadReferralPayments() {
+        db.collection("referrals").orderBy("createdAt","desc").onSnapshot(snap => {
+            allReferralPaymentRows = [];
+            snap.forEach(doc => allReferralPaymentRows.push({ id: doc.id, ...doc.data() }));
+            renderReferralPayments(allReferralPaymentRows);
+        });
+    }
+    function renderReferralPayments(rows) {
+        const tbody = document.getElementById("referralPaymentBody");
+        let filtered = rows;
+        if (referralFilter === 'paid') filtered = rows.filter(r => r.paid === true);
+        else if (referralFilter === 'unpaid') filtered = rows.filter(r => !r.paid);
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-text">कोणतीही रेफरल नाही.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(r => {
+            const paidBadge = r.paid ? '<span class="status-badge" style="background:#10b981;color:white;">✅ पेड</span>' : '<span class="status-badge" style="background:#ef4444;color:white;">❌ अनपेड</span>';
+            return `<tr>
+                <td>${r.referrerPhone || '-'}</td>
+                <td>${r.applicantPhone || '-'}</td>
+                <td>${r.jobTitle || '-'}</td>
+                <td>${r.companyName || '-'}</td>
+                <td>₹${r.commissionAmount || 0}</td>
+                <td>${paidBadge}</td>
+                <td>${!r.paid ? `<button class="action-btn btn-approve" onclick="markReferralPaid('${r.id}')">💰 पेड करा</button>` : `<button class="action-btn btn-delete" onclick="markReferralUnpaid('${r.id}')">↩ अनडू</button>`}</td>
+            </tr>`;
+        }).join('');
+    }
+    function filterReferralPayments(f, btn) {
+        referralFilter = f;
+        document.querySelectorAll('#referralPaymentTrackerTabSection .filter-chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        renderReferralPayments(allReferralPaymentRows);
+    }
+    async function markReferralPaid(id) {
+        if (!confirm("पेमेंट मार्क करायचं?")) return;
+        await db.collection("referrals").doc(id).update({ paid: true, paidAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("✅ पेड मार्क केलं!");
+    }
+    async function markReferralUnpaid(id) {
+        if (!confirm("अनपेड मार्क करायचं?")) return;
+        await db.collection("referrals").doc(id).update({ paid: false, paidAt: firebase.firestore.FieldValue.delete() });
+        alert("↩ अनपेड मार्क केलं.");
+    }
+
+    // ================== सर्व जॉब्स लोड ==================
+    function loadAllJobs() {
+        db.collection("jobs").orderBy("createdAt", "desc").onSnapshot(snap => {
+            allJobsArray = [];
+            snap.forEach(doc => allJobsArray.push({ id: doc.id, ...doc.data() }));
+            document.getElementById("totalJobsCount").innerText = allJobsArray.length;
+            renderAllJobsTable(allJobsArray);
+        });
+    }
+    function renderAllJobsTable(jobs) {
+        const tbody = document.getElementById("allJobsTableBody");
+        if (!jobs.length) {
+            tbody.innerHTML = '<tr><td colspan="8" class="empty-text">अद्याप कोणतीही नोकरी नाही.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = jobs.map(job => {
+            let statusBadge = '';
+            if (job.isApproved === true) statusBadge = '<span class="status-badge" style="background:#10b981; color:white;">लाईव्ह</span>';
+            else if (job.isApproved === false) statusBadge = '<span class="status-badge" style="background:#ef4444; color:white;">नाकारलेली</span>';
+            else statusBadge = '<span class="status-badge" style="background:#f59e0b; color:white;">प्रलंबित</span>';
+            let premiumBadge = job.isPremium === true ? '<span class="status-badge" style="background:#f59e0b; color:white;">⭐ प्रीमियम</span>' : '-';
+            return `<tr>
+                <td><strong>${job.companyName || job.company || '-'}</strong></td>
+                <td>${job.title || '-'}</td>
+                <td>${job.location || '-'}</td>
+                <td>₹${job.salary || 'N/A'}</td>
+                <td>${job.phone || job.employerPhone || '-'}</td>
+                <td>${statusBadge}</td>
+                <td>${premiumBadge}</td>
+                <td><button class="action-btn btn-delete" onclick="deleteJob('${job.id}')"><i class="fa-solid fa-trash-can"></i> डिलीट</button></td>
+            </tr>`;
+        }).join('');
+    }
+    function filterAllJobsTable() {
+        const query = document.getElementById("searchAllJobs").value.trim().toLowerCase();
+        if (!query) return renderAllJobsTable(allJobsArray);
+        const filtered = allJobsArray.filter(job =>
+            (job.companyName || '').toLowerCase().includes(query) ||
+            (job.title || '').toLowerCase().includes(query) ||
+            (job.phone || '').includes(query) ||
+            (job.employerPhone || '').includes(query)
+        );
+        renderAllJobsTable(filtered);
+    }
+    async function deleteJob(jobId) {
+        if (!confirm("ही नोकरी कायमची डिलीट करायची का?")) return;
+        try {
+            const jobDoc = await db.collection("jobs").doc(jobId).get();
+            const job = jobDoc.data();
+            await db.collection("jobs").doc(jobId).delete();
+            if (job && job.employerPhone) {
+                await db.collection("notifications").add({
+                    recipientPhone: job.employerPhone,
+                    recipientRole: 'employer',
+                    type: 'job_deleted',
+                    title: 'नोकरी डिलीट',
+                    message: `तुमची '${job.title || 'नोकरी'}' ॲडमिनने डिलीट केली आहे.`,
+                    relatedId: jobId,
+                    isRead: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            alert("नोकरी डिलीट झाली.");
+        } catch (err) {
+            alert("Firebase Security Error: " + err.message);
+        }
+    }
+
+    // ================== अॅनालिटिक्स ==================
+    function loadAnalytics() {
+        db.collection("users").where("role","==","seeker").onSnapshot(s => document.getElementById("countSeekers").innerText = s.size);
+        db.collection("users").where("role","==","employer").onSnapshot(s => document.getElementById("countEmployers").innerText = s.size);
+        db.collection("jobs").where("isApproved","==",true).onSnapshot(s => document.getElementById("countLiveJobs").innerText = s.size);
+        let pu=0, pp=0;
+        db.collection("users").where("isVerified","==","pending").onSnapshot(s => { pu=s.size; updatePending(pu,pp); });
+        db.collection("jobs").where("isPremium","==","pending").onSnapshot(s => { pp=s.size; updatePending(pu,pp); });
+        db.collection("ad_bookings").where("status","==","pending").onSnapshot(s => { document.getElementById("badgeAds").innerText = s.size; document.getElementById("badgeAds").style.display = s.size>0?'inline':'none'; updateTotalNotif(); });
+        db.collection("users").where("membershipStatus","==","pending_admin_approval").onSnapshot(s => { document.getElementById("badgeMembership").innerText = s.size; document.getElementById("badgeMembership").style.display = s.size>0?'inline':'none'; updateTotalNotif(); });
+    }
+    function updatePending(u,p) { document.getElementById("countPending").innerText = u+p; }
+
+    // ================== UPI सेटिंग्ज ==================
+    async function loadUpiId() {
+        const doc = await db.collection("settings").doc("upi").get();
+        if(doc.exists) document.getElementById("upiIdInput").value = doc.data().id || '';
+    }
+    async function saveUpiId() {
+        const id = document.getElementById("upiIdInput").value.trim();
+        if(!id) { alert("UPI ID टाका!"); return; }
+        await db.collection("settings").doc("upi").set({ id });
+        alert("UPI ID सेव्ह झाली!");
+    }
+
+    // ================== पिन कॅम्पेन ==================
+    async function savePinCampaign() {
+        const paidDays = parseInt(document.getElementById("campPaidDays").value);
+        const freeDays = parseInt(document.getElementById("campFreeDays").value);
+        const price = parseInt(document.getElementById("campPrice").value);
+        const name = document.getElementById("campName").value.trim() || `${paidDays}+${freeDays} दिवस`;
+        const file = document.getElementById("campMediaFile").files[0];
+        if(!paidDays || !freeDays || !price) { alert("सर्व माहिती भरा!"); return; }
+        let mediaUrl = '';
+        try {
+            if (file) mediaUrl = await uploadFileToCloudinary(file);
+            await db.collection("pin_campaigns").add({ 
+                name, paidDays, freeDays, totalDays: paidDays+freeDays, price, mediaUrl,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+            });
+            alert("कॅम्पेन सेव्ह झाला!");
+            document.getElementById("campPaidDays").value = ''; 
+            document.getElementById("campFreeDays").value = ''; 
+            document.getElementById("campPrice").value = ''; 
+            document.getElementById("campName").value = '';
+            document.getElementById("campMediaFile").value = '';
+        } catch (e) { alert("त्रुटी: " + e.message); }
+    }
+    function listenPinCampaigns() {
+        db.collection("pin_campaigns").orderBy("createdAt","desc").onSnapshot(snap => {
+            const tbody = document.getElementById("pinCampaignsTableBody");
+            if(snap.empty) { tbody.innerHTML = '<tr><td colspan="7" class="empty-text">अजून कोणतेही कॅम्पेन नाही.</td></tr>'; return; }
+            tbody.innerHTML = snap.docs.map(doc => { 
+                const c=doc.data(); 
+                const mediaCell = c.mediaUrl ? `<a href="${c.mediaUrl}" target="_blank">पहा</a>` : '—';
+                return `<tr>
+                    <td>${c.name}</td>
+                    <td>${c.paidDays} दिवस</td>
+                    <td>${c.freeDays} दिवस</td>
+                    <td><strong>${c.totalDays} दिवस</strong></td>
+                    <td>₹${c.price}</td>
+                    <td>${mediaCell}</td>
+                    <td><button class="action-btn btn-delete" onclick="deleteCampaign('${doc.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`; 
+            }).join('');
+        });
+    }
+    async function deleteCampaign(id) { if(confirm("कॅम्पेन हटवायचा?")) { await db.collection("pin_campaigns").doc(id).delete(); } }
+
+    // ================== पॉपअप मेसेज ==================
+    function handlePopupMediaSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        popupMediaFile = file;
+        document.getElementById('popupFileNameText').innerText = file.name;
+        const reader = new FileReader();
+        reader.onload = (e) => { document.getElementById('cropImage').src = e.target.result; openCropModal(); };
+        reader.readAsDataURL(file);
+    }
+    function openCropModal() {
+        document.getElementById('cropModal').style.display = 'flex';
+        const image = document.getElementById('cropImage');
+        if (popupCropper) popupCropper.destroy();
+        popupCropper = new Cropper(image, { aspectRatio: NaN, viewMode: 1, autoCropArea: 1, responsive: true, zoomable: true, scrollable: true });
+    }
+    function closeCropModal() {
+        document.getElementById('cropModal').style.display = 'none';
+        if (popupCropper) { popupCropper.destroy(); popupCropper = null; }
+    }
+    function cropAndConfirmPopup() {
+        if (!popupCropper) return;
+        const canvas = popupCropper.getCroppedCanvas();
+        canvas.toBlob((blob) => {
+            finalPopupCroppedFile = new File([blob], "popup_" + (popupMediaFile.name || "image.png"), { type: 'image/png' });
+            document.getElementById('popupPreviewImg').src = URL.createObjectURL(blob);
+            document.getElementById('popupCropPreview').style.display = 'block';
+            closeCropModal();
+        }, 'image/png');
+    }
+    async function uploadFileToCloudinary(file) {
+        const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", "satara_jobs");
+        const res = await fetch("https://api.cloudinary.com/v1_1/dkv5qenbu/auto/upload", { method: "POST", body: fd });
+        const data = await res.json(); if (data.error) throw new Error(data.error.message);
+        return data.secure_url;
+    }
+    async function savePopupMessage() {
+        const title = document.getElementById('popupTitle').value.trim();
+        const message = document.getElementById('popupMessage').value.trim();
+        const target = document.getElementById('popupTarget').value;
+        if (!title && !message && !finalPopupCroppedFile) { alert("किमान शीर्षक किंवा मेसेज किंवा इमेज भरा!"); return; }
+        let mediaUrl = '';
+        try {
+            if (finalPopupCroppedFile) mediaUrl = await uploadFileToCloudinary(finalPopupCroppedFile);
+            await db.collection("popup_messages").add({ title, message, target, mediaUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("✅ पॉपअप मेसेज सेव्ह झाला!");
+            document.getElementById('popupTitle').value = '';
+            document.getElementById('popupMessage').value = '';
+            document.getElementById('popupMediaFile').value = '';
+            document.getElementById('popupFileNameText').innerText = 'इमेज निवडा (optional)';
+            document.getElementById('popupCropPreview').style.display = 'none';
+            finalPopupCroppedFile = null; popupMediaFile = null;
+        } catch (e) { alert("त्रुटी: " + e.message); }
+    }
+    function listenPopupMessages() {
+        db.collection("popup_messages").orderBy("createdAt","desc").onSnapshot(snap => {
+            const tbody = document.getElementById("popupMessagesTableBody");
+            if(snap.empty) { tbody.innerHTML = '<tr><td colspan="6" class="empty-text">अजून कोणताही मेसेज नाही.</td></tr>'; return; }
+            tbody.innerHTML = snap.docs.map(doc => {
+                const m = doc.data();
+                const date = m.createdAt ? new Date(m.createdAt.toMillis()).toLocaleString('mr-IN') : 'नवीन';
+                let targetLabel = 'सर्व';
+                if (m.target === 'employer') targetLabel = 'फक्त कंपनी';
+                else if (m.target === 'seeker') targetLabel = 'फक्त युजर';
+                return `<tr><td>${m.title}</td><td>${m.message}</td><td>${targetLabel}</td><td>${m.mediaUrl?`<a href="${m.mediaUrl}" target="_blank">पहा</a>`:'—'}</td><td>${date}</td><td><button class="action-btn btn-delete" onclick="deletePopupMessage('${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            }).join('');
+        });
+    }
+    async function deletePopupMessage(id) { if(confirm("मेसेज डिलीट करायचा?")) { await db.collection("popup_messages").doc(id).delete(); } }
+
+    // ================== पेमेंट व्हेरिफिकेशन ==================
+    function listenPaymentVerification() {
+        const renderAll = () => {
+            let allRows = [];
+            db.collection("ad_bookings").where("status","==","pending").get().then(snap => {
+                snap.forEach(doc => allRows.push({ id:doc.id, ...doc.data(), type:'ad_booking' }));
+                db.collection("jobs").where("isPremium","==","pending").get().then(snap2 => {
+                    snap2.forEach(doc => allRows.push({ id:doc.id, ...doc.data(), type:'premium_job' }));
+                    db.collection("pendingPayments").where("status","==","pending").get().then(snap3 => {
+                        snap3.forEach(doc => allRows.push({ id:doc.id, ...doc.data(), type:'pin_job' }));
+                        renderPaymentTable(allRows);
+                        document.getElementById("badgePayment").innerText = allRows.length;
+                        document.getElementById("badgePayment").style.display = allRows.length>0?'inline':'none';
+                        updateTotalNotif();
+                    });
+                });
+            });
+        };
+        renderAll();
+        setInterval(renderAll, 10000);
+    }
+    function renderPaymentTable(rows) {
+        const tbody = document.getElementById("paymentVerificationBody");
+        if(!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-text">कोणतेही प्रलंबित पेमेंट नाही.</td></tr>'; return; }
+        tbody.innerHTML = rows.map(r => {
+            let typeLabel = r.type === 'premium_job' ? 'प्रीमियम जॉब' : (r.type === 'pin_job' ? 'पिन जॉब' : (r.adType || 'जाहिरात'));
+            let amount = r.premiumPrice || r.amount || '--';
+            return `<tr><td>${typeLabel}</td><td>${r.companyName||r.company||'--'}</td><td>${r.employerPhone||r.phone||r.contact||'--'}</td><td>₹${amount}</td><td>${r.mediaUrl?`<a href="${r.mediaUrl}" target="_blank">पहा</a>`:(r.screenshotUrl?`<a href="${r.screenshotUrl}" target="_blank">स्क्रीनशॉट</a>`:'--')}</td><td><button class="action-btn btn-approve" onclick="approvePayment('${r.id}','${r.type}')">मंजूर</button><button class="action-btn btn-delete" onclick="rejectPayment('${r.id}','${r.type}')">नाकारा</button></td></tr>`;
+        }).join('');
+    }
+    async function approvePayment(id, type) {
+        if(!confirm("पेमेंट मंजूर करायचे?")) return;
+        if(type === 'premium_job') {
+            await db.collection("jobs").doc(id).update({ isApproved:true, isPremium:true });
+            const jobDoc = await db.collection("jobs").doc(id).get(); const job = jobDoc.data();
+            if (job && job.employerPhone) await db.collection("notifications").add({ recipientPhone: job.employerPhone, recipientRole: 'employer', type: 'premium_approved', title: 'प्रीमियम जॉब मंजूर', message: `तुमची '${job.title || 'नोकरी'}' प्रीमियम जॉब मंजूर झाली आहे.`, relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else if(type === 'pin_job') {
+            await db.collection("pendingPayments").doc(id).update({ status:"approved" });
+            const req = (await db.collection("pendingPayments").doc(id).get()).data();
+            if(req) {
+                const expiry = firebase.firestore.Timestamp.fromMillis(Date.now() + (req.days||1)*24*60*60*1000);
+                await db.collection("pinned_jobs").doc(req.jobId).set({ jobId:req.jobId, jobTitle:req.jobTitle, companyName:req.companyName, location:req.location, expiry:expiry, pinnedAt:firebase.firestore.FieldValue.serverTimestamp() });
+                if (req.employerPhone) await db.collection("notifications").add({ recipientPhone: req.employerPhone, recipientRole: 'employer', type: 'pin_approved', title: 'पिन जॉब मंजूर', message: 'तुमची पिन जॉब विनंती मंजूर झाली आहे.', relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+        } else {
+            await db.collection("ad_bookings").doc(id).update({ status:"approved", approvedAt:firebase.firestore.FieldValue.serverTimestamp() });
+            const adDoc = await db.collection("ad_bookings").doc(id).get(); const ad = adDoc.data();
+            if (ad && ad.employerPhone) await db.collection("notifications").add({ recipientPhone: ad.employerPhone, recipientRole: 'employer', type: 'ad_approved', title: 'जाहिरात मंजूर', message: `तुमची '${ad.adType || 'जाहिरात'}' मंजूर झाली आहे.`, relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        }
+        listenPaymentVerification();
+    }
+    async function rejectPayment(id, type) {
+        if(!confirm("पेमेंट नाकारायचे?")) return;
+        if(type === 'premium_job') {
+            await db.collection("jobs").doc(id).update({ isPremium:false });
+            const jobDoc = await db.collection("jobs").doc(id).get(); const job = jobDoc.data();
+            if (job && job.employerPhone) await db.collection("notifications").add({ recipientPhone: job.employerPhone, recipientRole: 'employer', type: 'premium_rejected', title: 'प्रीमियम जॉब नाकारले', message: `तुमची '${job.title || 'नोकरी'}' प्रीमियम विनंती नाकारण्यात आली आहे.`, relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else if(type === 'pin_job') {
+            await db.collection("pendingPayments").doc(id).update({ status:"rejected" });
+            const req = (await db.collection("pendingPayments").doc(id).get()).data();
+            if (req && req.employerPhone) await db.collection("notifications").add({ recipientPhone: req.employerPhone, recipientRole: 'employer', type: 'pin_rejected', title: 'पिन जॉब नाकारले', message: 'तुमची पिन जॉब विनंती नाकारण्यात आली आहे.', relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else {
+            await db.collection("ad_bookings").doc(id).update({ status:"rejected" });
+            const adDoc = await db.collection("ad_bookings").doc(id).get(); const ad = adDoc.data();
+            if (ad && ad.employerPhone) await db.collection("notifications").add({ recipientPhone: ad.employerPhone, recipientRole: 'employer', type: 'ad_rejected', title: 'जाहिरात नाकारली', message: `तुमची '${ad.adType || 'जाहिरात'}' नाकारण्यात आली आहे.`, relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        }
+        listenPaymentVerification();
+    }
+
+    function updateTotalNotif() {
+        const emp = parseInt(document.getElementById("badgeEmp").innerText)||0;
+        const premium = parseInt(document.getElementById("badgePremium").innerText)||0;
+        const ads = parseInt(document.getElementById("badgeAds").innerText)||0;
+        const pay = parseInt(document.getElementById("badgePayment").innerText)||0;
+        const mem = parseInt(document.getElementById("badgeMembership").innerText)||0;
+        const total = emp+premium+ads+pay+mem;
+        document.getElementById("totalNotifCount").innerText = total;
+        document.getElementById("totalNotifCount").style.display = total>0?'flex':'none';
+    }
+
+    // ================== मालक पडताळणी ==================
+    function listenEmployers() {
+        db.collection("users").where("isVerified","==","pending").onSnapshot(snap => {
+            allEmployerRows = []; snap.forEach(doc => allEmployerRows.push({ id:doc.id, ...doc.data() }));
+            document.getElementById("badgeEmp").innerText = allEmployerRows.length;
+            document.getElementById("badgeEmp").style.display = allEmployerRows.length>0?'inline':'none';
+            updateTotalNotif();
+            renderEmployerTable(allEmployerRows);
+        });
+    }
+    function renderEmployerTable(rows) {
+        const tbody = document.getElementById("employerTableBody");
+        if(!rows.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-text">कोणतीही प्रलंबित रिक्वेस्ट नाही.</td></tr>'; return; }
+        tbody.innerHTML = rows.map(u => `<tr><td>${u.name||'नाही'}</td><td><strong>${u.phone}</strong></td><td>${u.verificationDocType||'Other'}</td><td>${u.verificationDocDesc||'-'}</td><td><a href="${u.verificationDocUrl}" target="_blank" style="color:var(--accent);">पहा</a></td><td><button class="action-btn btn-approve" onclick="verifyEmp('${u.id}')">मंजूर करा</button></td></tr>`).join('');
+    }
+    async function verifyEmp(uid) {
+        if(confirm("मंजूर करायचे?")) {
+            await db.collection("users").doc(uid).update({ isVerified:"true" });
+            await db.collection("notifications").add({ recipientPhone: uid, recipientRole: 'employer', type: 'employer_verified', title: 'खाते मंजूर', message: 'तुमचे कंपनी खाते मंजूर झाले आहे. आता तुम्ही नोकरी पोस्ट करू शकता.', isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("मंजूर!");
+        }
+    }
+
+    function listenPremium() {
+        db.collection("jobs").where("isPremium","==","pending").onSnapshot(snap => {
+            allPremiumRows = []; snap.forEach(doc => allPremiumRows.push({ id:doc.id, ...doc.data() }));
+            document.getElementById("badgePremium").innerText = allPremiumRows.length;
+            document.getElementById("badgePremium").style.display = allPremiumRows.length>0?'inline':'none';
+            updateTotalNotif();
+            renderPremiumTable(allPremiumRows);
+        });
+    }
+    function renderPremiumTable(rows) {
+        const tbody = document.getElementById("premiumTableBody");
+        if(!rows.length) { tbody.innerHTML='<tr><td colspan="5" class="empty-text">प्रलंबित नाहीत.</td></tr>'; return; }
+        tbody.innerHTML = rows.map(j => `<tr><td>${j.companyName}</td><td><strong>${j.title}</strong></td><td>₹${j.salary||'N/A'}</td><td>₹${j.premiumPrice} (${j.premiumDays}दि)</td><td><button class="action-btn btn-approve" onclick="approvePremium('${j.id}')">मंजूर</button></td></tr>`).join('');
+    }
+    async function approvePremium(id) {
+        if(confirm("मंजूर करायचे?")) {
+            await db.collection("jobs").doc(id).update({ isApproved:true, isPremium:true });
+            const jobDoc = await db.collection("jobs").doc(id).get(); const job = jobDoc.data();
+            if (job && job.employerPhone) await db.collection("notifications").add({ recipientPhone: job.employerPhone, recipientRole: 'employer', type: 'job_approved', title: 'प्रीमियम जॉब मंजूर', message: `तुमची '${job.title || 'नोकरी'}' प्रीमियम जॉब मंजूर झाली आहे.`, relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("मंजूर!");
+        }
+    }
+
+    function listenActivePremiumJobs() {
+        db.collection("jobs").where("isPremium", "==", true).onSnapshot(snap => {
+            const tbody = document.getElementById("activePremiumTableBody");
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="5" class="empty-text">सध्या कोणतीही प्रीमियम नोकरी चालू नाही.</td></tr>'; return; }
+            let activeRows = []; snap.forEach(doc => activeRows.push({ id: doc.id, ...doc.data() }));
+            tbody.innerHTML = activeRows.map(j => `<tr><td>${j.companyName || j.company || '-'}</td><td><strong>${j.title || '-'}</strong></td><td>₹${j.salary || 'N/A'}</td><td>₹${j.premiumPrice || '-'} (${j.premiumDays || '-'}दि)</td><td><button class="action-btn btn-delete" onclick="removePremiumStatus('${j.id}')">रिमूव्ह प्रीमियम</button></td></tr>`).join('');
+        });
+    }
+    async function removePremiumStatus(jobId) {
+        if (!confirm("या जॉबवरून प्रीमियम स्टेटस हटवायचे का?")) return;
+        try {
+            const jobDoc = await db.collection("jobs").doc(jobId).get(); const job = jobDoc.data();
+            await db.collection("jobs").doc(jobId).update({ isPremium: false, premiumPrice: firebase.firestore.FieldValue.delete(), premiumDays: firebase.firestore.FieldValue.delete() });
+            if (job && job.employerPhone) await db.collection("notifications").add({ recipientPhone: job.employerPhone, recipientRole: 'employer', type: 'premium_removed', title: 'प्रीमियम स्टेटस हटवले', message: `तुमच्या '${job.title || 'नोकरी'}' वरून प्रीमियम स्टेटस हटवण्यात आले आहे.`, relatedId: jobId, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("प्रीमियम स्टेटस हटवले.");
+        } catch (err) { alert("त्रुटी: " + err.message); }
+    }
+
+    function filterTable(type) {
+        const query = (document.getElementById(type==='employer'?'searchEmp':'searchPremium').value||'').trim().toLowerCase();
+        if(type==='employer') { const filtered = allEmployerRows.filter(u => (u.phone||'').includes(query) || (u.name||'').toLowerCase().includes(query)); renderEmployerTable(filtered); }
+        else { const filtered = allPremiumRows.filter(j => (j.companyName||'').toLowerCase().includes(query) || (j.phone||'').includes(query)); renderPremiumTable(filtered); }
+    }
+
+    async function adminPostJob() {
+        const t=document.getElementById("adminJobTitle").value.trim(), c=document.getElementById("adminJobCompany").value.trim(), l=document.getElementById("adminJobLocation").value.trim(), s=document.getElementById("adminJobSalary").value.trim(), q=document.getElementById("adminJobQualification").value.trim(), e=document.getElementById("adminJobExperience").value.trim(), d=document.getElementById("adminJobDescription").value.trim(), tag=document.getElementById("adminJobTag").value;
+        if(!t||!c||!l||!q||!e||!d) { alert("सर्व भरा!"); return; }
+        await db.collection("jobs").add({ title:t, company:c, companyName:c, location:l, salary:s||'Not Mentioned', qualification:q, experience:e, description:d, isApproved:true, isPremium:tag==='premium', isUrgent:tag==='urgent', phone:"9579535290", createdAt:firebase.firestore.FieldValue.serverTimestamp() });
+        alert("पोस्ट झाली!");
+    }
+
+    // ================== जाहिरात बुकिंग ==================
+    function loadAdminAdBookings(filter = 'pending') {
+        document.querySelectorAll('#uploadAdsTabSection .tab-btn').forEach(b => b.classList.remove('active'));
+        if (filter === 'pending') document.getElementById('btnPendingAds').classList.add('active');
+        else if (filter === 'approved') document.getElementById('btnApprovedAds').classList.add('active');
+        else document.getElementById('btnAllAds').classList.add('active');
+        const listDiv = document.getElementById('adminAdBookingsList');
+        listDiv.innerHTML = '<tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr>';
+        let query = db.collection("ad_bookings").orderBy("submittedAt", "desc");
+        if (filter === 'pending') query = query.where("status", "==", "pending");
+        else if (filter === 'approved') query = query.where("status", "==", "approved");
+        query.get().then(snapshot => {
+            listDiv.innerHTML = '';
+            if (snapshot.empty) { listDiv.innerHTML = '<tr><td colspan="7" class="empty-text">कोणतीही जाहिरात नाही.</td></tr>'; return; }
+            snapshot.forEach(doc => {
+                const ad = doc.data(); const adId = doc.id;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>${ad.companyName || '-'}</strong></td><td>${ad.contactNumber || '-'}</td><td>${ad.adType || '-'}</td><td>${ad.adDurationDays || '-'} दिवस</td><td><span class="status-badge" style="background:${ad.status==='approved'?'#10b981':'#f59e0b'}; color:white;">${ad.status}</span></td><td>${ad.mediaUrl ? `<a href="${ad.mediaUrl}" target="_blank">पहा</a>` : '—'}</td><td>${ad.status === 'pending' ? `<button class="action-btn btn-approve" onclick="approveAdBooking('${adId}')">✅ मंजूर</button>` : ''}<button class="action-btn btn-delete" onclick="deleteAdBooking('${adId}')">🗑 डिलीट</button></td>`;
+                listDiv.appendChild(tr);
+            });
+        }).catch(err => { listDiv.innerHTML = `<tr><td colspan="7" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`; });
+    }
+    async function approveAdBooking(adId) {
+        if (!confirm('ही जाहिरात मंजूर करायची का?')) return;
+        try {
+            await db.collection("ad_bookings").doc(adId).update({ status: "approved", approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            const adDoc = await db.collection("ad_bookings").doc(adId).get(); const ad = adDoc.data();
+            if (ad && ad.employerPhone) await db.collection("notifications").add({ recipientPhone: ad.employerPhone, recipientRole: 'employer', type: 'ad_approved', title: 'जाहिरात मंजूर', message: `तुमची '${ad.adType || 'जाहिरात'}' मंजूर झाली आहे.`, relatedId: adId, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("✅ जाहिरात मंजूर झाली!"); loadAdminAdBookings('pending');
+        } catch (e) { alert("त्रुटी: " + e.message); }
+    }
+    async function deleteAdBooking(adId) {
+        if (!confirm('ही जाहिरात कायमची डिलीट करायची का?')) return;
+        try {
+            const adDoc = await db.collection("ad_bookings").doc(adId).get(); const ad = adDoc.data();
+            await db.collection("ad_bookings").doc(adId).delete();
+            if (ad && ad.employerPhone) await db.collection("notifications").add({ recipientPhone: ad.employerPhone, recipientRole: 'employer', type: 'ad_deleted', title: 'जाहिरात डिलीट', message: `तुमची '${ad.adType || 'जाहिरात'}' ॲडमिनने डिलीट केली आहे.`, relatedId: adId, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("🗑 जाहिरात डिलीट झाली."); loadAdminAdBookings('all');
+        } catch (e) { alert("त्रुटी: " + e.message); }
+    }
+
+    function listenAdRates() {
+        db.collection("ad_rates").doc("current").onSnapshot(doc => {
+            if(doc.exists) {
+                const d=doc.data();
+                document.getElementById("valSplash").value=d.splashAd||''; document.getElementById("valSplashDays").value=d.splashDays||'';
+                document.getElementById("valSticky").value=d.stickyAd||''; document.getElementById("valStickyDays").value=d.stickyDays||'';
+                document.getElementById("valCategory").value=d.categoryAd||''; document.getElementById("valCategoryDays").value=d.categoryDays||'';
+                document.getElementById("valUrgent").value=d.urgentBadge||''; document.getElementById("valUrgentDays").value=d.urgentDays||'';
+                document.getElementById("valVideoRate").value=d.videoRate||''; document.getElementById("valVideoDays").value=d.videoDays||'';
+                document.getElementById("valPremiumPlan1Price").value=d.premiumPlan1Price||''; document.getElementById("valPremiumPlan1Days").value=d.premiumPlan1Days||'';
+                document.getElementById("valPremiumPlan2Price").value=d.premiumPlan2Price||''; document.getElementById("valPremiumPlan2Days").value=d.premiumPlan2Days||'';
+                document.getElementById("valPremiumPlan3Price").value=d.premiumPlan3Price||''; document.getElementById("valPremiumPlan3Days").value=d.premiumPlan3Days||'';
+            }
+        });
+    }
+    async function saveAdRates() {
+        const data={ 
+            splashAd:document.getElementById("valSplash").value, splashDays:document.getElementById("valSplashDays").value, 
+            stickyAd:document.getElementById("valSticky").value, stickyDays:document.getElementById("valStickyDays").value, 
+            categoryAd:document.getElementById("valCategory").value, categoryDays:document.getElementById("valCategoryDays").value, 
+            urgentBadge:document.getElementById("valUrgent").value, urgentDays:document.getElementById("valUrgentDays").value, 
+            videoRate:document.getElementById("valVideoRate").value, videoDays:document.getElementById("valVideoDays").value,
+            premiumPlan1Price:document.getElementById("valPremiumPlan1Price").value, premiumPlan1Days:document.getElementById("valPremiumPlan1Days").value,
+            premiumPlan2Price:document.getElementById("valPremiumPlan2Price").value, premiumPlan2Days:document.getElementById("valPremiumPlan2Days").value,
+            premiumPlan3Price:document.getElementById("valPremiumPlan3Price").value, premiumPlan3Days:document.getElementById("valPremiumPlan3Days").value
+        };
+        await db.collection("ad_rates").doc("current").set(data,{merge:true});
+        alert("सर्व दर सेव्ह झाले!");
+    }
+
+    function listenInquiries() {
+        db.collection("inquiries").where("status","==","Pending").onSnapshot(snap => {
+            const tbody=document.getElementById("inquiriesTableBody");
+            tbody.innerHTML = snap.empty ? '<tr><td colspan="5" class="empty-text">नाही</td></tr>' : snap.docs.map(doc => { const i=doc.data(); return `<tr><td>नवीन</td><td>${i.companyPhone}</td><td>${i.type||'Inquiry'}</td><td>${i.boostPlanSelected||''}</td><td><button class="action-btn btn-approve" onclick="resolveInquiry('${doc.id}')">Done</button></td></tr>`; }).join('');
+        });
+    }
+    async function resolveInquiry(id) { await db.collection("inquiries").doc(id).update({ status:"Resolved" }); alert("पूर्ण!"); }
+
+    function listenAllEmployers() {
+        db.collection("users").where("role","==","employer").onSnapshot(snap => {
+            const tbody = document.getElementById("allEmployersTableBody");
+            tbody.innerHTML = snap.docs.map(doc => {
+                const u = doc.data(); const col = u.isVerified === 'true' ? 'var(--success)' : (u.isVerified === 'pending' ? '#f59e0b' : 'var(--danger)');
+                return `<tr><td>${u.name || '-'}</td><td>${u.phone}</td><td>${u.companyName || '-'}</td><td style="color:${col}; font-weight:700;">${u.isVerified}</td><td><button class="action-btn btn-delete" onclick="deleteUser('${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            }).join('');
+        });
+    }
+
+    function listenAllSeekers() {
+        db.collection("users").where("role","==","seeker").onSnapshot(snap => {
+            const tbody = document.getElementById("allSeekersTableBody");
+            tbody.innerHTML = snap.docs.map(doc => { const u = doc.data(); return `<tr><td><strong>${u.name || 'अपूर्ण'}</strong></td><td>${u.email || '-'}</td><td>${u.phone || '-'}</td><td><button class="action-btn btn-delete" onclick="deleteUser('${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join('');
+        });
+    }
+
+    async function deleteUser(uid) {
+        if (!confirm("हा यूजर कायमचा डिलीट करायचा का?")) return;
+        try {
+            const userDoc = await db.collection("users").doc(uid).get(); const user = userDoc.data();
+            await db.collection("users").doc(uid).delete();
+            if (user && user.phone) await db.collection("notifications").add({ recipientPhone: user.phone, recipientRole: user.role || 'seeker', type: 'account_deleted', title: 'खाते डिलीट', message: 'तुमचे खाते ॲडमिनने डिलीट केले आहे.', relatedId: uid, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            alert("यूजर डिलीट झाला.");
+        } catch (e) { alert("डिलीट करताना त्रुटी: " + e.message); }
+    }
+
+    function listenFeedback() {
+        db.collection("feedbacks").orderBy("createdAt","desc").onSnapshot(snap => {
+            const tbody=document.getElementById("appFeedbackTableBody");
+            tbody.innerHTML = snap.docs.map(doc => { const f=doc.data(); return `<tr><td>नवीन</td><td>${f.phone||f.userId||''}</td><td>${f.role||''}</td><td>${f.rating||0}⭐</td><td>${f.feedback||''}</td></tr>`; }).join('');
+        });
+    }
+
+    async function searchMobileForClear() {
+        const mobile = document.getElementById("clearMobileInput").value.trim();
+        if (!mobile || mobile.length !== 10) { alert("10 अंकी मोबाईल नंबर टाका"); return; }
+        if (mobile === "9579535290") { alert("सुपर ॲडमिन खाते क्लियर करू शकत नाही."); return; }
+        const resultDiv = document.getElementById("mobileSearchResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = `<div class="text-sm"><i class="fa-solid fa-spinner fa-pulse"></i> शोध घेत आहे...</div>`;
+        try {
+            const qSnap = await db.collection("users").where("phone", "==", mobile).limit(1).get();
+            if (qSnap.empty) {
+                resultDiv.innerHTML = `<div class="user-clear-card"><i class="fa-solid fa-user-slash"></i> <strong>${mobile}</strong> या नंबरचा कोणताही वापरकर्ता आढळला नाही.</div>`;
+                return;
+            }
+            const userDoc = qSnap.docs[0];
+            const user = userDoc.data();
+            resultDiv.innerHTML = `
+                <div class="user-clear-card">
+                    <div class="flex-between"><span><i class="fa-solid fa-user"></i> <strong>${user.name || 'नाव नाही'}</strong></span><span class="status-badge" style="background:#e2e8f0; color:#0f172a;">${user.role === 'employer' ? '🏢 मालक' : (user.role === 'seeker' ? '🔍 उमेदवार' : 'अन्य')}</span></div>
+                    <div><i class="fa-solid fa-phone"></i> ${user.phone}</div>
+                    <div><i class="fa-solid fa-building"></i> ${user.companyName || '—'}</div>
+                    <div><i class="fa-solid fa-check-circle"></i> स्टेटस: ${user.isVerified || 'pending'}</div>
+                    <hr style="margin:12px 0;">
+                    <button id="confirmDeleteBtn" class="action-btn btn-delete" style="width:100%; padding:12px;" onclick="deleteUserCompletely('${user.phone}', '${userDoc.id}')"><i class="fa-solid fa-trash-can"></i> पूर्णपणे डिलीट करा (पुन्हा रजिस्टर करू शकेल)</button>
+                </div>`;
+        } catch(err) { resultDiv.innerHTML = `<div class="user-clear-card">त्रुटी: ${err.message}</div>`; }
+    }
+
+    async function deleteUserCompletely(mobile, userId) {
+        if (mobile === "9579535290") { alert("स्वतः ॲडमिन डिलीट करू शकत नाही."); return; }
+        if (!confirm(`"${mobile}" या नंबरची सर्व माहिती कायमची डिलीट करायची?`)) return;
+        try {
+            await db.collection("users").doc(userId).delete();
+            await db.collection("notifications").add({ recipientPhone: mobile, recipientRole: 'user', type: 'account_deleted', title: 'खाते डिलीट', message: 'तुमचे खाते ॲडमिनने पूर्णपणे डिलीट केले आहे.', isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            const batch = db.batch();
+            const jobs1 = await db.collection("jobs").where("employerPhone", "==", mobile).get();
+            const jobs2 = await db.collection("jobs").where("phone", "==", mobile).get();
+            jobs1.forEach(doc => batch.delete(doc.ref)); jobs2.forEach(doc => batch.delete(doc.ref));
+            const ads = await db.collection("ad_bookings").where("companyPhone", "==", mobile).get(); ads.forEach(doc => batch.delete(doc.ref));
+            const inquiries = await db.collection("inquiries").where("companyPhone", "==", mobile).get(); inquiries.forEach(doc => batch.delete(doc.ref));
+            const feedbacks = await db.collection("feedbacks").where("phone", "==", mobile).get(); feedbacks.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+            alert(`✅ ${mobile} पूर्णपणे क्लियर झाला.`);
+            document.getElementById("mobileSearchResult").style.display = "none";
+            document.getElementById("clearMobileInput").value = "";
+            listenAllEmployers(); listenAllSeekers(); loadAnalytics(); loadAllJobs();
+        } catch (err) { alert("डिलीट करताना त्रुटी: " + err.message); }
+    }
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(err => console.log('SW error', err));
+  }
+</script>
+
+</body>
+</html>

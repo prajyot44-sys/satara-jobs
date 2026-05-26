@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>सर्व नोकऱ्या - सातारा जॉब्स | शाळा, हॉस्पिटल, बँक फिल्टर</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #1e88e5;
+            --bg: #f4f6f9;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --premium: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: radial-gradient(circle at 30% 10%, #e9f0ff, var(--bg));
+            color: var(--text);
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+        #loader i {
+            font-size: 35px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        /* ── हेडर ── */
+        .header {
+            background: linear-gradient(135deg, #001a33, #002b4d);
+            padding: 18px 18px;
+            color: white;
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header-top i {
+            font-size: 20px;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .header-top h3 {
+            font-size: 17px;
+            font-weight: 800;
+        }
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+        .search-box i {
+            color: var(--primary);
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            background: transparent;
+        }
+        /* ── कॅटेगरी ── */
+        .category-wrap {
+            padding: 12px 15px 6px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .category-wrap::-webkit-scrollbar {
+            display: none;
+        }
+        .category-list {
+            display: inline-flex;
+            gap: 8px;
+        }
+        .category-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            color: #475569;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 6px 15px rgba(0, 51, 102, 0.3);
+        }
+        .container {
+            padding: 12px 15px;
+        }
+        /* ── सेक्शन टायटल ── */
+        .section-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        /* ── जॉब कार्ड (होम पेज सारखं कॉम्पॅक्ट) ── */
+        .job-card {
+            background: white;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        .job-card:active {
+            background: #f8fafc;
+        }
+        .job-icon {
+            width: 42px;
+            height: 42px;
+            background: #eff6ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--secondary);
+            flex-shrink: 0;
+        }
+        .job-content {
+            flex: 1;
+            overflow: hidden;
+        }
+        .job-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+        .company {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+        .job-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+        .job-meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .job-meta-row i {
+            font-size: 11px;
+            color: var(--secondary);
+        }
+        .save-btn {
+            position: absolute;
+            right: 8px;
+            top: 32px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(241, 245, 249, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #94a3b8;
+            z-index: 10;
+            border: 1px solid #e2e8f0;
+        }
+        .save-btn.saved {
+            background: #fee2e2 !important;
+            color: #ef4444 !important;
+            border-color: #fca5a5 !important;
+        }
+        .action-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            align-items: center;
+        }
+        .job-date {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 600;
+            flex: 1;
+        }
+        .action-btn {
+            padding: 7px 14px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+        }
+        .view-btn {
+            background: #eff6ff;
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+        }
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 16px;
+        }
+        .empty-box {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+        }
+        .empty-box i {
+            font-size: 50px;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+        }
+        .empty-box p {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+        }
+        /* ── इतर सेक्शन तसेच ── */
+        .smart-ai-lock-card {
+            background: #fff7ed;
+            border: 1.5px dashed #f97316;
+            padding: 12px 14px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            backdrop-filter: blur(8px);
+        }
+        .smart-ai-unlocked-header {
+            background: #ecfdf5;
+            border: 1.5px solid #a7f3d0;
+            color: #065f46;
+            padding: 10px 14px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1.4;
+            backdrop-filter: blur(8px);
+        }
+        .govt-section-title {
+            font-size: 14px;
+            font-weight: 800;
+            margin: 14px 0 10px;
+            color: #4a1515;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .portal-card {
+            background: var(--white);
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 6px 18px rgba(139, 30, 30, 0.04);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            border-left: 5px solid #c94b4b;
+            cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(8px);
+        }
+        .portal-card:active {
+            transform: scale(0.98);
+            background: #fff5f5;
+        }
+        .portal-info h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d0a0a;
+            margin-bottom: 2px;
+        }
+        .portal-info p {
+            font-size: 11px;
+            color: #777;
+            font-weight: 500;
+        }
+        .portal-icon {
+            background: #fce4e4;
+            color: #a52a2a;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .links-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .link-btn {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            color: #2d0a0a;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .link-btn:active {
+            background: #f1f5f9;
+            transform: scale(0.98);
+        }
+        .inapp-browser {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 99999;
+            display: none;
+            flex-direction: column;
+        }
+        .inapp-header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .inapp-header i {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px;
+        }
+        .inapp-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .inapp-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #f8fafc;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            border-top: 1px solid rgba(241, 245, 249, 0.8);
+        }
+        .nav-link {
+            text-decoration: none;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .nav-link i {
+            display: block;
+            font-size: 19px;
+            margin-bottom: 4px;
+        }
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        /* ────── लपलेल्या लिंक स्टाइल ────── */
+        .hidden-links {
+            position: fixed;
+            bottom: -200px;
+            left: -200px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -999;
+        }
+        .hidden-links a {
+            display: block;
+            font-size: 1px;
+            color: transparent;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><i class="fa-solid fa-circle-notch fa-spin"></i><p style="font-size:13px; color:#64748b; font-weight:600;">नोकऱ्या शोधत आहे...</p></div>
+
+    <div id="inappBrowser" class="inapp-browser">
+        <div class="inapp-header">
+            <i class="fa-solid fa-arrow-left" onclick="closeInAppBrowser()"></i>
+            <h3 id="inappTitle">सरकारी पोर्टल</h3>
+        </div>
+        <iframe id="inappIframe" class="inapp-iframe"></iframe>
+    </div>
+
+    <div class="header">
+        <div class="header-top"><i class="fa-solid fa-arrow-left" onclick="window.location.href='home.html'"></i><h3>सर्व नोकऱ्या शोधा</h3></div>
+        <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchInput" placeholder="नोकरी, कंपनी किंवा लोकेशन शोधा..." oninput="searchJobs()"></div>
+    </div>
+
+    <div class="category-wrap">
+        <div class="category-list">
+            <div class="category-btn active" onclick="filterJobs('all',this)">सर्व नोकऱ्या</div>
+            <div class="category-btn" onclick="filterJobs('Govt',this)"><i class="fa-solid fa-landmark"></i> Govt जॉब</div>
+            <div class="category-btn" onclick="filterJobs('Fresher',this)">Fresher</div>
+            <div class="category-btn" onclick="filterJobs('10th',this)">10वी/12वी पास</div>
+            <div class="category-btn" onclick="filterJobs('Graduate',this)">पदवीधर (Graduate)</div>
+            <div class="category-btn" onclick="filterJobs('ITI',this)">ITI / Diploma</div>
+            <div class="category-btn" onclick="filterJobs('School',this)"><i class="fa-solid fa-school"></i> शाळा / School</div>
+            <div class="category-btn" onclick="filterJobs('Hospital',this)"><i class="fa-solid fa-hospital"></i> हॉस्पिटल / Hospital</div>
+            <div class="category-btn" onclick="filterJobs('Bank',this)"><i class="fa-solid fa-building-columns"></i> प्रा. बँक / पतसंस्था</div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div id="govtStaticContainer" style="display: none; margin-bottom: 20px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px;">
+            <div class="govt-section-title"><i class="fas fa-star" style="color:#c94b4b;"></i> टॉप सरकारी जॉब पोर्टल्स</div>
+            <div class="portal-card" onclick="openInApp('https://mahabharti.in', 'महाभरती')"><div class="portal-info"><h3>महाभरती (Mahabharti)</h3><p>सर्व सरकारी भरतीचे अपडेट्स</p></div><div class="portal-icon"><i class="fas fa-external-link-alt"></i></div></div>
+            <div class="portal-card" onclick="openInApp('https://www.majhinaukri.in', 'माझी नोकरी')"><div class="portal-info"><h3>माझी नोकरी (Majhi Naukri)</h3><p>लेटेस्ट सरकारी जॉब नोटिफिकेशन्स</p></div><div class="portal-icon"><i class="fas fa-external-link-alt"></i></div></div>
+            <div class="portal-card" onclick="openInApp('https://mahasarkar.co.in', 'महासरकार')"><div class="portal-info"><h3>महासरकार (Mahasarkar)</h3><p>महाराष्ट्र शासन नोकरी भरती</p></div><div class="portal-icon"><i class="fas fa-external-link-alt"></i></div></div>
+            <div class="govt-section-title"><i class="fas fa-link" style="color:#c94b4b;"></i> इतर महत्त्वाच्या लिंक्स</div>
+            <div class="links-grid">
+                <div class="link-btn" onclick="openInApp('https://mpsc.gov.in', 'MPSC')">MPSC अधिकृत</div>
+                <div class="link-btn" onclick="openInApp('https://mahajobs.maharashtra.gov.in', 'MahaJobs')">MahaJobs</div>
+                <div class="link-btn" onclick="openInApp('https://mahaswayam.gov.in', 'महास्वयंम')">महास्वयंम</div>
+                <div class="link-btn" onclick="openInApp('https://ssc.nic.in', 'SSC भरती')">SSC भरती</div>
+            </div>
+        </div>
+
+        <div id="smartAiJobLockContainer" class="smart-ai-lock-card" style="display:none;">
+            <div style="text-align:left; flex:1;">
+                <div style="font-size:12px; font-weight:800; color:var(--primary);"><i class="fa-solid fa-user-lock" style="color:#f97316;"></i> ५ स्पेशल मॅचिंग नोकऱ्या लॉक आहेत</div>
+                <p style="font-size:10px; color:var(--muted); font-weight:500;">५ मित्रांना शेअर करा व अनलॉक करा.</p>
+            </div>
+            <button onclick="window.location.href='home.html'" style="background:#f97316; color:white; border:none; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">अनलॉक</button>
+        </div>
+
+        <div id="smartAiJobUnlockHeader" class="smart-ai-unlocked-header" style="display:none;">
+            <i class="fa-solid fa-circle-check" style="color:#10b981; font-size:14px; flex-shrink:0;"></i>
+            <span>तुमच्या शिक्षणाशी जुळणाऱ्या ५ स्पेशल नोकऱ्या सर्वात वर अनलॉक झाल्या आहेत!</span>
+        </div>
+
+        <div class="section-title">
+            <span><i class="fa-solid fa-list"></i> उपलब्ध नोकऱ्या</span>
+            <span id="jobCountBadge" style="font-size:11px; background:#e2e8f0; color:#475569; padding:4px 8px; border-radius:6px;">0 Jobs</span>
+        </div>
+
+        <div id="jobsContainer"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> होम</a>
+        <a href="jobs.html" class="nav-link active"><i class="fa-solid fa-briefcase"></i> जॉब्स</a>
+        <a href="applied.html" class="nav-link"><i class="fa-solid fa-clipboard-check"></i> माझे अर्ज</a>
+        <a href="profile.html" class="nav-link"><i class="fa-solid fa-user"></i> प्रोफाईल</a>
+    </div>
+
+    <!-- लपलेल्या लिंक -->
+    <div class="hidden-links">
+        <a href="https://mahabharti.in">महाभरती सरकारी नोकरी भरती पोर्टल</a>
+        <a href="https://www.majhinaukri.in">माझी नोकरी लेटेस्ट जॉब अपडेट्स</a>
+        <a href="https://mahasarkar.co.in">महासरकार महाराष्ट्र शासन भरती</a>
+        <a href="https://mpsc.gov.in">MPSC अधिकृत वेबसाइट</a>
+        <a href="https://mahajobs.maharashtra.gov.in">MahaJobs महाराष्ट्र सरकार</a>
+        <a href="https://mahaswayam.gov.in">महास्वयंम रोजगार पोर्टल</a>
+        <a href="https://ssc.nic.in">SSC स्टाफ सिलेक्शन कमिशन भरती</a>
+        <a href="https://satarajobs.com">सातारा जॉब्स सरकारी नोकरी</a>
+        <a href="https://www.satarajobs.com/jobs">सातारा जॉब्स सर्व नोकऱ्या</a>
+        <a href="https://www.satarajobs.com/home">सातारा जॉब्स होम पेज</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
+            authDomain: "satara-jobs-ed6ab.firebaseapp.com",
+            projectId: "satara-jobs-ed6ab",
+            storageBucket: "satara-jobs-ed6ab.appspot.com",
+            messagingSenderId: "688594836150",
+            appId: "1:688594836150:web:a59ecda1d87b599862a417"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let allJobs = [];
+        let savedJobs = [];
+        let currentFilter = 'all';
+        let seekerPhone = localStorage.getItem("user_phone") || "";
+        let seekerQualification = "";
+
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                const phone = localStorage.getItem("user_phone");
+                if (phone) {
+                    try {
+                        const userDoc = await db.collection("users").doc(phone).get();
+                        if (userDoc.exists && userDoc.data().role === "employer") {
+                            window.location.href = "company.html";
+                            return;
+                        }
+                    } catch (e) {}
+                }
+
+                if (!seekerPhone && user.phoneNumber) {
+                    seekerPhone = user.phoneNumber.replace("+91", "");
+                    localStorage.setItem("user_phone", seekerPhone);
+                }
+                if (seekerPhone) {
+                    try {
+                        const userDoc = await db.collection("users").doc(seekerPhone).get();
+                        if (userDoc.exists) { seekerQualification = userDoc.data().qualification || ""; }
+                    } catch (e) { console.log("Profile load error:", e); }
+                }
+                await loadSavedJobs(user.uid);
+                loadAllJobs();
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        function openInApp(url, title) {
+            document.getElementById('inappTitle').innerText = title;
+            document.getElementById('inappIframe').src = url;
+            document.getElementById('inappBrowser').style.display = 'flex';
+        }
+        function closeInAppBrowser() {
+            document.getElementById('inappBrowser').style.display = 'none';
+            document.getElementById('inappIframe').src = '';
+        }
+
+        function loadSavedJobs(uid) {
+            return db.collection("saved_jobs").doc(uid).get()
+                .then(doc => { savedJobs = doc.exists ? (doc.data().jobs || []).map(String) : []; })
+                .catch(err => console.log("Saved jobs error:", err));
+        }
+
+        function loadAllJobs() {
+            db.collection("jobs").where("isApproved", "==", true).onSnapshot(snapshot => {
+                allJobs = [];
+                const now = new Date();
+                snapshot.forEach(doc => {
+                    const job = { id: String(doc.id), ...doc.data() };
+                    // प्रीमियम एक्सपायरी चेक
+                    if (job.isPremium && job.premiumExpiry && job.premiumExpiry.toDate() < now) {
+                        job.isPremium = false;
+                    }
+                    // क्लोज्ड जॉब फिल्टर
+                    if (job.status === 'closed') return;
+                    allJobs.push(job);
+                });
+                // Regular jobs filter: keep non-premium or expired premium (already set to false)
+                // पण manageViralMatchingVisibility मध्ये allJobs वापरते त्यामुळे तशीच ठेवू.
+                manageViralMatchingVisibility();
+                applyFiltersAndRender();
+                document.getElementById('loader').style.display = 'none';
+            }, error => {
+                console.error("Firebase Error:", error);
+                document.getElementById('loader').style.display = 'none';
+            });
+        }
+
+        function manageViralMatchingVisibility() {
+            let jobShares = parseInt(localStorage.getItem("job_share_count")) || 0;
+            const lastSavedTime = localStorage.getItem("viral_task_unlocked_time");
+            if (lastSavedTime && (Date.now() - parseInt(lastSavedTime) > (30 * 24 * 60 * 60 * 1000))) {
+                localStorage.removeItem("job_share_count");
+                localStorage.removeItem("viral_task_unlocked_time");
+                jobShares = 0;
+            }
+            if (jobShares >= 5) {
+                document.getElementById("smartAiJobLockContainer").style.display = "none";
+                document.getElementById("smartAiJobUnlockHeader").style.display = "flex";
+                if (seekerQualification) {
+                    allJobs.sort((a, b) => {
+                        const aMatch = (a.qualification === seekerQualification) ? 1 : 0;
+                        const bMatch = (b.qualification === seekerQualification) ? 1 : 0;
+                        if (bMatch !== aMatch) return bMatch - aMatch;
+                        return (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0);
+                    });
+                }
+            } else {
+                document.getElementById("smartAiJobLockContainer").style.display = "flex";
+                document.getElementById("smartAiJobUnlockHeader").style.display = "none";
+                allJobs.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+            }
+        }
+
+        function applyFiltersAndRender() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let filtered = allJobs;
+            if (query) {
+                filtered = filtered.filter(job =>
+                    (job.title || '').toLowerCase().includes(query) ||
+                    (job.company || '').toLowerCase().includes(query) ||
+                    (job.companyName || '').toLowerCase().includes(query) ||
+                    (job.location || '').toLowerCase().includes(query)
+                );
+            }
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'Govt') {
+                    filtered = filtered.filter(job =>
+                        (job.title || '').toLowerCase().includes('govt') ||
+                        (job.title || '').includes('सरकारी') ||
+                        (job.company || job.companyName || '').toLowerCase().includes('govt') ||
+                        (job.company || job.companyName || '').includes('सरकारी') ||
+                        (job.company || job.companyName || '').toLowerCase().includes('government') ||
+                        (job.qualification || '').includes('Govt')
+                    );
+                }
+                else if (currentFilter === 'School') {
+                    filtered = filtered.filter(job => {
+                        const title = (job.title || '').toLowerCase();
+                        const company = (job.company || job.companyName || '').toLowerCase();
+                        const qual = (job.qualification || '').toLowerCase();
+                        return title.includes('शाळा') || title.includes('school') ||
+                               company.includes('शाळा') || company.includes('school') ||
+                               qual.includes('शाळा') || qual.includes('school') ||
+                               title.includes('academy') || company.includes('academy') ||
+                               title.includes('विद्यालय') || company.includes('विद्यालय');
+                    });
+                }
+                else if (currentFilter === 'Hospital') {
+                    filtered = filtered.filter(job => {
+                        const title = (job.title || '').toLowerCase();
+                        const company = (job.company || job.companyName || '').toLowerCase();
+                        const qual = (job.qualification || '').toLowerCase();
+                        return title.includes('हॉस्पिटल') || title.includes('hospital') ||
+                               company.includes('हॉस्पिटल') || company.includes('hospital') ||
+                               qual.includes('हॉस्पिटल') || qual.includes('hospital') ||
+                               title.includes('रुग्णालय') || company.includes('रुग्णालय') ||
+                               title.includes('clinic') || company.includes('clinic') ||
+                               title.includes('दवाखाना') || company.includes('दवाखाना');
+                    });
+                }
+                else if (currentFilter === 'Bank') {
+                    filtered = filtered.filter(job => {
+                        const title = (job.title || '').toLowerCase();
+                        const company = (job.company || job.companyName || '').toLowerCase();
+                        const qual = (job.qualification || '').toLowerCase();
+                        return title.includes('बँक') || title.includes('bank') ||
+                               company.includes('बँक') || company.includes('bank') ||
+                               qual.includes('बँक') || qual.includes('bank') ||
+                               title.includes('पतसंस्था') || company.includes('पतसंस्था') ||
+                               title.includes('credit society') || company.includes('credit society') ||
+                               title.includes('सहकारी') || company.includes('सहकारी') ||
+                               title.includes('cooperative') || company.includes('cooperative') ||
+                               title.includes('financial') || company.includes('financial') ||
+                               title.includes('मायक्रो फायनान्स') || company.includes('मायक्रो फायनान्स');
+                    });
+                }
+                else {
+                    const fLower = currentFilter.toLowerCase();
+                    filtered = filtered.filter(job =>
+                        (job.qualification || '').toLowerCase().includes(fLower) ||
+                        (job.experience || '').toLowerCase().includes(fLower) ||
+                        (job.title || '').toLowerCase().includes(fLower)
+                    );
+                }
+            }
+            renderJobs(filtered);
+        }
+
+        function searchJobs() { applyFiltersAndRender(); }
+
+        function filterJobs(type, btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = type;
+            if (type === 'Govt') {
+                document.getElementById('govtStaticContainer').style.display = 'block';
+            } else {
+                document.getElementById('govtStaticContainer').style.display = 'none';
+            }
+            applyFiltersAndRender();
+        }
+
+        function renderJobs(jobs) {
+            const container = document.getElementById('jobsContainer');
+            document.getElementById('jobCountBadge').innerText = `${jobs.length} Jobs`;
+            if (jobs.length === 0) {
+                container.innerHTML = `<div class="empty-box"><i class="fa-solid fa-search"></i><p>या माहितीशी संबंधित कोणतीही नोकरी सापडली नाही.</p></div>`;
+                return;
+            }
+            let html = '';
+            let aiMatchCount = 0;
+            let jobShares = parseInt(localStorage.getItem("job_share_count")) || 0;
+            jobs.forEach(job => {
+                const isSaved = savedJobs.includes(String(job.id));
+                let formattedDate = "आत्ताच";
+                if (job.createdAt) {
+                    formattedDate = new Date(job.createdAt.toMillis()).toLocaleDateString('mr-IN', { day: 'numeric', month: 'short' });
+                }
+                let badgeHtml = '';
+                let specialCardStyle = '';
+                if (jobShares >= 5 && seekerQualification && job.qualification === seekerQualification && aiMatchCount < 5) {
+                    badgeHtml = `<div style="position:absolute; top:8px; left:8px; background:#16a34a; color:white; font-size:9px; font-weight:800; padding:2px 8px; border-radius:20px; z-index:5;"><i class="fa-solid fa-circle-check"></i> AI Match</div>`;
+                    specialCardStyle = 'border-left:4px solid #16a34a; background:#f0fdf4;';
+                    aiMatchCount++;
+                }
+                html += `
+                <div class="job-card" style="${specialCardStyle}" data-id="${job.id}" onclick="openDetails(this.dataset.id)">
+                    ${badgeHtml}
+                    <div class="job-icon"><i class="fa-solid fa-building"></i></div>
+                    <div class="job-content">
+                        <div class="job-title">${job.title || 'No Title'}</div>
+                        <div class="company">${job.company || job.companyName || 'कंपनीची माहिती नाही'}</div>
+                        <div class="job-meta-row">
+                            <span><i class="fa-solid fa-location-dot"></i> ${job.location || 'Satara'}</span>
+                            <span><i class="fa-solid fa-indian-rupee-sign"></i> ${job.salary || 'Not Mentioned'}</span>
+                            <span><i class="fa-solid fa-graduation-cap"></i> ${job.qualification || 'Any'}</span>
+                            <span><i class="fa-solid fa-clock"></i> ${job.experience || 'Fresher'}</span>
+                        </div>
+                        <div class="action-row">
+                            <div class="job-date">पोस्ट: ${formattedDate}</div>
+                            <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">View</button>
+                            <button class="action-btn whatsapp-btn" onclick="event.stopPropagation(); shareJob('${(job.title||'').replace(/'/g,"\\'")}', '${(job.company||job.companyName||'').replace(/'/g,"\\'")}', '${job.id}')"><i class="fa-brands fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                    <div class="save-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${job.id}', this)"><i class="fa-solid fa-heart"></i></div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function openDetails(id) { if (id && id !== "undefined" && id !== "null") { window.location.href = "job-details.html?id=" + id; } }
+
+        function shareJob(title, company, id) {
+            const textToShare = `*नव्या नोकरीची सुवर्णसंधी!* 🚀\n\n*पद:* ${title}\n*कंपनी:* ${company || 'माहिती नाही'}\n\nपूर्ण माहिती पाहण्यासाठी:\nhttps://satara-jobs-ed6ab.web.app/job-details.html?id=${id}`;
+            let shareCount = parseInt(localStorage.getItem("job_share_count")) || 0;
+            shareCount++;
+            localStorage.setItem("job_share_count", shareCount);
+            if (shareCount === 5) {
+                localStorage.setItem("viral_task_unlocked_time", Date.now().toString());
+                manageViralMatchingVisibility();
+                applyFiltersAndRender();
+            }
+            if (navigator.share) { navigator.share({ title: 'सातारा जॉब्स', text: textToShare }).catch(err => console.log(err)); } else { window.open(`whatsapp://send?text=${encodeURIComponent(textToShare)}`, '_blank'); }
+        }
+
+        async function toggleSave(jobId, btnElement) {
+            const user = auth.currentUser;
+            if (!user) return;
+            const strJobId = String(jobId);
+            if (savedJobs.includes(strJobId)) {
+                savedJobs = savedJobs.filter(id => id !== strJobId);
+                btnElement.classList.remove('saved');
+            } else {
+                savedJobs.push(strJobId);
+                btnElement.classList.add('saved');
+            }
+            try { await db.collection("saved_jobs").doc(user.uid).set({ jobs: savedJobs }); } catch (error) { console.error("Save error:", error); }
+        }
+    </script>
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('SW registered'))
+          .catch(err => console.log('SW error', err));
+      }
+    </script>
+</body>
+</html>

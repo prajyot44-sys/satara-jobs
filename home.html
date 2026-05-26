@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>सातारा जॉब्स - Home</title>
+    <link rel="icon" href="1778817504151.png">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #1e88e5;
+            --bg: #f4f6f9;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --premium: #f59e0b;
+            --danger: #ef4444;
+            --urgent: #f97316;
+            --success: #10b981;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+        body { background:#f4f6f9; color:var(--text); padding-bottom:70px; }
+        #loader { position:fixed; inset:0; background:white; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:99999; }
+        #loader i { font-size:36px; color:var(--primary); margin-bottom:12px; }
+        .header { background:linear-gradient(135deg,#001a33,#003366); color:white; padding:20px 16px 18px; border-bottom-left-radius:28px; border-bottom-right-radius:28px; position:sticky; top:0; z-index:1000; }
+        .header-top { display:flex; justify-content:space-between; align-items:center; }
+        .brand { display:flex; align-items:center; gap:12px; }
+        .brand img { width:50px; height:50px; border-radius:14px; background:white; padding:4px; }
+        .brand h1 { font-size:20px; font-weight:800; }
+        .brand p { font-size:11px; opacity:0.8; }
+        .header-actions { display:flex; gap:8px; align-items:center; }
+        .icon-btn { width:42px; height:42px; border-radius:14px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+        .bell-container { position:relative; cursor:pointer; margin-right:4px; }
+        .bell-icon { font-size:22px; color:white; }
+        .bell-badge { position:absolute; top:-6px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:18px; height:18px; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700; }
+        .search-box { margin-top:18px; background:white; border-radius:16px; padding:14px 16px; display:flex; align-items:center; }
+        .search-box i { color:var(--primary); }
+        .search-box input { border:none; outline:none; width:100%; margin-left:10px; font-size:14px; }
+
+        .stats-slider-container { margin:14px 15px; border-radius:16px; overflow:hidden; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.04); position:relative; }
+        .stats-slider-track { display:flex; transition:transform 0.4s ease; }
+        .stats-slide, .ad-slide { min-width:100%; display:flex; align-items:center; justify-content:center; }
+        .stats-slide { padding:18px 16px; justify-content:space-around; }
+        .stats-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .stats-item i { font-size:20px; }
+        .stats-item h3 { font-size:20px; font-weight:800; margin:0; color:var(--primary); }
+        .stats-item p { font-size:10px; color:var(--muted); margin:0; }
+        .stats-divider { width:1px; height:36px; background:#e2e8f0; }
+        .ad-slide img, .ad-slide video { width:100%; height:100%; object-fit:cover; }
+
+        .slider-dots { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); display:flex; gap:6px; }
+        .slider-dot { width:8px; height:8px; border-radius:50%; background:rgba(0,0,0,0.2); }
+        .slider-dot.active { background:var(--primary); }
+
+        #categoryAdContainer { display:none; margin:10px 15px; }
+        .category-ad-box { border-radius:12px; overflow:hidden; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+        .category-ad-box img, .category-ad-box video { width:100%; max-height:120px; object-fit:cover; display:block; }
+
+        #urgentBadgeContainer { display:none; margin:10px 15px; }
+        .urgent-badge-box { display:flex; align-items:center; gap:10px; background:#fff7ed; border-left:4px solid var(--urgent); padding:10px 14px; border-radius:10px; }
+        .urgent-badge-box img { height:40px; width:auto; }
+
+        /* Membership Card */
+        .membership-card-home {
+            margin: 10px 15px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px solid #bae6fd;
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .membership-card-home .plan-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .container { padding:0 15px; }
+        .section-title { display:flex; align-items:center; gap:10px; margin:15px 0 12px; font-size:14px; font-weight:800; color:var(--primary); }
+        .job-card { background:white; border-radius:14px; padding:12px; margin-bottom:10px; display:flex; gap:10px; border:1px solid #e2e8f0; position:relative; }
+        .premium-card { border-left:4px solid var(--premium); }
+        .job-icon { width:42px; height:42px; border-radius:12px; background:#eff6ff; display:flex; align-items:center; justify-content:center; color:var(--secondary); flex-shrink:0; }
+        .job-content { flex:1; }
+        .job-title { font-size:16px; font-weight:800; color:var(--primary); }
+        .company { font-size:13px; color:var(--muted); margin-top:2px; }
+        .job-meta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; font-size:12px; }
+        .job-meta-row span { display:flex; align-items:center; gap:4px; }
+        .job-meta-row i { color:var(--secondary); }
+        .action-row { display:flex; align-items:center; gap:8px; margin-top:10px; }
+        .job-date { flex:1; font-size:11px; color:var(--muted); }
+        .action-btn { border:none; border-radius:16px; padding:7px 14px; font-size:11px; font-weight:700; cursor:pointer; }
+        .view-btn { background:#eff6ff; color:var(--primary); }
+        .apply-btn { background:var(--primary); color:white; }
+        .premium-tag { position:absolute; top:8px; right:8px; background:var(--premium); color:#5d4300; padding:2px 8px; border-radius:20px; font-size:9px; font-weight:800; }
+        .urgent-tag { position:absolute; top:8px; right:8px; background:var(--urgent); color:white; padding:2px 8px; border-radius:20px; font-size:9px; font-weight:800; }
+        .save-btn { position:absolute; right:8px; top:36px; width:30px; height:30px; border-radius:10px; background:#f8fafc; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#94a3b8; transition: 0.2s; }
+        .save-btn.saved { background:#fee2e2; color:#ef4444; }
+        .bottom-nav { position:fixed; bottom:0; width:100%; background:white; display:flex; justify-content:space-around; padding:10px 0; box-shadow:0 -4px 15px rgba(0,0,0,0.05); z-index:999; }
+        .nav-link { text-decoration:none; text-align:center; font-size:10px; color:#94a3b8; font-weight:600; }
+        .nav-link i { display:block; font-size:18px; margin-bottom:4px; }
+        .nav-link.active { color:var(--primary); }
+        
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+        .profile-popup-box { background:white; width:90%; max-width:380px; border-radius:24px; padding:30px 20px; text-align:center; box-shadow: 0 15px 30px rgba(0,0,0,0.15); animation: popIn 0.3s ease-out; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .profile-popup-icon { width:65px; height:65px; background:#eff6ff; color:var(--secondary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 15px; border: 4px solid #e0f2fe; }
+
+        #splashAdModal .splash-content { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+        #splashAdModal img, #splashAdModal video { max-width:100%; max-height:100%; object-fit:contain; }
+        .splash-skip { position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.6); color:white; border:none; padding:8px 20px; border-radius:20px; font-weight:700; cursor:pointer; z-index:10; }
+
+        #notifModal .modal-content { max-width:450px; }
+        .notif-item { padding:12px; border-bottom:1px solid #f1f5f9; cursor:pointer; transition:background 0.2s; }
+        .notif-item:hover { background:#f8fafc; }
+        .notif-item.unread { background:#eff6ff; font-weight:700; }
+        .notif-item .time { font-size:10px; color:var(--muted); margin-top:4px; }
+
+        /* Popup Message Modal */
+        #popupMessageModal .popup-msg-box { background:white; width:92%; max-width:420px; border-radius:24px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.2); animation:popIn 0.3s ease-out; }
+        #popupMessageModal .popup-msg-img { width:100%; max-height:250px; object-fit:cover; display:block; }
+        #popupMessageModal .popup-msg-body { padding:20px; }
+        #popupMessageModal .popup-msg-body h3 { font-size:17px; font-weight:800; color:var(--primary); margin-bottom:8px; }
+        #popupMessageModal .popup-msg-body p { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+
+        /* Rewards Panel */
+        .rewards-panel {
+            position: fixed; top: 0; right: -100%; width: 92%; max-width: 420px; height: 100vh;
+            background: white; z-index: 3000; transition: right 0.35s ease;
+            box-shadow: -8px 0 30px rgba(0,0,0,0.15); overflow-y: auto; padding: 20px 16px 30px;
+        }
+        .rewards-panel.open { right: 0; }
+        .rewards-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2999; }
+        .rewards-overlay.active { display:block; }
+        .panel-close-btn { position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; background:#fee2e2; border:none; color:var(--danger); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .panel-title { font-size:17px; font-weight:800; color:var(--primary); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .badge-chip { background:white; border:2px solid #e2e8f0; border-radius:20px; padding:6px 14px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:6px; margin:3px; }
+        .badge-chip.locked { opacity:0.5; border-style:dashed; }
+        .criteria-box { background:#f8fafc; border-radius:14px; padding:14px; margin-bottom:14px; border:1px solid #e2e8f0; }
+        .criteria-box h4 { font-size:13px; font-weight:800; color:var(--primary); margin-bottom:8px; }
+        .criteria-box p { font-size:11px; color:var(--muted); margin:3px 0; display:flex; align-items:center; gap:6px; }
+        .criteria-box i { color:var(--secondary); font-size:12px; width:18px; text-align:center; }
+        .leaderboard-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:12px; }
+        .leaderboard-row:last-child { border-bottom:none; }
+        .leaderboard-rank { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px; color:white; flex-shrink:0; }
+        .rank-1{background:#f59e0b;} .rank-2{background:#94a3b8;} .rank-3{background:#d97706;} .rank-other{background:#cbd5e1;color:#64748b;}
+        .rewards-trigger-btn {
+            position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+            background: var(--primary); color: white; border: none;
+            padding: 14px 8px; border-radius: 14px 0 0 14px;
+            font-size: 11px; font-weight: 800; cursor: pointer; z-index: 2000;
+            writing-mode: vertical-lr; letter-spacing: 1px;
+            box-shadow: -4px 0 15px rgba(0,51,102,0.25);
+            transition: all 0.3s;
+        }
+        .rewards-trigger-btn:hover { background: #004080; padding-right: 12px; }
+    </style>
+</head>
+<body>
+
+<!-- लपवलेल्या लिंक्स (APK पॅकेजिंग साठी) -->
+<a href="company.html" style="display:none;">कंपनी</a>
+<a href="admin.html" style="display:none;">ॲडमिन</a>
+<a href="job-details.html" style="display:none;">जॉब डिटेल</a>
+<a href="saved.html" style="display:none;">सेव्ह</a>
+<a href="profile.html" style="display:none;">प्रोफाइल</a>
+<a href="jobs.html" style="display:none;">जॉब्स</a>
+<a href="notifications.html" style="display:none;">नोटिफिकेशन</a>
+<a href="applied.html" style="display:none;">अर्ज</a>
+
+<div id="loader">
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+    <p style="font-size:13px;color:#64748b;">डेटा लोड होत आहे...</p>
+</div>
+
+<!-- Splash Ad Modal -->
+<div id="splashAdModal" class="modal-overlay">
+    <div class="splash-content">
+        <button class="splash-skip" onclick="closeSplashAd()">Skip ⏭</button>
+        <div id="splashMediaContainer" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
+    </div>
+</div>
+
+<!-- Rewards Panel Trigger Button -->
+<button class="rewards-trigger-btn" id="rewardsTriggerBtn" onclick="openRewardsPanel()">
+    🏆 बक्षिसे
+</button>
+
+<!-- Rewards Overlay -->
+<div class="rewards-overlay" id="rewardsOverlay" onclick="closeRewardsPanel()"></div>
+
+<!-- Rewards Sliding Panel -->
+<div class="rewards-panel" id="rewardsPanel">
+    <button class="panel-close-btn" onclick="closeRewardsPanel()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="panel-title"><i class="fa-solid fa-trophy" style="color:var(--premium);"></i> तुमची बक्षिसे व मानांकन</div>
+
+    <!-- Membership Card inside panel -->
+    <div class="membership-card-home" id="panelMembershipCard" style="margin:0 0 14px 0;">
+        <div>
+            <strong>⭐ तुमची मेंबरशिप:</strong> <span id="panelMembershipPlan">फ्री</span>
+            <br><small>📅 एक्सपायरी: <span id="panelMembershipExpiry">—</span></small>
+        </div>
+        <span class="plan-badge" id="panelMembershipBadge">फ्री</span>
+    </div>
+
+    <!-- Badges -->
+    <div class="criteria-box">
+        <h4><i class="fa-solid fa-award"></i> तुमचे बॅज</h4>
+        <div id="panelBadgesContainer" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- Badge Criteria -->
+    <div class="criteria-box">
+        <h4><i class="fa-solid fa-circle-question"></i> बॅज निकष (Criteria)</h4>
+        <p><i class="fa-solid fa-share-nodes"></i> <strong>शेअरर</strong> — १ जॉब शेअर केल्यावर</p>
+        <p><i class="fa-solid fa-share-nodes"></i> <strong>सुपर शेअरर</strong> — १० जॉब्स शेअर केल्यावर</p>
+        <p><i class="fa-solid fa-share-nodes"></i> <strong>स्टार शेअरर</strong> — ५० जॉब्स शेअर केल्यावर</p>
+        <p><i class="fa-solid fa-link"></i> <strong>कनेक्टर</strong> — तुमच्या लिंकवरून १ अर्ज आल्यावर</p>
+        <p><i class="fa-solid fa-link"></i> <strong>टॉप कनेक्टर</strong> — तुमच्या लिंकवरून ५ अर्ज आल्यावर</p>
+        <p><i class="fa-solid fa-bullseye"></i> <strong>हायरिंग हिरो</strong> — तुमच्या रेफरलवर १ हायरिंग झाल्यावर</p>
+        <p style="color:var(--success); font-weight:700; margin-top:6px;"><i class="fa-solid fa-indian-rupee-sign"></i> हायरिंग बोनस — ₹२०० (हायरिंग झाल्यावर)</p>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="criteria-box">
+        <h4><i class="fa-solid fa-trophy" style="color:#f59e0b;"></i> या आठवड्याचे टॉप शेअरर्स</h4>
+        <div id="panelLeaderboardList"></div>
+    </div>
+
+    <!-- How to Earn -->
+    <div class="criteria-box" style="background:#f0fdf4; border-color:#86efac;">
+        <h4><i class="fa-solid fa-circle-info" style="color:var(--success);"></i> बक्षिसं कशी मिळवायची?</h4>
+        <p style="color:#065f46;"><i class="fa-solid fa-1"></i> जॉबवरील <strong>"शेअर"</strong> बटण दाबून WhatsApp वर पाठवा.</p>
+        <p style="color:#065f46;"><i class="fa-solid fa-2"></i> तुमच्या लिंकवरून कोणी अर्ज केला तर तुम्हाला क्रेडिट मिळेल.</p>
+        <p style="color:#065f46;"><i class="fa-solid fa-3"></i> त्या उमेदवाराला नोकरी लागली तर <strong>₹२०० बक्षीस</strong> थेट तुमच्या UPI वर!</p>
+    </div>
+</div>
+
+<div class="header">
+    <div class="header-top">
+        <div class="brand">
+            <img src="1778817504151.png">
+            <div>
+                <h1>सातारा जॉब्स</h1>
+                <p>Maharashtra Smart Job Portal</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="bell-container" onclick="openNotificationModal()">
+                <i class="fa-solid fa-bell bell-icon"></i>
+                <span class="bell-badge" id="notifBadge" style="display:none;">0</span>
+            </div>
+            <div class="icon-btn" onclick="logoutUser()">
+                <i class="fa-solid fa-power-off"></i>
+            </div>
+        </div>
+    </div>
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="नोकरी, कंपनी, लोकेशन शोधा..." oninput="searchJobs()">
+    </div>
+</div>
+
+<!-- Membership Card -->
+<div id="membershipCardHome" class="membership-card-home" style="display:none;">
+    <div>
+        <strong>⭐ तुमची मेंबरशिप:</strong> <span id="homeMembershipPlan">फ्री</span>
+        <br><small>📅 एक्सपायरी: <span id="homeMembershipExpiry">—</span></small>
+    </div>
+    <span class="plan-badge" id="homeMembershipBadge">फ्री</span>
+</div>
+
+<div class="stats-slider-container" id="statsSliderContainer">
+    <div class="stats-slider-track" id="statsSliderTrack"></div>
+    <div class="slider-dots" id="statsSliderDots"></div>
+</div>
+
+<div id="urgentBadgeContainer"></div>
+<div id="categoryAdContainer"></div>
+<div class="container" id="jobsContainer"></div>
+
+<div class="bottom-nav">
+    <a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="jobs.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Jobs</a>
+    <a href="saved.html" class="nav-link"><i class="fa-solid fa-heart"></i> Saved</a>
+    <a href="profile.html" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+</div>
+
+<div id="profilePopup" class="modal-overlay">
+    <div class="profile-popup-box">
+        <div class="profile-popup-icon"><i class="fa-solid fa-user-pen"></i></div>
+        <h3 style="font-size:18px; color:var(--primary); font-weight:800; margin-bottom:8px;">तुमची प्रोफाईल अपडेट करा</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:24px; line-height:1.6;">नोकरीसाठी यशस्वीरित्या अर्ज करण्यासाठी आणि चांगल्या संधी मिळवण्यासाठी कृपया तुमची प्रोफाईल माहिती पूर्ण भरा.</p>
+        <div style="display:flex; gap:12px;">
+            <button onclick="closeProfilePopup()" style="flex:1; padding:12px; border-radius:14px; border:2px solid #e2e8f0; background:white; color:#64748b; font-weight:700; cursor:pointer;">नंतर करूया</button>
+            <button onclick="window.location.href='profile.html'" style="flex:1; padding:12px; border-radius:14px; border:none; background:var(--primary); color:white; font-weight:700; cursor:pointer; box-shadow:0 6px 15px rgba(0,51,102,0.25);">अपडेट करा</button>
+        </div>
+    </div>
+</div>
+
+<!-- Popup Message Modal -->
+<div class="modal-overlay" id="popupMessageModal">
+    <div class="popup-msg-box">
+        <img id="popupMsgImage" src="" class="popup-msg-img" style="display:none;">
+        <div class="popup-msg-body">
+            <h3 id="popupMsgTitle"></h3>
+            <p id="popupMsgText"></p>
+            <button onclick="closePopupMessage()" style="width:100%; padding:12px; border:none; border-radius:14px; background:var(--primary); color:white; font-weight:700; cursor:pointer;">ठीक आहे</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="notifModal">
+    <div class="modal-content" style="background:white; width:95%; max-width:450px; border-radius:20px; padding:25px; max-height:80vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+            <h3 style="font-size:18px; color:var(--primary); font-weight:800;">🔔 सूचना</h3>
+            <button onclick="closeNotificationModal()" style="background:#fee2e2; border:none; font-size:18px; width:35px; height:35px; border-radius:50%; color:var(--danger); cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="notifList" style="max-height:55vh; overflow-y:auto;"></div>
+        <button onclick="window.location.href='notifications.html'" style="width:100%; margin-top:12px; padding:12px; border:none; border-radius:12px; background:var(--primary); color:white; font-weight:700; cursor:pointer;">सर्व सूचना पहा</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
+        authDomain: "satara-jobs-ed6ab.firebaseapp.com",
+        projectId: "satara-jobs-ed6ab",
+        storageBucket: "satara-jobs-ed6ab.appspot.com",
+        messagingSenderId: "688594836150",
+        appId: "1:688594836150:web:a59ecda1d87b599862a417"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    let allJobs = [];
+    let savedJobs = [];
+    let isProfileCompleted = false; 
+    let userPhone = '';
+
+    let totalJobsCount = 0;
+    let premiumJobsCount = 0;
+    let totalCompaniesCount = 0;
+
+    function escapeHTML(str) {
+        return String(str || '').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    }
+
+    setTimeout(() => { document.getElementById('loader').style.display='none'; }, 10000);
+
+    function showProfilePopup() { document.getElementById('profilePopup').style.display = 'flex'; }
+    function closeProfilePopup() { document.getElementById('profilePopup').style.display = 'none'; }
+
+    let scrollPopupShown = false;
+    window.addEventListener('scroll', () => {
+        if (!isProfileCompleted && !scrollPopupShown && window.scrollY > 2400) {
+            showProfilePopup();
+            scrollPopupShown = true; 
+        }
+    });
+
+    let unreadCount = 0;
+    function updateNotifBadge() {
+        const badge = document.getElementById('notifBadge');
+        badge.innerText = unreadCount;
+        badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
+
+    function listenSeekerNotifications() {
+        const phone = localStorage.getItem("user_phone");
+        if (!phone) return;
+        db.collection("notifications")
+          .where("recipientPhone", "==", phone)
+          .orderBy("createdAt", "desc")
+          .onSnapshot(snap => {
+              unreadCount = 0;
+              snap.forEach(doc => { if (!doc.data().isRead) unreadCount++; });
+              updateNotifBadge();
+          }, err => console.error("Notification listener error:", err));
+    }
+
+    function openNotificationModal() {
+        const phone = localStorage.getItem("user_phone");
+        if (!phone) return;
+        db.collection("notifications")
+          .where("recipientPhone", "==", phone)
+          .orderBy("createdAt", "desc")
+          .limit(20).get().then(snap => {
+              const list = document.getElementById('notifList');
+              list.innerHTML = '';
+              if (snap.empty) {
+                  list.innerHTML = '<p style="text-align:center; padding:20px;">कोणतीही सूचना नाही</p>';
+              } else {
+                  snap.forEach(doc => {
+                      const n = doc.data();
+                      const div = document.createElement('div');
+                      div.className = `notif-item ${n.isRead ? '' : 'unread'}`;
+                      div.innerHTML = `<strong>${n.title}</strong><p style="font-size:12px;">${n.message}</p><span class="time">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleTimeString('mr-IN') : ''}</span>`;
+                      div.onclick = () => {
+                          db.collection("notifications").doc(doc.id).update({ isRead: true });
+                          div.classList.remove('unread');
+                      };
+                      list.appendChild(div);
+                  });
+              }
+              document.getElementById('notifModal').style.display = 'flex';
+          }).catch(err => {
+              document.getElementById('notifList').innerHTML = '<p>त्रुटी: ' + err.message + '</p>';
+              document.getElementById('notifModal').style.display = 'flex';
+          });
+    }
+
+    function closeNotificationModal() { document.getElementById('notifModal').style.display = 'none'; }
+
+    // ---- POPUP MESSAGE ----
+    function loadPopupMessages() {
+        const phone = localStorage.getItem("user_phone");
+        if (!phone || sessionStorage.getItem('popupShown')) return;
+        db.collection("popup_messages")
+          .orderBy("createdAt", "desc")
+          .limit(1)
+          .get()
+          .then(snap => {
+              if (snap.empty) return;
+              const doc = snap.docs[0];
+              const m = doc.data();
+              if (m.target === 'employer') return;
+              document.getElementById('popupMsgTitle').innerText = m.title || '';
+              document.getElementById('popupMsgText').innerText = m.message || '';
+              if (m.mediaUrl) {
+                  document.getElementById('popupMsgImage').src = m.mediaUrl;
+                  document.getElementById('popupMsgImage').style.display = 'block';
+              } else {
+                  document.getElementById('popupMsgImage').style.display = 'none';
+              }
+              document.getElementById('popupMessageModal').style.display = 'flex';
+              sessionStorage.setItem('popupShown', 'true');
+          }).catch(err => console.error("Popup load error:", err));
+    }
+
+    function closePopupMessage() {
+        document.getElementById('popupMessageModal').style.display = 'none';
+    }
+
+    // ---- Rewards Panel ----
+    function openRewardsPanel() {
+        document.getElementById('rewardsPanel').classList.add('open');
+        document.getElementById('rewardsOverlay').classList.add('active');
+    }
+    function closeRewardsPanel() {
+        document.getElementById('rewardsPanel').classList.remove('open');
+        document.getElementById('rewardsOverlay').classList.remove('active');
+    }
+
+    // ---- मेंबरशिप कार्ड (होम + पॅनल) ----
+    async function loadMembershipCard() {
+        if (!userPhone) return;
+        const doc = await db.collection("users").doc(userPhone).get();
+        if (!doc.exists) return;
+        const user = doc.data();
+        const plan = user.membershipPlan || 'free';
+        const planNames = { free: 'फ्री', silver: '🥈 सिल्वर', gold: '🥇 गोल्ड' };
+        const expiry = user.membershipExpiry ? user.membershipExpiry.toDate().toLocaleDateString('mr-IN') : 'आजीवन';
+        // होम कार्ड
+        const homePlan = document.getElementById('homeMembershipPlan');
+        const homeExpiry = document.getElementById('homeMembershipExpiry');
+        const homeBadge = document.getElementById('homeMembershipBadge');
+        if (homePlan) homePlan.innerText = planNames[plan] || 'फ्री';
+        if (homeExpiry) homeExpiry.innerText = expiry;
+        if (homeBadge) homeBadge.innerText = planNames[plan] || 'फ्री';
+        document.getElementById('membershipCardHome').style.display = 'flex';
+        // पॅनल कार्ड
+        const panelPlan = document.getElementById('panelMembershipPlan');
+        const panelExpiry = document.getElementById('panelMembershipExpiry');
+        const panelBadge = document.getElementById('panelMembershipBadge');
+        if (panelPlan) panelPlan.innerText = planNames[plan] || 'फ्री';
+        if (panelExpiry) panelExpiry.innerText = expiry;
+        if (panelBadge) panelBadge.innerText = planNames[plan] || 'फ्री';
+        if (document.getElementById('panelMembershipCard')) document.getElementById('panelMembershipCard').style.display = 'flex';
+    }
+
+    // ---- बॅज डिस्प्ले (होम + पॅनल) ----
+    function loadBadges() {
+        if (!userPhone) return;
+        db.collection("settings").doc("badges").get().then(badgeDoc => {
+            const thresholds = badgeDoc.exists ? badgeDoc.data() : {};
+            const share1 = thresholds.share1 || 1;
+            const share10 = thresholds.share10 || 10;
+            const share50 = thresholds.share50 || 50;
+            const app1 = thresholds.app1 || 1;
+            const app5 = thresholds.app5 || 5;
+            const hire1 = thresholds.hire1 || 1;
+
+            db.collection("users").doc(userPhone).get().then(userDoc => {
+                if (!userDoc.exists) return;
+                const u = userDoc.data();
+                const shares = u.totalShares || 0;
+                const apps = u.totalApplicationsViaReferral || 0;
+                const hires = u.totalHiringsViaReferral || 0;
+
+                const badgeList = [
+                    { name: '🥉 शेअरर', earned: shares >= share1, progress: Math.min(shares, share1), target: share1 },
+                    { name: '🥈 सुपर शेअरर', earned: shares >= share10, progress: Math.min(shares, share10), target: share10 },
+                    { name: '🥇 स्टार शेअरर', earned: shares >= share50, progress: Math.min(shares, share50), target: share50 },
+                    { name: '🔗 कनेक्टर', earned: apps >= app1, progress: Math.min(apps, app1), target: app1 },
+                    { name: '⭐ टॉप कनेक्टर', earned: apps >= app5, progress: Math.min(apps, app5), target: app5 },
+                    { name: '🎯 हायरिंग हिरो', earned: hires >= hire1, progress: Math.min(hires, hire1), target: hire1 },
+                ];
+
+                const badgesHTML = badgeList.map(b => {
+                    const cls = b.earned ? '' : 'locked';
+                    const progressText = b.earned ? '' : ` (${b.progress}/${b.target})`;
+                    return `<span class="badge-chip ${cls}">${b.name}${progressText}</span>`;
+                }).join('');
+
+                // पॅनल बॅज
+                const panelContainer = document.getElementById('panelBadgesContainer');
+                if (panelContainer) {
+                    panelContainer.innerHTML = badgesHTML;
+                }
+                // होम पेजवर बॅज दाखवायचे नाहीत — तो कंटेनर लपवा
+                const homeContainer = document.getElementById('badgesContainer');
+                if (homeContainer) homeContainer.style.display = 'none';
+            });
+        });
+    }
+
+    // ---- लीडरबोर्ड (फक्त पॅनल) ----
+    function loadLeaderboard() {
+        db.collection("users")
+          .orderBy("weeklyShares", "desc")
+          .limit(5)
+          .get()
+          .then(snap => {
+              const panelList = document.getElementById('panelLeaderboardList');
+              if (snap.empty) {
+                  if (panelList) panelList.innerHTML = '<p style="font-size:12px;color:var(--muted);">अजून कोणीही शेअर केलेले नाही.</p>';
+                  return;
+              }
+              let html = '';
+              let rank = 0;
+              snap.forEach(doc => {
+                  rank++;
+                  const u = doc.data();
+                  const name = u.name || doc.id;
+                  const shares = u.weeklyShares || 0;
+                  let rankClass = 'rank-other';
+                  if (rank === 1) rankClass = 'rank-1';
+                  else if (rank === 2) rankClass = 'rank-2';
+                  else if (rank === 3) rankClass = 'rank-3';
+                  html += `<div class="leaderboard-row">
+                      <span class="leaderboard-rank ${rankClass}">${rank}</span>
+                      <span style="flex:1; font-weight:600;">${name}</span>
+                      <span style="color:var(--muted);">${shares} शेअर्स</span>
+                  </div>`;
+              });
+              if (panelList) panelList.innerHTML = html;
+              // होम पेजवरचा लीडरबोर्ड लपवा
+              const homeLB = document.getElementById('leaderboardCard');
+              if (homeLB) homeLB.style.display = 'none';
+          });
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            userPhone = localStorage.getItem("user_phone") || '';
+            if (userPhone) {
+                const profDoc = await db.collection("users").doc(userPhone).get();
+                if (profDoc.exists && profDoc.data().profileCompleted) isProfileCompleted = true;
+            }
+
+            try {
+                await loadSavedJobs(user.uid);
+                loadMembershipCard();
+                loadBadges();
+                loadLeaderboard();
+                loadJobs();
+                loadApprovedAdBookings();
+                listenSeekerNotifications();
+                listenTotalCompanies();
+                loadPopupMessages();
+            } catch (e) {
+                console.log(e);
+                document.getElementById('loader').style.display='none';
+            }
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    async function loadSavedJobs(uid) {
+        try {
+            const doc = await db.collection("saved_jobs").doc(uid).get();
+            savedJobs = doc.exists ? (doc.data().jobs || []).map(id => String(id)) : [];
+        } catch (e) { console.error(e); }
+    }
+
+    function listenTotalCompanies() {
+        db.collection("users").where("role", "==", "employer").onSnapshot(snap => {
+            totalCompaniesCount = snap.size;
+            if (document.getElementById('totalCompaniesCount')) {
+                document.getElementById('totalCompaniesCount').innerText = totalCompaniesCount;
+            }
+        });
+    }
+
+    // ---------- USER-SPECIFIC SHUFFLE & ROTATION ----------
+    function getUserHash() {
+        const phone = localStorage.getItem("user_phone") || '0';
+        return phone.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    }
+
+    function getRotationIndex(key, length) {
+        if (length === 0) return 0;
+        let stored = localStorage.getItem(key);
+        if (stored === null) {
+            const hash = getUserHash();
+            const startIndex = hash % length;
+            localStorage.setItem(key, startIndex);
+            return startIndex;
+        }
+        let index = parseInt(stored);
+        if (isNaN(index) || index >= length) index = 0;
+        localStorage.setItem(key, (index + 1) % length);
+        return index;
+    }
+
+    function shuffleArray(array, seed) {
+        const hash = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const sorted = [...array].sort((a, b) => {
+            const ha = (hash + a.id.split('').reduce((acc,c)=>acc+c.charCodeAt(0),0)) % 1000;
+            const hb = (hash + b.id.split('').reduce((acc,c)=>acc+c.charCodeAt(0),0)) % 1000;
+            return ha - hb;
+        });
+        return sorted;
+    }
+
+    let statsSliderInterval = null;
+    let allSliderSlides = [];
+    let currentSliderIndex = 0;
+
+    function buildStatsSliderTrack() {
+        const track = document.getElementById('statsSliderTrack');
+        const dotsContainer = document.getElementById('statsSliderDots');
+        track.innerHTML = '';
+        dotsContainer.innerHTML = '';
+
+        allSliderSlides.forEach((slide, index) => {
+            const slideDiv = document.createElement('div');
+            if (slide.type === 'stats') {
+                slideDiv.className = 'stats-slide';
+                slideDiv.innerHTML = `
+                    <div class="stats-item">
+                        <i class="fa-solid fa-briefcase" style="color:var(--secondary);"></i>
+                        <h3 id="totalJobsCount">${totalJobsCount}</h3>
+                        <p>एकूण नोकऱ्या</p>
+                    </div>
+                    <div class="stats-divider"></div>
+                    <div class="stats-item">
+                        <i class="fa-solid fa-star" style="color:var(--premium);"></i>
+                        <h3 id="premiumJobsCount">${premiumJobsCount}</h3>
+                        <p>प्रीमियम</p>
+                    </div>
+                    <div class="stats-divider"></div>
+                    <div class="stats-item">
+                        <i class="fa-solid fa-building" style="color:#8B5CF6;"></i>
+                        <h3 id="totalCompaniesCount">${totalCompaniesCount}</h3>
+                        <p>कंपन्या</p>
+                    </div>
+                `;
+            } else {
+                slideDiv.className = 'ad-slide';
+                slideDiv.innerHTML = slide.isVideo 
+                    ? `<video src="${slide.media}" muted loop playsinline></video>`
+                    : `<img src="${slide.media}">`;
+            }
+            track.appendChild(slideDiv);
+
+            const dot = document.createElement('span');
+            dot.className = 'slider-dot';
+            dotsContainer.appendChild(dot);
+        });
+
+        const phone = localStorage.getItem("user_phone") || '0';
+        const hash = phone.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        currentSliderIndex = hash % allSliderSlides.length;
+        goToStatsSlide(currentSliderIndex);
+    }
+
+    function goToStatsSlide(index) {
+        const track = document.getElementById('statsSliderTrack');
+        track.style.transform = `translateX(-${index * 100}%)`;
+        const dots = document.querySelectorAll('#statsSliderDots .slider-dot');
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        currentSliderIndex = index;
+    }
+
+    function startStatsSliderAutoPlay() {
+        if (statsSliderInterval) clearInterval(statsSliderInterval);
+        statsSliderInterval = setInterval(() => {
+            if (allSliderSlides.length === 0) return;
+            currentSliderIndex = (currentSliderIndex + 1) % allSliderSlides.length;
+            goToStatsSlide(currentSliderIndex);
+        }, 3000);
+    }
+
+    let categoryInterval = null;
+
+    function isAdExpired(ad) {
+        if (!ad.approvedAt) return false;
+        const approvedDate = ad.approvedAt.toDate ? ad.approvedAt.toDate() : new Date(ad.approvedAt);
+        const durationDays = parseInt(ad.adDurationDays) || 30;
+        const expiryDate = new Date(approvedDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+        return new Date() > expiryDate;
+    }
+
+    function loadApprovedAdBookings() {
+        db.collection("ad_bookings").where("status", "==", "approved").onSnapshot((snap) => {
+            if (categoryInterval) clearInterval(categoryInterval);
+            if (statsSliderInterval) clearInterval(statsSliderInterval);
+
+            document.getElementById('categoryAdContainer').style.display = 'none';
+            document.getElementById('urgentBadgeContainer').style.display = 'none';
+            if (!sessionStorage.getItem('splashShown')) document.getElementById('splashAdModal').style.display = 'none';
+
+            const activeAds = [];
+            snap.forEach(doc => {
+                const ad = doc.data();
+                if (!isAdExpired(ad)) {
+                    activeAds.push(ad);
+                }
+            });
+
+            if (activeAds.length === 0) {
+                allSliderSlides = [{ type: 'stats' }];
+                buildStatsSliderTrack();
+                startStatsSliderAutoPlay();
+                return;
+            }
+
+            const splashPool = [];
+            const stickyPool = [];
+            const categoryPool = [];
+            const urgentPool = [];
+
+            activeAds.forEach(ad => {
+                const type = ad.adType || '';
+                const media = ad.mediaUrl || '';
+                if (!media) return;
+                const isVideo = /\.(mp4|webm|ogg)$/i.test(media);
+                const adObj = { media, isVideo };
+
+                if (type === 'Splash Ad' || type === 'Video Ad') splashPool.push(adObj);
+                else if (type === 'Sticky Ad') stickyPool.push(adObj);
+                else if (type === 'Category Ad') categoryPool.push(adObj);
+                else if (type === 'Urgent Badge') urgentPool.push(adObj);
+            });
+
+            if (splashPool.length > 0 && !sessionStorage.getItem('splashShown')) {
+                const idx = getRotationIndex('splashIndex', splashPool.length);
+                const ad = splashPool[idx];
+                document.getElementById('splashMediaContainer').innerHTML = ad.isVideo 
+                    ? `<video src="${ad.media}" autoplay muted playsinline style="max-width:100%; max-height:100%;"></video>`
+                    : `<img src="${ad.media}" style="max-width:100%; max-height:100%;">`;
+                document.getElementById('splashAdModal').style.display = 'flex';
+            }
+
+            if (categoryPool.length > 0) {
+                const hash = getUserHash();
+                let catIdx = hash % categoryPool.length;
+                const showCategory = () => {
+                    const ad = categoryPool[catIdx];
+                    document.getElementById('categoryAdContainer').innerHTML = 
+                        `<div class="category-ad-box">${ad.isVideo ? `<video src="${ad.media}" autoplay muted loop playsinline></video>` : `<img src="${ad.media}">`}</div>`;
+                    document.getElementById('categoryAdContainer').style.display = 'block';
+                    catIdx = (catIdx + 1) % categoryPool.length;
+                };
+                showCategory();
+                categoryInterval = setInterval(showCategory, 5000);
+            }
+
+            if (urgentPool.length > 0) {
+                const ad = urgentPool[0];
+                document.getElementById('urgentBadgeContainer').innerHTML = 
+                    `<div class="urgent-badge-box"><img src="${ad.media}"><span style="font-size:13px; font-weight:700; color:#c2410c;">⚡ Urgent</span></div>`;
+                document.getElementById('urgentBadgeContainer').style.display = 'block';
+            }
+
+            allSliderSlides = [{ type: 'stats' }];
+            if (stickyPool.length > 0) {
+                const hash = getUserHash();
+                const stickyStart = hash % stickyPool.length;
+                const reordered = [...stickyPool.slice(stickyStart), ...stickyPool.slice(0, stickyStart)];
+                reordered.forEach(ad => allSliderSlides.push({ type: 'ad', ...ad }));
+            }
+            buildStatsSliderTrack();
+            startStatsSliderAutoPlay();
+        });
+    }
+
+    function closeSplashAd() {
+        document.getElementById('splashAdModal').style.display = 'none';
+        sessionStorage.setItem('splashShown', 'true');
+    }
+
+    function loadJobs() {
+        db.collection("jobs").where("isApproved","==",true).onSnapshot((snap) => {
+            allJobs = [];
+            let total = 0, premium = 0;
+            const now = new Date();
+            snap.forEach(doc => {
+                const job = { id: String(doc.id), ...doc.data() };
+                if (job.isPremium && job.premiumExpiry && job.premiumExpiry.toDate() < now) {
+                    job.isPremium = false;
+                }
+                if (job.status === 'closed') return;
+                allJobs.push(job);
+                total++;
+                if (job.isPremium) premium++;
+            });
+            totalJobsCount = total;
+            premiumJobsCount = premium;
+            const totalEl = document.getElementById('totalJobsCount');
+            const premiumEl = document.getElementById('premiumJobsCount');
+            if (totalEl) totalEl.innerText = total;
+            if (premiumEl) premiumEl.innerText = premium;
+            renderJobs(allJobs);
+            document.getElementById('loader').style.display = 'none';
+        }, (error) => {
+            console.log(error);
+            document.getElementById('loader').style.display = 'none';
+        });
+    }
+
+    function renderJobs(list) {
+        const container = document.getElementById('jobsContainer');
+        if (!list.length) {
+            container.innerHTML = `<div class="empty-box" style="text-align:center;padding:60px 20px;"><i class="fa-solid fa-folder-open" style="font-size:48px;color:#cbd5e1;"></i><p style="margin-top:10px;color:#64748b;">सध्या नोकऱ्या उपलब्ध नाहीत</p></div>`;
+            return;
+        }
+        let premiumJobs = list.filter(j => j.isPremium);
+        const regularJobs = list.filter(j => !j.isPremium);
+        
+        if (premiumJobs.length > 0) {
+            premiumJobs = shuffleArray(premiumJobs, userPhone || '0');
+        }
+
+        let html = '';
+        if (premiumJobs.length) {
+            html += `<div class="section-title"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Premium Jobs</div>`;
+            premiumJobs.forEach(job => html += buildCard(job, true));
+        }
+        if (regularJobs.length) {
+            html += `<div class="section-title"><i class="fa-solid fa-briefcase"></i> Regular Jobs</div>`;
+            regularJobs.forEach(job => html += buildCard(job, false));
+        }
+        html += `<div class="view-more-btn" style="width:100%;padding:12px;margin-top:14px;border-radius:16px;border:1px dashed var(--primary);background:#eff6ff;color:var(--primary);font-weight:800;text-align:center;" onclick="window.location.href='jobs.html'">अधिक नोकऱ्या पाहा</div>`;
+        container.innerHTML = html;
+    }
+
+    function buildCard(job, isPremium) {
+        const saved = savedJobs.includes(String(job.id));
+        const date = job.createdAt ? new Date(job.createdAt.toMillis()).toLocaleDateString('mr-IN', { day:'numeric', month:'short' }) : 'आत्ताच';
+        let tagHtml = '';
+        if (job.isUrgent) {
+            tagHtml = `<div class="urgent-tag">⚡ Urgent</div>`;
+        } else if (isPremium) {
+            tagHtml = `<div class="premium-tag">Premium</div>`;
+        }
+        return `
+        <div class="job-card ${isPremium ? 'premium-card' : ''}">
+            ${tagHtml}
+            <div class="job-icon"><i class="fa-solid fa-building"></i></div>
+            <div class="job-content">
+                <div class="job-title">${escapeHTML(job.title)}</div>
+                <div class="company">${escapeHTML(job.company)}</div>
+                <div class="job-meta-row">
+                    <span><i class="fa-solid fa-location-dot"></i> ${escapeHTML(job.location || 'Satara')}</span>
+                    <span><i class="fa-solid fa-indian-rupee-sign"></i> ${escapeHTML(job.salary || 'Not Mentioned')}</span>
+                    <span><i class="fa-solid fa-graduation-cap"></i> ${escapeHTML(job.qualification || 'Any')}</span>
+                </div>
+                <div class="action-row">
+                    <div class="job-date">पोस्ट: ${date}</div>
+                    <button class="action-btn view-btn" onclick="openDetails('${job.id}')">View</button>
+                    <button class="action-btn apply-btn" onclick="applyJob('${job.id}')">Apply</button>
+                </div>
+            </div>
+            <div class="save-btn ${saved ? 'saved' : ''}" onclick="toggleSave(event,'${job.id}',this)">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+        </div>`;
+    }
+
+    function searchJobs() {
+        const q = document.getElementById('searchInput').value.toLowerCase().trim();
+        if (!q) { renderJobs(allJobs); return; }
+        const filtered = allJobs.filter(j => {
+            return String(j.title || '').toLowerCase().includes(q) ||
+            String(j.company || '').toLowerCase().includes(q) ||
+            String(j.location || '').toLowerCase().includes(q);
+        });
+        renderJobs(filtered);
+    }
+
+    async function toggleSave(e, jobId, el) {
+        e.stopPropagation();
+        try {
+            const user = auth.currentUser;
+            if (!user) { alert("नोकरी सेव्ह करण्यासाठी लॉगिन आवश्यक आहे."); return; }
+            const strJobId = String(jobId);
+            const isSaved = el.classList.contains('saved');
+            if (isSaved) {
+                el.classList.remove('saved');
+                savedJobs = savedJobs.filter(id => id !== strJobId);
+                await db.collection("saved_jobs").doc(user.uid).set({ jobs: firebase.firestore.FieldValue.arrayRemove(strJobId) }, { merge: true });
+            } else {
+                el.classList.add('saved');
+                if (!savedJobs.includes(strJobId)) savedJobs.push(strJobId);
+                await db.collection("saved_jobs").doc(user.uid).set({ jobs: firebase.firestore.FieldValue.arrayUnion(strJobId) }, { merge: true });
+            }
+        } catch (err) { 
+            console.error("Save Error:", err); 
+            alert("तांत्रिक अडचण! जॉब सेव्ह होऊ शकला नाही.");
+        }
+    }
+
+    function openDetails(id) { window.location.href = `job-details.html?id=${id}`; }
+
+    async function applyJob(jobId) {
+        try {
+            const user = auth.currentUser;
+            if (!user) { window.location.href = 'index.html'; return; }
+            if (!isProfileCompleted) {
+                const phone = localStorage.getItem("user_phone") || '';
+                if(phone) {
+                    const profDoc = await db.collection("users").doc(phone).get();
+                    if(profDoc.exists && profDoc.data().profileCompleted) isProfileCompleted = true;
+                }
+                if(!isProfileCompleted) { showProfilePopup(); return; }
+            }
+            const phone = localStorage.getItem("user_phone");
+            const already = await db.collection("applications").where("jobId","==",jobId).where("applicantPhone","==",phone).get();
+            if (!already.empty) { alert("आधीच अर्ज केला आहे"); return; }
+            const jobDoc = await db.collection("jobs").doc(jobId).get();
+            if (!jobDoc.exists) { alert("नोकरी उपलब्ध नाही"); return; }
+            const job = jobDoc.data();
+            await db.collection("applications").add({
+                jobId: jobId, applicantPhone: phone, jobTitle: job.title || '', companyName: job.company || '',
+                status: "Pending", appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("अर्ज यशस्वी 🎉");
+        } catch (e) { console.log(e); alert("Apply failed"); }
+    }
+
+    function logoutUser() { auth.signOut().then(() => { window.location.href = 'index.html'; }); }
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(err => console.log('SW error', err));
+  }
+</script>
+
+</body>
+</html>

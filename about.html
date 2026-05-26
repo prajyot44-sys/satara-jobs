@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>आमच्याबद्दल - सातारा जॉब्स</title>
+    <!-- manifest link -->
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0B1E33;
+            --accent: #00A3FF;
+            --bg: #F3F6FC;
+            --card: #FFFFFF;
+            --text: #1A1F36;
+            --text-secondary: #5B667A;
+            --border: #E7ECF3;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+            --radius: 24px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        body { background:var(--bg); color:var(--text); padding-bottom:40px; }
+
+        .header {
+            background:linear-gradient(145deg, var(--primary), #14273E); padding:20px 18px; color:white;
+            border-radius:0 0 28px 28px; position:sticky; top:0; z-index:1000;
+            box-shadow:0 8px 30px rgba(0,0,0,0.15); display:flex; align-items:center; gap:14px;
+        }
+        .header i { font-size:20px; cursor:pointer; transition:0.2s; }
+        .header i:active { opacity:0.7; }
+        .header h3 { font-size:18px; font-weight:800; }
+
+        .container { padding:20px 16px; }
+
+        .about-card {
+            background:var(--card); border-radius:var(--radius); padding:30px 20px; text-align:center;
+            box-shadow:var(--shadow-md); border:1px solid var(--border); margin-bottom:20px;
+        }
+        .logo-container {
+            width:90px; height:90px; margin:0 auto 15px; border-radius:20px;
+            background:white; box-shadow:0 5px 15px rgba(0,0,0,0.08);
+            display:flex; align-items:center; justify-content:center; overflow:hidden;
+            padding:5px; border:2px solid #F1F5F9;
+        }
+        .logo-container img { width:100%; height:100%; object-fit:contain; border-radius:15px; }
+
+        .app-name { font-size:24px; font-weight:800; color:var(--primary); margin-bottom:5px; }
+        .app-tagline { font-size:13px; font-weight:600; color:var(--accent); margin-bottom:15px; }
+        .intro-text { font-size:13px; color:#475569; line-height:1.8; font-weight:500; }
+
+        .message-box {
+            text-align:left; padding:20px; border-radius:20px; margin-bottom:15px;
+            box-shadow:var(--shadow-sm); border-left:5px solid; background:white;
+        }
+        .message-box h4 { font-size:15px; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+        .message-box p { font-size:13px; line-height:1.8; }
+
+        .box-seeker { border-left-color:#E11D48; }
+        .box-seeker h4 { color:#BE123C; }
+        .box-seeker p { color:#4C0519; font-weight:500; }
+
+        .box-employer { border-left-color:#16A34A; }
+        .box-employer h4 { color:#15803D; }
+        .box-employer p { color:#14532D; font-weight:500; }
+
+        .highlights {
+            background:white; border:1px solid var(--border); border-radius:var(--radius);
+            padding:20px; margin-bottom:25px; box-shadow:var(--shadow-sm);
+        }
+        .highlights h4 { font-size:14px; font-weight:800; color:var(--primary); margin-bottom:12px; text-align:center; }
+        .point { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; font-size:13px; font-weight:600; color:#475569; }
+        .point i { color:var(--accent); font-size:16px; margin-top:2px; }
+
+        .contact-card {
+            background:linear-gradient(145deg, var(--primary), #14273E); border-radius:var(--radius);
+            padding:25px 20px; text-align:center; color:white;
+            box-shadow:0 10px 20px rgba(11,30,51,0.2);
+        }
+        .contact-title { font-size:16px; font-weight:800; margin-bottom:15px; display:flex; align-items:center; justify-content:center; gap:8px; }
+
+        .contact-btn {
+            display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+            background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white;
+            padding:14px; border-radius:14px; font-size:14px; font-weight:700; text-decoration:none;
+            margin-bottom:10px; transition:0.2s; cursor:pointer; outline:none;
+            backdrop-filter:blur(4px);
+        }
+        .contact-btn:active { background:rgba(255,255,255,0.25); transform:scale(0.98); }
+        .contact-btn i { font-size:18px; }
+
+        .footer-text { font-size:10px; font-weight:600; color:#CBD5E1; margin-top:20px; opacity:0.8; }
+    </style>
+</head>
+<body>
+
+<!-- लपवलेल्या लिंक्स (APK पॅकेजिंग साठी) -->
+<a href="index.html" style="display:none;">लॉगिन</a>
+<a href="home.html" style="display:none;">होम</a>
+<a href="company.html" style="display:none;">कंपनी</a>
+<a href="admin.html" style="display:none;">ॲडमिन</a>
+<a href="notifications.html" style="display:none;">नोटिफिकेशन</a>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+    <h3>आमच्याबद्दल (About Us)</h3>
+</div>
+
+<div class="container">
+    
+    <div class="about-card">
+        <div class="logo-container">
+            <img src="1778817504151.png" alt="Satara Jobs Logo">
+        </div>
+        <div class="app-name">सातारा जॉब्स</div>
+        <div class="app-tagline">Maharashtra's Smart Job Portal</div>
+        <div class="intro-text">
+            'सातारा जॉब्स' हे केवळ एक ॲप नाही, तर साताऱ्यातील तरुणांच्या स्वप्नांना पंख देणारं आणि स्थानिक व्यवसायांना बळकटी देणारं एक हक्काचं व्यासपीठ आहे.
+        </div>
+    </div>
+
+    <div class="message-box box-seeker">
+        <h4><i class="fa-solid fa-graduation-cap"></i> उमेदवारांसाठी (तुमच्या स्वप्नांचा साथीदार)</h4>
+        <p>नोकरी शोधणं किती कठीण असतं, हे आम्हाला समजतं. शिक्षणासाठी घेतलेले कष्ट, आई-वडिलांच्या डोळ्यातील आशा आणि स्वतःच्या पायावर उभं राहण्याची धडपड... या प्रवासात अनेकदा निराशा येते. पण आता तुम्हाला हक्काची नोकरी शोधण्यासाठी घर सोडून दूर जाण्याची किंवा वणवण भटकण्याची गरज नाही. <b>'सातारा जॉब्स'</b> च्या माध्यमातून तुमच्याच शहरात, तुमच्याच जिल्ह्यात तुम्हाला सन्मानाची नोकरी मिळवून देण्यासाठी आम्ही तुमच्या पाठीशी खंबीरपणे उभे आहोत. तुमचा संघर्ष आता आमचा आहे!</p>
+    </div>
+
+    <div class="message-box box-employer">
+        <h4><i class="fa-solid fa-briefcase"></i> व्यावसायिकांसाठी (तुमच्या प्रगतीचा भागीदार)</h4>
+        <p>व्यवसायाच्या वाढीसाठी योग्य, प्रामाणिक आणि कष्टाळू कर्मचारी मिळणे ही आजच्या वेगाने बदलणाऱ्या काळातील सर्वात मोठी गरज आहे. <b>'सातारा जॉब्स'</b> तुम्हाला एका क्लिकवर स्थानिक आणि पडताळणी केलेले (Verified) सर्वोत्तम उमेदवार मिळवून देते. तुमचा मौल्यवान वेळ आणि पैसा वाचवून, तुमची भरती प्रक्रिया (Hiring Process) अत्यंत सोपी, जलद आणि पारदर्शक बनवणे हे आमचे ध्येय आहे. योग्य टॅलेंट, योग्य वेळी आणि योग्य जागी... हाच आमचा व्यवसायिक दृष्टिकोन आहे.</p>
+    </div>
+
+    <div class="highlights">
+        <h4>आमची मुख्य वैशिष्ट्ये</h4>
+        <div class="point"><i class="fa-solid fa-circle-check"></i> <div>स्थानिक रोजगाराला प्रथम प्राधान्य.</div></div>
+        <div class="point"><i class="fa-solid fa-circle-check"></i> <div>उमेदवारांसाठी १००% मोफत आणि सुरक्षित सेवा.</div></div>
+        <div class="point"><i class="fa-solid fa-circle-check"></i> <div>कंपन्यांसाठी अतिशय सोपी आणि स्मार्ट डॅशबोर्ड सिस्टीम.</div></div>
+        <div class="point"><i class="fa-solid fa-circle-check"></i> <div>बनावट (Fake) नोकऱ्यांपासून सुरक्षित ठेवण्यासाठी कडक पडताळणी.</div></div>
+    </div>
+
+    <div class="contact-card">
+        <div class="contact-title"><i class="fa-solid fa-headset"></i> सपोर्ट व संपर्क (Help & Support)</div>
+        <p style="font-size:12px; color:#CBD5E1; margin-bottom:20px; line-height:1.5;">
+            तुम्हाला ॲपबद्दल काही अडचण, तक्रार, सूचना किंवा जाहिरातीसाठी संपर्क करायचा असल्यास खालील ईमेलवर मेल करा. आमची टीम तुम्हाला नक्की मदत करेल.
+        </p>
+
+        <button onclick="openSmartGmail()" class="contact-btn">
+            <i class="fa-solid fa-envelope"></i> satarajobsmh11@gmail.com
+        </button>
+
+        <div class="footer-text">
+            © <script>document.write(new Date().getFullYear())</script> Satara Jobs. All Rights Reserved.<br>
+            Powered by Trust. Made with ❤️ for Satara.
+        </div>
+    </div>
+
+</div>
+
+<script>
+function openSmartGmail() {
+    const email = "satarajobsmh11@gmail.com";
+    navigator.clipboard.writeText(email).then(() => {
+        alert("✅ आमचा ईमेल आयडी कॉपी झाला आहे: " + email + "\n\nजर तुमचे Gmail ॲप आपोआप उघडले नाही, तर तुम्ही मोबाईलमध्ये Gmail उघडून आम्हाला थेट मेल करू शकता.");
+        window.location.href = "mailto:" + email;
+    }).catch(err => {
+        window.location.href = "mailto:" + email;
+    });
+}
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(err => console.log('SW error', err));
+  }
+</script>
+
+</body>
+</html>

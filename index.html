@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>लॉगिन - सातारा जॉब्स</title>
+    <!-- manifest link -->
+    <link rel="manifest" href="manifest.json">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #003366;
+            --primary-light: #004080;
+            --secondary: #1e88e5;
+            --bg: linear-gradient(135deg, #eef2f7 0%, #dbeafe 100%);
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --3d-shadow: 0 20px 40px rgba(0, 51, 102, 0.15), 0 5px 15px rgba(0, 0, 0, 0.05);
+            --inner-bevel: inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 35px 30px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: var(--3d-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .app-logo-box {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        .login-card:hover .app-logo-box {
+            transform: rotate(5deg) scale(1.05);
+        }
+        .logo-area h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        .logo-area p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+            background: #e2e8f0;
+            padding: 6px;
+            border-radius: 14px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .role-btn {
+            border: none;
+            padding: 14px 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            background: transparent;
+            color: #475569;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            line-height: 1.3;
+            text-align: center;
+        }
+        .role-btn i {
+            font-size: 16px;
+        }
+        .role-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), var(--inner-bevel);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            border: 1.5px solid #cbd5e1;
+            outline: none;
+            font-size: 14px;
+            background: #f8fafc;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        .form-input:focus {
+            border-color: var(--secondary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 6px 15px rgba(0, 51, 102, 0.25), var(--inner-bevel);
+            transition: all 0.2s ease;
+        }
+        .login-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.35);
+            transform: translateY(-1px);
+        }
+        .login-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(0, 51, 102, 0.2);
+        }
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .forgot-password-link {
+            display: block;
+            margin-top: 18px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--secondary);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .forgot-password-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-area">
+            <div class="app-logo-box">
+                <img src="1778817504151.png" alt="सातारा जॉब्स लोगो"
+                     style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0px 8px 15px rgba(0,51,102,0.25));">
+            </div>
+            <h2>सातारा जॉब्स</h2>
+            <p>मोबाईल नंबर आणि पासवर्डने सुरक्षित लॉगिन करा</p>
+        </div>
+
+        <div class="role-selector">
+            <button class="role-btn active" id="btnSeeker" onclick="setRole('seeker')">
+                <i class="fa-solid fa-user"></i>
+                <span>नोकरी पाहिजे<br>
+                    <small style="font-size:10px; font-weight:600; opacity:0.8;">For User</small>
+                </span>
+            </button>
+            <button class="role-btn" id="btnEmployer" onclick="setRole('employer')">
+                <i class="fa-solid fa-industry"></i>
+                <span>नोकरी द्यायची आहे<br>
+                    <small style="font-size:10px; font-weight:600; opacity:0.8;">For Company</small>
+                </span>
+            </button>
+        </div>
+
+        <div class="input-group">
+            <label>मोबाईल नंबर (१० अंकी) *</label>
+            <input type="tel" id="loginPhone" class="form-input"
+                   placeholder="95XXXXXXXX" maxlength="10">
+        </div>
+
+        <div class="input-group">
+            <label>६ अंकी सिक्रेट पासवर्ड *</label>
+            <input type="password" id="loginPassword" class="form-input" placeholder="******">
+        </div>
+
+        <button class="login-btn" id="mainLoginBtn" onclick="handleSecureLogin()">
+            <i class="fa-solid fa-right-to-bracket"></i> लॉगिन करा
+        </button>
+
+        <span class="forgot-password-link" onclick="handleAdminForgotPasswordReset()">
+            <i class="fa-solid fa-key"></i> पासवर्ड विसरलात? (Forgot Password)
+        </span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
+            authDomain: "satara-jobs-ed6ab.firebaseapp.com",
+            projectId: "satara-jobs-ed6ab",
+            storageBucket: "satara-jobs-ed6ab.appspot.com",
+            messagingSenderId: "688594836150",
+            appId: "1:688594836150:web:a59ecda1d87b599862a417"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script>
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let selectedRole = 'seeker';
+
+        function setRole(role) {
+            selectedRole = role;
+            document.getElementById("btnSeeker").classList.toggle("active", role === 'seeker');
+            document.getElementById("btnEmployer").classList.toggle("active", role === 'employer');
+        }
+
+        function isValidPhone(phone) {
+            return /^\d{10}$/.test(phone);
+        }
+
+        function redirectByRole(role) {
+            if (role === "admin") {
+                window.location.href = "admin.html";
+            } else if (role === "employer") {
+                window.location.href = "company.html";
+            } else {
+                window.location.href = "home.html";
+            }
+        }
+
+        // Auto login
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const savedPhone = localStorage.getItem("user_phone");
+                if (savedPhone) {
+                    try {
+                        const userDoc = await db.collection("users").doc(savedPhone).get();
+                        if (userDoc.exists) {
+                            const role = userDoc.data().role;
+                            redirectByRole(role);
+                        }
+                    } catch (e) { }
+                }
+            }
+        });
+
+        function handleAdminForgotPasswordReset() {
+            const phone = document.getElementById("loginPhone").value.trim();
+            if (!isValidPhone(phone)) {
+                alert("आधी अचूक १० अंकी मोबाईल नंबर टाका!");
+                return;
+            }
+            if (confirm(`तुम्हाला +91 ${phone} या नंबरचा पासवर्ड रिसेट करायचा आहे का?`)) {
+                const secureEmail = `${phone}@satara-jobs.com`;
+                auth.sendPasswordResetEmail(secureEmail)
+                    .then(() => alert("पासवर्ड रिसेट लिंक पाठवली आहे!"))
+                    .catch(err => {
+                        alert("त्रुटी: " + (err.code === "auth/user-not-found" ? "हा नंबर रजिस्टर नाही." : err.message));
+                    });
+            }
+        }
+
+        async function handleSecureLogin() {
+            const phone = document.getElementById("loginPhone").value.trim();
+            const pass = document.getElementById("loginPassword").value.trim();
+            const btn = document.getElementById("mainLoginBtn");
+
+            if (!isValidPhone(phone)) { alert("अचूक १० अंकी नंबर टाका!"); return; }
+            if (pass.length < 6) { alert("पासवर्ड किमान ६ अंकी हवा!"); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = "<i class='fa-solid fa-circle-notch fa-spin'></i> पडताळणी सुरू आहे...";
+
+            const secureEmail = `${phone}@satara-jobs.com`;
+
+            try {
+                await auth.signInWithEmailAndPassword(secureEmail, pass);
+                localStorage.setItem("user_phone", phone);
+
+                const userDoc = await db.collection("users").doc(phone).get();
+                if (userDoc.exists) {
+                    const role = userDoc.data().role;
+                    redirectByRole(role);
+                } else {
+                    await db.collection("users").doc(phone).set({
+                        phone, role: selectedRole,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        isVerified: false
+                    });
+                    redirectByRole(selectedRole);
+                }
+            } catch (err) {
+                if (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
+                    try {
+                        await auth.createUserWithEmailAndPassword(secureEmail, pass);
+                        localStorage.setItem("user_phone", phone);
+                        await db.collection("users").doc(phone).set({
+                            phone, role: selectedRole,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            isVerified: false
+                        });
+                        redirectByRole(selectedRole);
+                    } catch (createErr) {
+                        alert("अकाऊंट तयार करताना चूक: " + createErr.message);
+                        btn.disabled = false;
+                        btn.innerHTML = "<i class='fa-solid fa-right-to-bracket'></i> लॉगिन करा";
+                    }
+                } else {
+                    alert("लॉगिन नाकारले: " + err.message);
+                    btn.disabled = false;
+                    btn.innerHTML = "<i class='fa-solid fa-right-to-bracket'></i> लॉगिन करा";
+                }
+            }
+        }
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('SW registered'))
+          .catch(err => console.log('SW error', err));
+      }
+    </script>
+</body>
+</html>

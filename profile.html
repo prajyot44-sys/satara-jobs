@@ -46,12 +46,32 @@
         .plan-card:hover { border-color: var(--accent); transform: translateY(-2px); }
         .plan-card.active { border-color: var(--accent); background: #f0f9ff; }
         .plan-price { font-size: 22px; font-weight: 800; color: var(--accent); }
+
+        /* Lock Mode Message */
+        #compulsoryMessage { display:none; background: #FEF2F2; color: #991B1B; padding: 12px; border-radius: 12px; margin-bottom: 16px; font-size: 13px; font-weight: 600; text-align: center; border: 1px solid #FECACA; }
+        
+        /* Rating Styles */
+        .star-rating.active { color: #f59e0b; transform: scale(1.1); }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 <div id="loader"><div class="spinner" style="width:40px;height:40px;border:4px solid #E2E8F0;border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;"></div></div>
-<div class="header"><i class="fa-solid fa-arrow-left" onclick="window.location.href='home.html'"></i><h3>माझा बायोडाटा</h3></div>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" id="backBtn" onclick="window.location.href='home.html'"></i>
+    <h3>माझा बायोडाटा</h3>
+</div>
+
 <div class="container">
+    <div id="compulsoryMessage">
+        <i class="fa-solid fa-circle-exclamation"></i> नोकरीसाठी अर्ज करण्यासाठी कृपया तुमची प्रोफाईल आणि रेझ्युमे पूर्ण करा.
+    </div>
+
     <div class="card">
         <div class="section-title"><i class="fa-solid fa-user"></i> वैयक्तिक माहिती</div>
         <div class="input-group"><label>पूर्ण नाव *</label><input type="text" id="userName" class="form-input"></div>
@@ -114,7 +134,6 @@
         <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" style="display:none;" onchange="updateResumeName()">
     </div>
 
-    <!-- Membership Section -->
     <div class="card" id="membershipSection">
         <div class="section-title"><i class="fa-solid fa-crown" style="color:var(--premium);"></i> तुमची मेंबरशिप</div>
         <div class="membership-card-profile" id="membershipCardProfile">
@@ -139,22 +158,24 @@
                     <div style="font-size:10px; color:var(--muted);">अनलिमिटेड अर्ज, प्रायोरिटी, प्रोफाइल हायलाइट</div>
                 </div>
             </div>
-            <div id="selectedPlanInfo" style="display:none; margin-top:12px; background:#f0fdf4; border:2px solid #86efac; border-radius:14px; padding:14px; text-align:center;">
-                <p>UPI ID: <strong>9579535290@jupiteraxis</strong></p>
-                <p style="font-size:11px; color:var(--muted);">वरील ID वर पेमेंट करून स्क्रीनशॉट अपलोड करा</p>
-                <input type="file" id="membershipPaymentScreenshot" class="form-input" accept="image/*" style="margin-top:8px;">
-                <button class="btn btn-success" onclick="submitMembershipUpgrade()">पेमेंट सबमिट करा</button>
+            
+            <!-- नवीन Razorpay Payment Section -->
+            <div id="selectedPlanInfo" style="display:none; margin-top:12px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:14px; padding:16px; text-align:center;">
+                <p style="font-size:14px; font-weight:700; color:var(--primary); margin-bottom:10px;">ऑनलाइन सुरक्षित पेमेंट करा</p>
+                <button class="btn btn-success" id="rzpPaymentBtn" onclick="startRazorpayPayment()" style="background:#3388FF; box-shadow:0 4px 12px rgba(51,136,255,0.3);">
+                    <i class="fa-solid fa-credit-card"></i> <span id="payBtnAmountText">पेमेंट करा</span>
+                </button>
+                <p style="font-size:10px; color:var(--text-secondary); margin-top:10px;"><i class="fa-solid fa-lock"></i> 100% Secure by Razorpay</p>
             </div>
+            
         </div>
     </div>
 
-    <!-- Badges Section -->
     <div class="card" id="badgesSection">
         <div class="section-title"><i class="fa-solid fa-award" style="color:var(--premium);"></i> तुमचे बॅज</div>
         <div id="badgesContainerProfile" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
     </div>
 
-    <!-- Share Stats -->
     <div class="card" id="shareStatsSection">
         <div class="section-title"><i class="fa-solid fa-share-nodes" style="color:var(--accent);"></i> शेअर स्टॅट्स</div>
         <div class="stat-row">
@@ -165,14 +186,35 @@
         </div>
     </div>
 
+    <div class="card" id="feedbackSection" style="text-align:center; background:linear-gradient(135deg, #f0f9ff, #e0f2fe); border:2px solid #bae6fd;">
+        <div style="font-size: 32px; margin-bottom: 5px; animation: pulse 2s infinite;">⭐</div>
+        <h3 style="font-size: 16px; color: #003366; font-weight: 800; margin-bottom: 6px;">सातारा जॉब्सला रेट करा</h3>
+        <p style="font-size: 12px; color: #5b667a; margin-bottom: 15px; line-height: 1.5;">आमचे वेब-ॲप तुम्हाला कसे वाटले? तुमचे ५-स्टार रेटिंग आणि अभिप्राय आमच्यासाठी खूप महत्त्वाचे आहेत!</p>
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:18px; font-size:28px; color:#cbd5e1;">
+            <i class="fa-solid fa-star star-rating" onclick="selectStars(1)" style="cursor:pointer; transition:0.2s;"></i>
+            <i class="fa-solid fa-star star-rating" onclick="selectStars(2)" style="cursor:pointer; transition:0.2s;"></i>
+            <i class="fa-solid fa-star star-rating" onclick="selectStars(3)" style="cursor:pointer; transition:0.2s;"></i>
+            <i class="fa-solid fa-star star-rating" onclick="selectStars(4)" style="cursor:pointer; transition:0.2s;"></i>
+            <i class="fa-solid fa-star star-rating" onclick="selectStars(5)" style="cursor:pointer; transition:0.2s;"></i>
+        </div>
+
+        <button onclick="submitFeedbackToAdmin()" id="feedbackSubmitBtn" disabled
+                style="width:100%; padding:14px; border:none; border-radius:14px; background:#cbd5e1; color:#94a3b8; font-weight:700; font-size:14px; cursor:not-allowed; transition:0.3s; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fa-solid fa-paper-plane" style="font-size:16px;"></i> अभिप्राय सबमिट करा
+        </button>
+    </div>
+
     <button class="btn btn-success" id="saveBtn" onclick="saveProfile()"><i class="fa-solid fa-floppy-disk"></i> सेव्ह करा</button>
 </div>
-<div class="bottom-nav">
+
+<div class="bottom-nav" id="bottomNavMenu">
     <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i> होम</a>
     <a href="jobs.html" class="nav-item"><i class="fa-solid fa-briefcase"></i> जॉब्स</a>
     <a href="applied.html" class="nav-item"><i class="fa-solid fa-clipboard-check"></i> अर्ज</a>
     <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user"></i> प्रोफाइल</a>
 </div>
+
 <div class="hidden-links">
     <a href="https://mahabharti.in">महाभरती</a>
     <a href="https://www.majhinaukri.in">माझी नोकरी</a>
@@ -185,6 +227,10 @@
     <a href="https://www.satarajobs.com/profile">प्रोफाइल</a>
     <a href="https://www.satarajobs.com/home">होम</a>
 </div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -203,6 +249,19 @@
 
     let phone = localStorage.getItem("user_phone")||"";
     let selectedPlan = null;
+    let isCompulsoryMode = false;
+    let dynamicRazorpayKey = ""; // Razorpay Key साठी ग्लोबल व्हेरिएबल
+
+    // Firebase मधून ॲडमिनने टाकलेली Razorpay Key लोड करणे
+    db.collection("settings").doc("api_keys").get().then(doc => {
+        if(doc.exists) dynamicRazorpayKey = doc.data().razorpayKeyId || "";
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('compulsory') === 'true') {
+        isCompulsoryMode = true;
+        document.getElementById('compulsoryMessage').style.display = 'block';
+    }
 
     auth.onAuthStateChanged(user=>{
         if(!user) window.location.href="index.html";
@@ -240,12 +299,14 @@
         document.getElementById("expList").appendChild(div);
     }
     function updateResumeName(){ const f=document.getElementById("resumeFile").files[0]; if(f) document.getElementById("resumeText").innerText = f.name; }
+    
     async function uploadFile(file){
         const fd=new FormData(); fd.append("file",file); fd.append("upload_preset","satara_jobs");
         const res=await fetch("https://api.cloudinary.com/v1_1/dkv5qenbu/auto/upload",{method:"POST",body:fd});
         const data=await res.json(); if(data.error)throw new Error(data.error.message);
         return data.secure_url;
     }
+
     function loadProfile(){
         if(!phone) return document.getElementById("loader").style.display="none";
         db.collection("users").doc(phone).get().then(doc=>{
@@ -331,32 +392,91 @@
         document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('active'));
         document.getElementById(plan==='silver'?'planSilverCard':'planGoldCard').classList.add('active');
         document.getElementById('selectedPlanInfo').style.display = 'block';
+        
+        // डायनॅमिक रक्कम दाखवणे
+        let amt = plan === 'silver' ? 49 : 99;
+        document.getElementById('payBtnAmountText').innerText = `₹${amt} पेमेंट करा`;
     }
 
-    async function submitMembershipUpgrade() {
+    async function startRazorpayPayment() {
         if (!selectedPlan) { alert("प्लॅन निवडा!"); return; }
-        const file = document.getElementById('membershipPaymentScreenshot').files[0];
-        if (!file) { alert("स्क्रीनशॉट अपलोड करा!"); return; }
-        try {
-            const url = await uploadFile(file);
-            await db.collection("users").doc(phone).update({
-                membershipStatus: 'pending_admin_approval',
-                membershipUpgradeRequestedPlan: selectedPlan,
-                membershipPaymentScreenshot: url,
-                membershipUpgradeRequestedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("✅ विनंती पाठवली! ॲडमिन मंजुरीनंतर अपग्रेड होईल.");
-            document.getElementById('membershipPlansContainer').style.display = 'none';
-            document.getElementById('selectedPlanInfo').style.display = 'none';
-        } catch(e) { alert("त्रुटी: "+e.message); }
+        if (!dynamicRazorpayKey) { 
+            alert("पेमेंट गेटवे सध्या उपलब्ध नाही. कृपया ॲडमिनला संपर्क करा."); 
+            return; 
+        }
+        
+        const amountInRupees = selectedPlan === 'silver' ? 49 : 99;
+        const amountInPaise = amountInRupees * 100;
+        const userName = document.getElementById("userName").value.trim() || "User";
+        const userEmail = document.getElementById("userEmail").value.trim() || "user@satarajobs.com";
+
+        const options = {
+            "key": dynamicRazorpayKey,
+            "amount": amountInPaise,
+            "currency": "INR",
+            "name": "सातारा जॉब्स",
+            "description": `Upgrade to ${selectedPlan.toUpperCase()} Plan`,
+            "handler": async function (response) {
+                // पेमेंट यशस्वी झाल्यावर हे लॉजिक चालेल
+                try {
+                    document.getElementById('rzpPaymentBtn').disabled = true;
+                    document.getElementById('rzpPaymentBtn').innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> अपग्रेड होत आहे...";
+                    
+                    // 1 महिन्याची एक्सपायरी सेट करणे
+                    const expiryDate = new Date();
+                    expiryDate.setMonth(expiryDate.getMonth() + 1);
+
+                    // युझरचे स्टेटस थेट ॲक्टिव्ह करणे
+                    await db.collection("users").doc(phone).update({
+                        membershipStatus: 'active',
+                        membershipPlan: selectedPlan,
+                        membershipExpiry: firebase.firestore.Timestamp.fromDate(expiryDate),
+                        membershipUpgradeRequestedPlan: firebase.firestore.FieldValue.delete(),
+                        membershipUpgradeRequestedAt: firebase.firestore.FieldValue.delete(),
+                        membershipPaymentScreenshot: firebase.firestore.FieldValue.delete()
+                    });
+
+                    // व्यवहाराची नोंद (Transaction) सेव्ह करणे
+                    await db.collection("transactions").add({
+                        phone: phone,
+                        role: "seeker",
+                        plan: selectedPlan,
+                        amount: amountInRupees,
+                        paymentId: response.razorpay_payment_id,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    alert("🎉 पेमेंट यशस्वी! तुमचा प्लॅन आपोआप ॲक्टिव्हेट झाला आहे.");
+                    
+                    document.getElementById('membershipPlansContainer').style.display = 'none';
+                    document.getElementById('selectedPlanInfo').style.display = 'none';
+                    loadMembershipInfo(); // UI रिफ्रेश करणे
+                    
+                } catch(e) {
+                    alert("त्रुटी: " + e.message);
+                }
+            },
+            "prefill": {
+                "name": userName,
+                "email": userEmail,
+                "contact": phone
+            },
+            "theme": {
+                "color": "#00A3FF"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response){
+            alert("पेमेंट अयशस्वी झाले. कृपया पुन्हा प्रयत्न करा.");
+        });
+        rzp.open();
     }
 
     async function saveProfile(){
         const name=document.getElementById("userName").value.trim();
         if(!name){ alert("नाव आवश्यक!"); return; }
-        const email=document.getElementById("userEmail").value.trim();
-        const city=document.getElementById("userCity").value.trim();
-        const skills = document.getElementById("userSkills").value.trim();
+        
         let qual=document.getElementById("userEduSelect").value;
         if(qual==="ITI"){
             const trade = document.getElementById("itiTradeSelect").value;
@@ -367,41 +487,132 @@
             if(!qual){ alert("शिक्षण टाइप करा!"); return; }
         }
         if(!qual){ alert("शिक्षण निवडा!"); return; }
+
         const expType=document.querySelector('input[name="expType"]:checked').value;
         let expString="Fresher", expHistory=[];
         if(expType==="Experienced"){
             const blocks=document.querySelectorAll(".exp-block");
             if(blocks.length===0){ alert("किमान एक अनुभव जोडा"); return; }
+            let allFilled = true;
             blocks.forEach(b=>{
                 const comp=b.querySelector(".exp-comp").value.trim();
                 const role=b.querySelector(".exp-role").value.trim();
                 const yrs=b.querySelector(".exp-yrs").value.trim();
                 const mos=b.querySelector(".exp-mos").value.trim();
                 const desc=b.querySelector(".exp-desc").value.trim();
-                if(!comp||!role||!desc){ alert("प्रत्येक अनुभव पूर्ण भरा"); return; }
+                if(!comp||!role||!desc){ allFilled = false; return; }
                 expHistory.push({company:comp,role:role,years:parseInt(yrs)||0,months:parseInt(mos)||0,description:desc});
             });
+            if(!allFilled) { alert("प्रत्येक अनुभव पूर्ण भरा"); return; }
+            
             let totalY=0,totalM=0;
             expHistory.forEach(e=>{ totalY+=e.years; totalM+=e.months; });
             totalY+=Math.floor(totalM/12); totalM=totalM%12;
             expString=`${totalY} वर्ष ${totalM} महिने`;
         }
+        
+        const email=document.getElementById("userEmail").value.trim();
+        const city=document.getElementById("userCity").value.trim();
+        const skills = document.getElementById("userSkills").value.trim();
+
         const btn=document.getElementById("saveBtn");
         btn.disabled=true; btn.innerHTML="<i class='fa-solid fa-spinner fa-spin'></i> सेव्ह...";
+        
         try{
             let resumeUrl="";
             const file=document.getElementById("resumeFile").files[0];
+            
+            const resumeTextNode = document.getElementById("resumeText").innerText;
+            if(!file && resumeTextNode !== "जुना रेझ्युमे अपलोड आहे") {
+                alert("कृपया तुमचा रेझ्युमे (PDF/Word) अपलोड करा!");
+                btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-floppy-disk'></i> सेव्ह करा";
+                return;
+            }
+
             if(file) resumeUrl = await uploadFile(file);
-            const payload = { name, email, city, phone, skills, qualification:qual, experienceType:expType, experience:expString, profileCompleted:true, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+            
+            const payload = { 
+                name, email, city, phone, skills, qualification:qual, 
+                experienceType:expType, experience:expString, 
+                profileCompleted:true, updatedAt:firebase.firestore.FieldValue.serverTimestamp() 
+            };
             if(expType==="Experienced") payload.experienceHistory=expHistory;
             if(resumeUrl) payload.resumeUrl=resumeUrl;
+            
             await db.collection("users").doc(phone).set(payload,{merge:true});
-            alert("🎉 प्रोफाइल सेव्ह झाले!");
+            alert("🎉 प्रोफाइल यशस्वीरित्या सेव्ह झाली!");
+            
             window.location.href="home.html";
-        }catch(e){ alert(e.message); btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-floppy-disk'></i> सेव्ह करा"; }
+        }catch(e){ 
+            alert("त्रुटी: " + e.message); 
+            btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-floppy-disk'></i> सेव्ह करा"; 
+        }
+    }
+
+    let selectedUserRating = 0;
+
+    function selectStars(rating) {
+        selectedUserRating = rating;
+        const stars = document.querySelectorAll('.star-rating');
+        
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+
+        const btn = document.getElementById('feedbackSubmitBtn');
+        btn.disabled = false;
+        btn.style.background = 'var(--accent)'; 
+        btn.style.color = 'white';
+        btn.style.cursor = 'pointer';
+        btn.style.boxShadow = '0 6px 15px rgba(0, 163, 255, 0.3)';
+    }
+
+    async function submitFeedbackToAdmin() {
+        if (selectedUserRating === 0) return;
+
+        const feedbackText = prompt("आमच्या ॲपबद्दल तुमचा अनुभव किंवा काही सुधारणा थोडक्यात सांगा:");
+
+        if (feedbackText !== null) {
+            const btn = document.getElementById('feedbackSubmitBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> सबमिट होत आहे...";
+
+            try {
+                const userPhoneNum = localStorage.getItem("user_phone") || "Unknown";
+
+                await db.collection("feedbacks").add({
+                    phone: userPhoneNum,
+                    role: "seeker",
+                    rating: selectedUserRating,
+                    feedback: feedbackText,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert("🙏 तुमचे रेटिंग आणि अभिप्राय सेव्ह झाला आहे! धन्यवाद.");
+
+                selectedUserRating = 0;
+                selectStars(0);
+                btn.disabled = true;
+                btn.style.background = '#cbd5e1';
+                btn.style.color = '#94a3b8';
+                btn.style.boxShadow = 'none';
+                btn.innerHTML = "<i class='fa-solid fa-check'></i> सबमिट झाले";
+
+            } catch(error) {
+                console.error("Feedback Error:", error);
+                alert("तांत्रिक अडचण: अभिप्राय पाठवता आला नाही.");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
     }
 </script>
-<!-- Service Worker Registration -->
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')

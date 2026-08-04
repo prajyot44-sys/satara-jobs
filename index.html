@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>लॉगिन - सातारा जॉब्स</title>
-    <!-- manifest link -->
     <link rel="manifest" href="manifest.json">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -50,55 +49,65 @@
             position: relative;
             transition: transform 0.3s ease;
         }
-        .login-card:hover {
-            transform: translateY(-5px);
+
+        /* Auth Tabs CSS */
+        .auth-toggle {
+            display: flex;
+            background: #e2e8f0;
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 25px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .auth-tab.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .logo-area {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .app-logo-box {
-            width: 85px;
-            height: 85px;
-            margin: 0 auto 15px auto;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.3s ease;
-        }
-        .login-card:hover .app-logo-box {
-            transform: rotate(5deg) scale(1.05);
         }
         .logo-area h2 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--primary);
             letter-spacing: -0.5px;
-        }
-        .logo-area p {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-            font-weight: 500;
         }
 
         .role-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 24px;
-            background: #e2e8f0;
-            padding: 6px;
-            border-radius: 14px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
         }
         .role-btn {
-            border: none;
-            padding: 14px 10px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 800;
+            border: 2px solid #e2e8f0;
+            padding: 12px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
             background: transparent;
             color: #475569;
@@ -108,20 +117,16 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            line-height: 1.3;
             text-align: center;
         }
-        .role-btn i {
-            font-size: 16px;
-        }
         .role-btn.active {
-            background: var(--white);
+            background: #f0f9ff;
+            border-color: var(--secondary);
             color: var(--primary);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), var(--inner-bevel);
         }
 
         .input-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
             text-align: left;
         }
         .input-group label {
@@ -131,7 +136,6 @@
             font-weight: 700;
             color: #475569;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .form-input {
             width: 100%;
@@ -143,7 +147,6 @@
             background: #f8fafc;
             text-align: center;
             font-weight: 600;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: all 0.2s ease;
         }
         .form-input:focus {
@@ -159,32 +162,20 @@
             border-radius: 14px;
             background: linear-gradient(135deg, var(--primary-light), var(--primary));
             color: var(--white);
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 800;
-            letter-spacing: 0.5px;
             cursor: pointer;
             margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 6px 15px rgba(0, 51, 102, 0.25), var(--inner-bevel);
+            box-shadow: 0 6px 15px rgba(0, 51, 102, 0.25);
             transition: all 0.2s ease;
-        }
-        .login-btn:hover {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.35);
-            transform: translateY(-1px);
-        }
-        .login-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 3px 10px rgba(0, 51, 102, 0.2);
         }
         .login-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
         }
 
         .forgot-password-link {
@@ -196,61 +187,150 @@
             font-weight: 700;
             cursor: pointer;
             text-decoration: none;
-            transition: color 0.2s ease;
         }
-        .forgot-password-link:hover {
-            color: var(--primary);
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
         }
+        .modal-content {
+            background: var(--white);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .modal-header h3 { font-size: 16px; color: var(--primary); font-weight: 800; }
+        .close-modal { background: none; border: none; font-size: 20px; color: var(--danger); cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
+    <div class="login-card" id="loginCard">
+        
         <div class="logo-area">
             <div class="app-logo-box">
-                <img src="1778817504151.png" alt="सातारा जॉब्स लोगो"
-                     style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0px 8px 15px rgba(0,51,102,0.25));">
+                <img src="1778817504151.png" alt="सातारा जॉब्स लोगो" style="width:100%; height:100%; object-fit:contain;">
             </div>
             <h2>सातारा जॉब्स</h2>
-            <p>मोबाईल नंबर आणि पासवर्डने सुरक्षित लॉगिन करा</p>
+        </div>
+
+        <div class="auth-toggle">
+            <button class="auth-tab" id="tabLogin" onclick="setAuthMode('login')">लॉगिन करा</button>
+            <button class="auth-tab active" id="tabSignup" onclick="setAuthMode('signup')">नवीन अकाऊंट</button>
         </div>
 
         <div class="role-selector">
             <button class="role-btn active" id="btnSeeker" onclick="setRole('seeker')">
                 <i class="fa-solid fa-user"></i>
-                <span>नोकरी पाहिजे<br>
-                    <small style="font-size:10px; font-weight:600; opacity:0.8;">For User</small>
-                </span>
+                <span>नोकरी पाहिजे<br><small style="font-size:10px;">For User</small></span>
             </button>
             <button class="role-btn" id="btnEmployer" onclick="setRole('employer')">
                 <i class="fa-solid fa-industry"></i>
-                <span>नोकरी द्यायची आहे<br>
-                    <small style="font-size:10px; font-weight:600; opacity:0.8;">For Company</small>
-                </span>
+                <span>नोकरी द्यायची आहे<br><small style="font-size:10px;">For Company</small></span>
             </button>
         </div>
 
         <div class="input-group">
             <label>मोबाईल नंबर (१० अंकी) *</label>
-            <input type="tel" id="loginPhone" class="form-input"
-                   placeholder="95XXXXXXXX" maxlength="10">
+            <input type="tel" id="loginPhone" class="form-input" placeholder="95XXXXXXXX" maxlength="10">
         </div>
 
         <div class="input-group">
-            <label>६ अंकी सिक्रेट पासवर्ड *</label>
+            <label id="pwdLabel">नवीन ६ अंकी सिक्रेट पासवर्ड तयार करा *</label>
             <input type="password" id="loginPassword" class="form-input" placeholder="******">
         </div>
 
-        <button class="login-btn" id="mainLoginBtn" onclick="handleSecureLogin()">
-            <i class="fa-solid fa-right-to-bracket"></i> लॉगिन करा
+        <div id="securityQuestionContainer" style="display:block; background:#f0fdf4; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #bbf7d0;">
+            <p style="font-size:11px; color:#166534; font-weight:700; margin-bottom:10px; text-align:center;">
+                ✅ भविष्यात पासवर्ड विसरल्यास हे उत्तर उपयोगी पडेल.
+            </p>
+            <div class="input-group" style="margin-bottom:10px;">
+                <label>सिक्युरिटी प्रश्न निवडा *</label>
+                <select id="secQuestionSelect" class="form-input" style="background:white;">
+                    <option value="school">तुमच्या पहिल्या शाळेचे नाव काय?</option>
+                    <option value="friend">तुमच्या लहानपणीच्या मित्राचे नाव काय?</option>
+                    <option value="color">तुमचा आवडता रंग कोणता?</option>
+                    <option value="food">तुमचा आवडता पदार्थ कोणता?</option>
+                </select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+                <label>उत्तर लिहा (लक्षात ठेवा) *</label>
+                <input type="text" id="secAnswerInput" class="form-input" style="background:white;" placeholder="उत्तर टाईप करा...">
+            </div>
+        </div>
+
+        <button class="login-btn" id="mainLoginBtn" onclick="handleSecureAuth()" style="background:var(--success);">
+            <i class="fa-solid fa-user-plus"></i> रजिस्टर करा
         </button>
 
-        <span class="forgot-password-link" onclick="handleAdminForgotPasswordReset()">
+        <span class="forgot-password-link" onclick="openForgotPasswordFlow()" id="forgotPwdText" style="display:none;">
             <i class="fa-solid fa-key"></i> पासवर्ड विसरलात? (Forgot Password)
         </span>
     </div>
 
-    <!-- Firebase SDK -->
+    <div class="login-card" id="forgotPwdCard" style="display:none;">
+        <div class="logo-area" style="margin-bottom:15px;">
+            <h2 style="color:var(--secondary);">पासवर्ड रिसेट</h2>
+            <p>तुमचे खाते सुरक्षित ठेवण्यासाठी पडताळणी</p>
+        </div>
+        
+        <div id="step1Phone">
+            <p style="font-size:13px; text-align:center; color:var(--muted); margin-bottom:15px;">आधी तुमचा नोंदणीकृत मोबाईल नंबर टाका.</p>
+            <div class="input-group">
+                <label>मोबाईल नंबर (१० अंकी) *</label>
+                <input type="tel" id="resetPhone" class="form-input" placeholder="95XXXXXXXX" maxlength="10">
+            </div>
+            <button class="login-btn" onclick="verifyPhoneForReset()">पुढील पायरी</button>
+            <span class="forgot-password-link" onclick="goBackToLogin()">
+                <i class="fa-solid fa-arrow-left"></i> मागे जा
+            </span>
+        </div>
+
+        <div id="step2Question" style="display:none;">
+            <p style="font-size:13px; text-align:center; color:var(--muted); margin-bottom:15px;">पडताळणीसाठी खालील प्रश्नाचे अचूक उत्तर द्या.</p>
+            <div class="input-group">
+                <label style="color:var(--primary); font-size:13px;" id="displaySecQuestion">प्रश्न लोड होत आहे...</label>
+                <input type="text" id="verifySecAnswer" class="form-input" placeholder="तुमचे उत्तर टाका...">
+            </div>
+            <button class="login-btn" onclick="verifySecurityAnswer()">उत्तर तपासा</button>
+            <span class="forgot-password-link" onclick="goBackToLogin()">
+                <i class="fa-solid fa-arrow-left"></i> मागे जा
+            </span>
+        </div>
+
+        <div id="step3NewPwd" style="display:none;">
+            <p style="font-size:13px; text-align:center; color:var(--success); margin-bottom:15px; font-weight:700;">✅ पडताळणी यशस्वी! खालील लिंक वापरून ॲडमिनला मेसेज करा.</p>
+            
+            <a href="#" id="whatsappResetBtn" target="_blank" style="display:block; width:100%; padding:12px; text-align:center; border-radius:12px; background:#25D366; color:white; font-size:14px; font-weight:700; text-decoration:none;">
+                <i class="fa-brands fa-whatsapp fa-lg"></i> ॲडमिनला मेसेज करा
+            </a>
+            
+            <span class="forgot-password-link" onclick="goBackToLogin()">
+                लॉगिन पेजवर जा
+            </span>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -270,8 +350,38 @@
     <script>
         const db = firebase.firestore();
         const auth = firebase.auth();
+        const adminWhatsAppNumber = "919579535290"; 
 
         let selectedRole = 'seeker';
+        let authMode = 'signup'; // बाय डिफॉल्ट आता 'नवीन अकाऊंट' सेट केले आहे
+
+        const questionMap = {
+            "school": "तुमच्या पहिल्या शाळेचे नाव काय?",
+            "friend": "तुमच्या लहानपणीच्या मित्राचे नाव काय?",
+            "color": "तुमचा आवडता रंग कोणता?",
+            "food": "तुमचा आवडता पदार्थ कोणता?"
+        };
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+            document.getElementById('tabSignup').classList.toggle('active', mode === 'signup');
+
+            const btn = document.getElementById('mainLoginBtn');
+            if (mode === 'signup') {
+                document.getElementById('securityQuestionContainer').style.display = 'block';
+                document.getElementById('forgotPwdText').style.display = 'none';
+                document.getElementById('pwdLabel').innerText = "नवीन ६ अंकी सिक्रेट पासवर्ड तयार करा *";
+                btn.innerHTML = "<i class='fa-solid fa-user-plus'></i> रजिस्टर करा";
+                btn.style.background = "var(--success)";
+            } else {
+                document.getElementById('securityQuestionContainer').style.display = 'none';
+                document.getElementById('forgotPwdText').style.display = 'block';
+                document.getElementById('pwdLabel').innerText = "६ अंकी सिक्रेट पासवर्ड *";
+                btn.innerHTML = "<i class='fa-solid fa-right-to-bracket'></i> लॉगिन करा";
+                btn.style.background = "linear-gradient(135deg, var(--primary-light), var(--primary))";
+            }
+        }
 
         function setRole(role) {
             selectedRole = role;
@@ -279,18 +389,12 @@
             document.getElementById("btnEmployer").classList.toggle("active", role === 'employer');
         }
 
-        function isValidPhone(phone) {
-            return /^\d{10}$/.test(phone);
-        }
+        function isValidPhone(phone) { return /^\d{10}$/.test(phone); }
 
         function redirectByRole(role) {
-            if (role === "admin") {
-                window.location.href = "admin.html";
-            } else if (role === "employer") {
-                window.location.href = "company.html";
-            } else {
-                window.location.href = "home.html";
-            }
+            if (role === "admin") window.location.href = "admin.html";
+            else if (role === "employer") window.location.href = "company.html";
+            else window.location.href = "home.html";
         }
 
         // Auto login
@@ -300,32 +404,22 @@
                 if (savedPhone) {
                     try {
                         const userDoc = await db.collection("users").doc(savedPhone).get();
-                        if (userDoc.exists) {
-                            const role = userDoc.data().role;
-                            redirectByRole(role);
-                        }
+                        if (userDoc.exists) { redirectByRole(userDoc.data().role); }
                     } catch (e) { }
                 }
             }
         });
 
-        function handleAdminForgotPasswordReset() {
-            const phone = document.getElementById("loginPhone").value.trim();
-            if (!isValidPhone(phone)) {
-                alert("आधी अचूक १० अंकी मोबाईल नंबर टाका!");
-                return;
-            }
-            if (confirm(`तुम्हाला +91 ${phone} या नंबरचा पासवर्ड रिसेट करायचा आहे का?`)) {
-                const secureEmail = `${phone}@satara-jobs.com`;
-                auth.sendPasswordResetEmail(secureEmail)
-                    .then(() => alert("पासवर्ड रिसेट लिंक पाठवली आहे!"))
-                    .catch(err => {
-                        alert("त्रुटी: " + (err.code === "auth/user-not-found" ? "हा नंबर रजिस्टर नाही." : err.message));
-                    });
+        function resetBtn(btn) {
+            btn.disabled = false;
+            if(authMode === 'login') {
+                btn.innerHTML = "<i class='fa-solid fa-right-to-bracket'></i> लॉगिन करा";
+            } else {
+                btn.innerHTML = "<i class='fa-solid fa-user-plus'></i> रजिस्टर करा";
             }
         }
 
-        async function handleSecureLogin() {
+        async function handleSecureAuth() {
             const phone = document.getElementById("loginPhone").value.trim();
             const pass = document.getElementById("loginPassword").value.trim();
             const btn = document.getElementById("mainLoginBtn");
@@ -333,59 +427,123 @@
             if (!isValidPhone(phone)) { alert("अचूक १० अंकी नंबर टाका!"); return; }
             if (pass.length < 6) { alert("पासवर्ड किमान ६ अंकी हवा!"); return; }
 
+            let secQ = "", secA = "";
+            if (authMode === 'signup') {
+                secQ = document.getElementById("secQuestionSelect").value;
+                secA = document.getElementById("secAnswerInput").value.trim().toLowerCase();
+                if(!secA) { alert("कृपया सिक्युरिटी प्रश्नाचे उत्तर लिहा."); return; }
+            }
+
             btn.disabled = true;
-            btn.innerHTML = "<i class='fa-solid fa-circle-notch fa-spin'></i> पडताळणी सुरू आहे...";
+            btn.innerHTML = "<i class='fa-solid fa-circle-notch fa-spin'></i> प्रक्रिया सुरू आहे...";
 
             const secureEmail = `${phone}@satara-jobs.com`;
 
-            try {
-                await auth.signInWithEmailAndPassword(secureEmail, pass);
-                localStorage.setItem("user_phone", phone);
-
-                const userDoc = await db.collection("users").doc(phone).get();
-                if (userDoc.exists) {
-                    const role = userDoc.data().role;
-                    redirectByRole(role);
-                } else {
+            if (authMode === 'login') {
+                try {
+                    await auth.signInWithEmailAndPassword(secureEmail, pass);
+                    localStorage.setItem("user_phone", phone);
+                    const userDoc = await db.collection("users").doc(phone).get();
+                    if (userDoc.exists) redirectByRole(userDoc.data().role);
+                    else redirectByRole(selectedRole);
+                } catch (err) {
+                    alert("लॉगिन अयशस्वी: मोबाईल नंबर किंवा पासवर्ड चुकीचा आहे.");
+                    resetBtn(btn);
+                }
+            } else {
+                // SIGNUP MODE
+                try {
+                    await auth.createUserWithEmailAndPassword(secureEmail, pass);
+                    localStorage.setItem("user_phone", phone);
                     await db.collection("users").doc(phone).set({
-                        phone, role: selectedRole,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        isVerified: false
+                        phone, role: selectedRole, securityQuestion: secQ, securityAnswer: secA,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(), isVerified: false
                     });
                     redirectByRole(selectedRole);
-                }
-            } catch (err) {
-                if (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential") {
-                    try {
-                        await auth.createUserWithEmailAndPassword(secureEmail, pass);
-                        localStorage.setItem("user_phone", phone);
-                        await db.collection("users").doc(phone).set({
-                            phone, role: selectedRole,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            isVerified: false
-                        });
-                        redirectByRole(selectedRole);
-                    } catch (createErr) {
-                        alert("अकाऊंट तयार करताना चूक: " + createErr.message);
-                        btn.disabled = false;
-                        btn.innerHTML = "<i class='fa-solid fa-right-to-bracket'></i> लॉगिन करा";
+                } catch (err) {
+                    if (err.code === 'auth/email-already-in-use') {
+                        alert("हा नंबर आधीपासून रजिस्टर आहे! कृपया 'लॉगिन करा' टॅबवर जाऊन लॉगिन करा.");
+                    } else {
+                        alert("अकाऊंट तयार करताना चूक: " + err.message);
                     }
-                } else {
-                    alert("लॉगिन नाकारले: " + err.message);
-                    btn.disabled = false;
-                    btn.innerHTML = "<i class='fa-solid fa-right-to-bracket'></i> लॉगिन करा";
+                    resetBtn(btn);
                 }
             }
         }
+
+        // --- FORGOT PASSWORD FLOW ---
+        let currentResetPhone = "";
+
+        function openForgotPasswordFlow() {
+            document.getElementById('loginCard').style.display = 'none';
+            document.getElementById('forgotPwdCard').style.display = 'block';
+            
+            const p = document.getElementById('loginPhone').value.trim();
+            if(isValidPhone(p)) document.getElementById('resetPhone').value = p;
+        }
+
+        function goBackToLogin() {
+            document.getElementById('forgotPwdCard').style.display = 'none';
+            document.getElementById('loginCard').style.display = 'block';
+            document.getElementById('step1Phone').style.display = 'block';
+            document.getElementById('step2Question').style.display = 'none';
+            document.getElementById('step3NewPwd').style.display = 'none';
+            document.getElementById('verifySecAnswer').value = "";
+        }
+
+        async function verifyPhoneForReset() {
+            const phone = document.getElementById('resetPhone').value.trim();
+            if(!isValidPhone(phone)) { alert("अचूक नंबर टाका."); return; }
+            
+            try {
+                const doc = await db.collection("users").doc(phone).get();
+                if(!doc.exists) { alert("हा नंबर नोंदणीकृत नाही."); return; }
+                
+                const data = doc.data();
+                if(!data.securityQuestion || !data.securityAnswer) {
+                    alert("तुमच्या अकाऊंटवर सिक्युरिटी प्रश्न सेट केलेला नाही. त्यामुळे सिक्युरिटी कारणास्तव तुम्ही ॲडमिनशी संपर्क साधा.");
+                    const message = encodeURIComponent(`नमस्कार, मला माझा पासवर्ड विसरला आहे आणि सिक्युरिटी प्रश्न पण आठवत नाही.\nमाझा नंबर: ${phone}`);
+                    window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
+                    return;
+                }
+
+                currentResetPhone = phone;
+                document.getElementById('displaySecQuestion').innerText = questionMap[data.securityQuestion];
+                document.getElementById('step1Phone').style.display = 'none';
+                document.getElementById('step2Question').style.display = 'block';
+
+            } catch(e) { alert("त्रुटी: " + e.message); }
+        }
+
+        async function verifySecurityAnswer() {
+            const ans = document.getElementById('verifySecAnswer').value.trim().toLowerCase();
+            if(!ans) { alert("उत्तर टाका."); return; }
+
+            try {
+                const doc = await db.collection("users").doc(currentResetPhone).get();
+                if(doc.data().securityAnswer === ans) {
+                    document.getElementById('step2Question').style.display = 'none';
+                    document.getElementById('step3NewPwd').style.display = 'block';
+                    
+                    const message = encodeURIComponent(`नमस्कार, मी माझा सिक्युरिटी प्रश्न बरोबर सोडवला आहे. कृपया माझा सातारा जॉब्स ॲपचा पासवर्ड रिसेट करा.\nमाझा नंबर: ${currentResetPhone}`);
+                    document.getElementById('whatsappResetBtn').href = `https://wa.me/${adminWhatsAppNumber}?text=${message}`;
+                } else {
+                    alert("उत्तर चुकीचे आहे! कृपया पुन्हा प्रयत्न करा.");
+                }
+            } catch(e) { alert("त्रुटी: " + e.message); }
+        }
+
+        // --- URL Parameter Check ---
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            // जर कोणी action=login घेऊन आला तरच लॉगिन दाखवा, अन्यथा सर्वांना थेट 'नवीन अकाउंट' दाखवा
+            if (urlParams.get('action') === 'login') {
+                setAuthMode('login');
+            } else {
+                setAuthMode('signup'); 
+            }
+        });
     </script>
 
-    <!-- Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('SW registered'))
-          .catch(err => console.log('SW error', err));
-      }
-    </script>
 </body>
 </html>

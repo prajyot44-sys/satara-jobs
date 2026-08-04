@@ -20,6 +20,8 @@
             --danger: #ef4444;
             --urgent: #f97316;
             --success: #10b981;
+            --guaranteed-green: #059669;
+            --govt-purple: #8b5cf6;
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
         body { background:#f4f6f9; color:var(--text); padding-bottom:70px; }
@@ -63,30 +65,32 @@
         .urgent-badge-box { display:flex; align-items:center; gap:10px; background:#fff7ed; border-left:4px solid var(--urgent); padding:10px 14px; border-radius:10px; }
         .urgent-badge-box img { height:40px; width:auto; }
 
-        /* Membership Card */
         .membership-card-home {
-            margin: 10px 15px;
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            border: 2px solid #bae6fd;
-            border-radius: 16px;
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin:10px 15px;
+            background:linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border:2px solid #bae6fd; border-radius:16px; padding:14px 16px;
+            display:flex; justify-content:space-between; align-items:center;
         }
         .membership-card-home .plan-badge {
-            background: var(--primary);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 800;
+            background:var(--primary); color:white; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:800;
         }
 
         .container { padding:0 15px; }
+
+        .job-tab-bar { margin:12px 0 4px; display:flex; gap:8px; background:white; border-radius:14px; padding:6px; box-shadow:0 2px 8px rgba(0,0,0,0.03); }
+        .job-tab-btn { flex:1; padding:10px 8px; border:none; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:6px; }
+        .job-tab-btn.tab-all { background:#e2e8f0; color:var(--text); }
+        .job-tab-btn.tab-all.active { background:var(--primary); color:white; }
+        .job-tab-btn.tab-private { background:#f1f5f9; color:#334155; }
+        .job-tab-btn.tab-private.active { background:var(--secondary); color:white; }
+        .job-tab-btn.tab-govt { background:#f3e8ff; color:#6b21a8; }
+        .job-tab-btn.tab-govt.active { background:var(--govt-purple); color:white; }
+
         .section-title { display:flex; align-items:center; gap:10px; margin:15px 0 12px; font-size:14px; font-weight:800; color:var(--primary); }
         .job-card { background:white; border-radius:14px; padding:12px; margin-bottom:10px; display:flex; gap:10px; border:1px solid #e2e8f0; position:relative; }
         .premium-card { border-left:4px solid var(--premium); }
+        .hiring-guarantee-card { border-left:4px solid #10b981; background:#f0fdf4; }
+        .govt-job-card { border-left:4px solid var(--govt-purple); background:#faf5ff; }
         .job-icon { width:42px; height:42px; border-radius:12px; background:#eff6ff; display:flex; align-items:center; justify-content:center; color:var(--secondary); flex-shrink:0; }
         .job-content { flex:1; }
         .job-title { font-size:16px; font-weight:800; color:var(--primary); }
@@ -97,11 +101,14 @@
         .action-row { display:flex; align-items:center; gap:8px; margin-top:10px; }
         .job-date { flex:1; font-size:11px; color:var(--muted); }
         .action-btn { border:none; border-radius:16px; padding:7px 14px; font-size:11px; font-weight:700; cursor:pointer; }
-        .view-btn { background:#eff6ff; color:var(--primary); }
+        .view-btn { background:#eff6ff; color:var(--primary); border: 1px solid #bfdbfe; }
         .apply-btn { background:var(--primary); color:white; }
+        .share-wa-btn { background:#25D366; color:white; border:none; border-radius:16px; padding:7px 10px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; }
         .premium-tag { position:absolute; top:8px; right:8px; background:var(--premium); color:#5d4300; padding:2px 8px; border-radius:20px; font-size:9px; font-weight:800; }
         .urgent-tag { position:absolute; top:8px; right:8px; background:var(--urgent); color:white; padding:2px 8px; border-radius:20px; font-size:9px; font-weight:800; }
-        .save-btn { position:absolute; right:8px; top:36px; width:30px; height:30px; border-radius:10px; background:#f8fafc; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#94a3b8; transition: 0.2s; }
+        .govt-tag { position:absolute; top:8px; right:8px; background:var(--govt-purple); color:white; padding:2px 8px; border-radius:20px; font-size:9px; font-weight:800; }
+        .hiring-guarantee-tag { position:absolute; top:30px; right:8px; background:#10b981; color:white; padding:2px 8px; border-radius:20px; font-size:8px; font-weight:800; }
+        .save-btn { position:absolute; right:8px; top:36px; width:30px; height:30px; border-radius:10px; background:#f8fafc; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#94a3b8; transition:0.2s; }
         .save-btn.saved { background:#fee2e2; color:#ef4444; }
         .bottom-nav { position:fixed; bottom:0; width:100%; background:white; display:flex; justify-content:space-around; padding:10px 0; box-shadow:0 -4px 15px rgba(0,0,0,0.05); z-index:999; }
         .nav-link { text-decoration:none; text-align:center; font-size:10px; color:#94a3b8; font-weight:600; }
@@ -109,9 +116,9 @@
         .nav-link.active { color:var(--primary); }
         
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
-        .profile-popup-box { background:white; width:90%; max-width:380px; border-radius:24px; padding:30px 20px; text-align:center; box-shadow: 0 15px 30px rgba(0,0,0,0.15); animation: popIn 0.3s ease-out; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .profile-popup-icon { width:65px; height:65px; background:#eff6ff; color:var(--secondary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 15px; border: 4px solid #e0f2fe; }
+        .profile-popup-box { background:white; width:90%; max-width:380px; border-radius:24px; padding:30px 20px; text-align:center; box-shadow:0 15px 30px rgba(0,0,0,0.15); animation:popIn 0.3s ease-out; }
+        @keyframes popIn { from { transform:scale(0.9); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .profile-popup-icon { width:65px; height:65px; background:#eff6ff; color:var(--secondary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 15px; border:4px solid #e0f2fe; }
 
         #splashAdModal .splash-content { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
         #splashAdModal img, #splashAdModal video { max-width:100%; max-height:100%; object-fit:contain; }
@@ -123,20 +130,18 @@
         .notif-item.unread { background:#eff6ff; font-weight:700; }
         .notif-item .time { font-size:10px; color:var(--muted); margin-top:4px; }
 
-        /* Popup Message Modal */
         #popupMessageModal .popup-msg-box { background:white; width:92%; max-width:420px; border-radius:24px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.2); animation:popIn 0.3s ease-out; }
         #popupMessageModal .popup-msg-img { width:100%; max-height:250px; object-fit:cover; display:block; }
         #popupMessageModal .popup-msg-body { padding:20px; }
         #popupMessageModal .popup-msg-body h3 { font-size:17px; font-weight:800; color:var(--primary); margin-bottom:8px; }
         #popupMessageModal .popup-msg-body p { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
 
-        /* Rewards Panel */
         .rewards-panel {
-            position: fixed; top: 0; right: -100%; width: 92%; max-width: 420px; height: 100vh;
-            background: white; z-index: 3000; transition: right 0.35s ease;
-            box-shadow: -8px 0 30px rgba(0,0,0,0.15); overflow-y: auto; padding: 20px 16px 30px;
+            position:fixed; top:0; right:-100%; width:92%; max-width:420px; height:100vh;
+            background:white; z-index:3000; transition:right 0.35s ease;
+            box-shadow:-8px 0 30px rgba(0,0,0,0.15); overflow-y:auto; padding:20px 16px 30px;
         }
-        .rewards-panel.open { right: 0; }
+        .rewards-panel.open { right:0; }
         .rewards-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2999; }
         .rewards-overlay.active { display:block; }
         .panel-close-btn { position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; background:#fee2e2; border:none; color:var(--danger); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
@@ -152,20 +157,43 @@
         .leaderboard-rank { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px; color:white; flex-shrink:0; }
         .rank-1{background:#f59e0b;} .rank-2{background:#94a3b8;} .rank-3{background:#d97706;} .rank-other{background:#cbd5e1;color:#64748b;}
         .rewards-trigger-btn {
-            position: fixed; right: 0; top: 50%; transform: translateY(-50%);
-            background: var(--primary); color: white; border: none;
-            padding: 14px 8px; border-radius: 14px 0 0 14px;
-            font-size: 11px; font-weight: 800; cursor: pointer; z-index: 2000;
-            writing-mode: vertical-lr; letter-spacing: 1px;
-            box-shadow: -4px 0 15px rgba(0,51,102,0.25);
-            transition: all 0.3s;
+            position:fixed; right:0; top:50%; transform:translateY(-50%);
+            background:var(--primary); color:white; border:none;
+            padding:14px 8px; border-radius:14px 0 0 14px;
+            font-size:11px; font-weight:800; cursor:pointer; z-index:2000;
+            writing-mode:vertical-lr; letter-spacing:1px;
+            box-shadow:-4px 0 15px rgba(0,51,102,0.25);
+            transition:all 0.3s;
         }
-        .rewards-trigger-btn:hover { background: #004080; padding-right: 12px; }
+        .rewards-trigger-btn:hover { background:#004080; padding-right:12px; }
+
+        /* Feature Grid Styles */
+        .feature-grid {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:16px;
+            margin-top:16px;
+        }
+        @media(max-width:500px){ .feature-grid{ grid-template-columns:1fr; } }
+        .feature-card {
+            background:white;
+            border-radius:16px;
+            padding:20px 16px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.04);
+            border:1px solid #e2e8f0;
+        }
+        .feature-card .feature-icon {
+            width:44px; height:44px;
+            border-radius:12px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:20px; margin-bottom:12px;
+        }
+        .feature-card h4 { font-size:14px; font-weight:800; color:var(--primary); margin-bottom:6px; }
+        .feature-card p { font-size:12px; color:var(--muted); line-height:1.6; }
     </style>
 </head>
 <body>
 
-<!-- लपवलेल्या लिंक्स (APK पॅकेजिंग साठी) -->
 <a href="company.html" style="display:none;">कंपनी</a>
 <a href="admin.html" style="display:none;">ॲडमिन</a>
 <a href="job-details.html" style="display:none;">जॉब डिटेल</a>
@@ -174,13 +202,13 @@
 <a href="jobs.html" style="display:none;">जॉब्स</a>
 <a href="notifications.html" style="display:none;">नोटिफिकेशन</a>
 <a href="applied.html" style="display:none;">अर्ज</a>
+<a href="about.html" style="display:none;">अबाउट अस</a>
 
 <div id="loader">
     <i class="fa-solid fa-circle-notch fa-spin"></i>
     <p style="font-size:13px;color:#64748b;">डेटा लोड होत आहे...</p>
 </div>
 
-<!-- Splash Ad Modal -->
 <div id="splashAdModal" class="modal-overlay">
     <div class="splash-content">
         <button class="splash-skip" onclick="closeSplashAd()">Skip ⏭</button>
@@ -188,53 +216,27 @@
     </div>
 </div>
 
-<!-- Rewards Panel Trigger Button -->
-<button class="rewards-trigger-btn" id="rewardsTriggerBtn" onclick="openRewardsPanel()">
-    🏆 बक्षिसे
-</button>
-
-<!-- Rewards Overlay -->
+<button class="rewards-trigger-btn" id="rewardsTriggerBtn" onclick="openRewardsPanel()">🏆 बक्षिसे</button>
 <div class="rewards-overlay" id="rewardsOverlay" onclick="closeRewardsPanel()"></div>
-
-<!-- Rewards Sliding Panel -->
 <div class="rewards-panel" id="rewardsPanel">
     <button class="panel-close-btn" onclick="closeRewardsPanel()"><i class="fa-solid fa-xmark"></i></button>
     <div class="panel-title"><i class="fa-solid fa-trophy" style="color:var(--premium);"></i> तुमची बक्षिसे व मानांकन</div>
-
-    <!-- Membership Card inside panel -->
     <div class="membership-card-home" id="panelMembershipCard" style="margin:0 0 14px 0;">
-        <div>
-            <strong>⭐ तुमची मेंबरशिप:</strong> <span id="panelMembershipPlan">फ्री</span>
-            <br><small>📅 एक्सपायरी: <span id="panelMembershipExpiry">—</span></small>
-        </div>
+        <div><strong>⭐ तुमची मेंबरशिप:</strong> <span id="panelMembershipPlan">फ्री</span><br><small>📅 एक्सपायरी: <span id="panelMembershipExpiry">—</span></small></div>
         <span class="plan-badge" id="panelMembershipBadge">फ्री</span>
     </div>
-
-    <!-- Badges -->
-    <div class="criteria-box">
-        <h4><i class="fa-solid fa-award"></i> तुमचे बॅज</h4>
-        <div id="panelBadgesContainer" style="margin-top:8px;"></div>
-    </div>
-
-    <!-- Badge Criteria -->
+    <div class="criteria-box"><h4><i class="fa-solid fa-award"></i> तुमचे बॅज</h4><div id="panelBadgesContainer" style="margin-top:8px;"></div></div>
     <div class="criteria-box">
         <h4><i class="fa-solid fa-circle-question"></i> बॅज निकष (Criteria)</h4>
         <p><i class="fa-solid fa-share-nodes"></i> <strong>शेअरर</strong> — १ जॉब शेअर केल्यावर</p>
         <p><i class="fa-solid fa-share-nodes"></i> <strong>सुपर शेअरर</strong> — १० जॉब्स शेअर केल्यावर</p>
-        <p><i class="fa-solid fa-share-nodes"></i> <strong>स्टार शेअरर</strong> — ५० जॉब्स शेअर केल्यावर</p>
+        <p><i class="fa-solid fa-share-nodes"></i> <strong>स्टार शेअरर</strong> — ५0 जॉब्स शेअर केल्यावर</p>
         <p><i class="fa-solid fa-link"></i> <strong>कनेक्टर</strong> — तुमच्या लिंकवरून १ अर्ज आल्यावर</p>
         <p><i class="fa-solid fa-link"></i> <strong>टॉप कनेक्टर</strong> — तुमच्या लिंकवरून ५ अर्ज आल्यावर</p>
         <p><i class="fa-solid fa-bullseye"></i> <strong>हायरिंग हिरो</strong> — तुमच्या रेफरलवर १ हायरिंग झाल्यावर</p>
         <p style="color:var(--success); font-weight:700; margin-top:6px;"><i class="fa-solid fa-indian-rupee-sign"></i> हायरिंग बोनस — ₹२०० (हायरिंग झाल्यावर)</p>
     </div>
-
-    <!-- Leaderboard -->
-    <div class="criteria-box">
-        <h4><i class="fa-solid fa-trophy" style="color:#f59e0b;"></i> या आठवड्याचे टॉप शेअरर्स</h4>
-        <div id="panelLeaderboardList"></div>
-    </div>
-
-    <!-- How to Earn -->
+    <div class="criteria-box"><h4><i class="fa-solid fa-trophy" style="color:#f59e0b;"></i> या आठवड्याचे टॉप शेअरर्स</h4><div id="panelLeaderboardList"></div></div>
     <div class="criteria-box" style="background:#f0fdf4; border-color:#86efac;">
         <h4><i class="fa-solid fa-circle-info" style="color:var(--success);"></i> बक्षिसं कशी मिळवायची?</h4>
         <p style="color:#065f46;"><i class="fa-solid fa-1"></i> जॉबवरील <strong>"शेअर"</strong> बटण दाबून WhatsApp वर पाठवा.</p>
@@ -247,19 +249,17 @@
     <div class="header-top">
         <div class="brand">
             <img src="1778817504151.png">
-            <div>
-                <h1>सातारा जॉब्स</h1>
-                <p>Maharashtra Smart Job Portal</p>
-            </div>
+            <div><h1>सातारा जॉब्स</h1><p>Maharashtra Smart Job Portal</p></div>
         </div>
         <div class="header-actions">
+            <div class="icon-btn" onclick="window.location.href='about.html'" title="आमच्याबद्दल">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
             <div class="bell-container" onclick="openNotificationModal()">
                 <i class="fa-solid fa-bell bell-icon"></i>
                 <span class="bell-badge" id="notifBadge" style="display:none;">0</span>
             </div>
-            <div class="icon-btn" onclick="logoutUser()">
-                <i class="fa-solid fa-power-off"></i>
-            </div>
+            <div class="icon-btn" onclick="logoutUser()"><i class="fa-solid fa-power-off"></i></div>
         </div>
     </div>
     <div class="search-box">
@@ -268,12 +268,8 @@
     </div>
 </div>
 
-<!-- Membership Card -->
 <div id="membershipCardHome" class="membership-card-home" style="display:none;">
-    <div>
-        <strong>⭐ तुमची मेंबरशिप:</strong> <span id="homeMembershipPlan">फ्री</span>
-        <br><small>📅 एक्सपायरी: <span id="homeMembershipExpiry">—</span></small>
-    </div>
+    <div><strong>⭐ तुमची मेंबरशिप:</strong> <span id="homeMembershipPlan">फ्री</span><br><small>📅 एक्सपायरी: <span id="homeMembershipExpiry">—</span></small></div>
     <span class="plan-badge" id="homeMembershipBadge">फ्री</span>
 </div>
 
@@ -284,36 +280,105 @@
 
 <div id="urgentBadgeContainer"></div>
 <div id="categoryAdContainer"></div>
+
+<div class="container" style="padding:0 15px;">
+    <div class="job-tab-bar">
+        <button id="tabAll" class="job-tab-btn tab-all active" onclick="switchJobTab('all')">
+            <i class="fa-solid fa-list"></i> All Jobs
+        </button>
+        <button id="tabPrivate" class="job-tab-btn tab-private" onclick="switchJobTab('homeTabPrivate')">
+            <i class="fa-solid fa-briefcase"></i> Private Jobs
+        </button>
+        <button id="tabGovt" class="job-tab-btn tab-govt" onclick="switchJobTab('homeTabGovt')">
+            <i class="fa-solid fa-landmark"></i> Govt Jobs
+        </button>
+    </div>
+</div>
+
 <div class="container" id="jobsContainer"></div>
 
+<div class="container" id="secFeaturesUser" style="display:none;">
+    <div style="margin-top:16px;">
+        <div class="section-title" style="margin-top:0;"><i class="fa-solid fa-star" style="color:var(--premium);"></i> 🚀 तुमच्यासाठी खास सुविधा</div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.6;">सातारा जॉब्स वर उमेदवारांना मिळणाऱ्या सर्व सुविधांची सविस्तर माहिती.</p>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#eff6ff; color:var(--secondary);"><i class="fa-solid fa-user-plus"></i></div>
+                <h4>निःशुल्क नोंदणी</h4>
+                <p>फक्त तुमचा मोबाईल नंबर टाकून मोफत अकाउंट तयार करा. कोणतेही शुल्क नाही.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#ecfdf5; color:var(--success);"><i class="fa-solid fa-id-card"></i></div>
+                <h4>प्रोफाइल तयार करा</h4>
+                <p>तुमचे शिक्षण, अनुभव, कौशल्ये आणि रेझ्युमे अपलोड करा. एकदा भरले की प्रत्येक अर्जासाठी आपोआप वापरले जाते.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h4>प्रगत शोध</h4>
+                <p>पद, कंपनी किंवा लोकेशननुसार नोकऱ्या शोधा. सर्व नोकऱ्या एकाच ठिकाणी.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-paper-plane"></i></div>
+                <h4>एक-क्लिक अर्ज</h4>
+                <p>प्रोफाइल पूर्ण असल्यास एका बटणावर अर्ज करा. वेळ वाचवा.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#fce7f3; color:#be185d;"><i class="fa-solid fa-heart"></i></div>
+                <h4>नोकरी सेव्ह करा</h4>
+                <p>आवडलेल्या नोकऱ्या सेव्ह करा आणि नंतर पहा. सेव्ह केलेल्या यादीतून थेट अर्ज करा.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#fff7ed; color:#ea580c;"><i class="fa-solid fa-bell"></i></div>
+                <h4>त्वरित सूचना</h4>
+                <p>नवीन जॉब, अर्जाची स्थिती बदलल्यास लगेच नोटिफिकेशन मिळते. कोणतीही अपडेट चुकणार नाही.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#dcfce7; color:#16a34a;"><i class="fa-brands fa-whatsapp"></i></div>
+                <h4>शेअर करून कमाई करा</h4>
+                <p>WhatsApp वर जॉब शेअर करा. तुमच्या लिंकवरून कोणी अर्ज केला आणि नोकरी लागली तर तुम्हाला ₹२०० पर्यंत बोनस मिळेल.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#fef9c3; color:#a16207;"><i class="fa-solid fa-trophy"></i></div>
+                <h4>बॅज व रिवॉर्ड्स</h4>
+                <p>शेअर करा, अर्ज करा, रेफर करा — विविध बॅज मिळवा. टॉप शेअरर्सच्या यादीत नाव कमवा.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#ede9fe; color:#7c3aed;"><i class="fa-solid fa-crown"></i></div>
+                <h4>प्रीमियम मेंबरशिप</h4>
+                <p>सिल्वर किंवा गोल्ड प्लॅन घेऊन अधिक अर्ज, प्राधान्य सेवा आणि खास बॅज मिळवा.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background:#d1fae5; color:#065f46;"><i class="fa-solid fa-shield-halved"></i></div>
+                <h4>सुरक्षित आणि विश्वासार्ह</h4>
+                <p>सर्व कंपन्या ॲडमिन मार्फत व्हेरिफाईड. बनावट नोकऱ्यांपासून संरक्षण.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="bottom-nav">
-    <a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#" class="nav-link active" id="navHome" onclick="showJobsTab()"><i class="fa-solid fa-house"></i> Home</a>
     <a href="jobs.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Jobs</a>
     <a href="saved.html" class="nav-link"><i class="fa-solid fa-heart"></i> Saved</a>
     <a href="profile.html" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+    <a href="#" class="nav-link" id="navFeatures" onclick="showFeaturesTab()"><i class="fa-solid fa-star"></i> Features</a>
 </div>
 
 <div id="profilePopup" class="modal-overlay">
     <div class="profile-popup-box">
         <div class="profile-popup-icon"><i class="fa-solid fa-user-pen"></i></div>
-        <h3 style="font-size:18px; color:var(--primary); font-weight:800; margin-bottom:8px;">तुमची प्रोफाईल अपडेट करा</h3>
-        <p style="font-size:13px; color:#64748b; margin-bottom:24px; line-height:1.6;">नोकरीसाठी यशस्वीरित्या अर्ज करण्यासाठी आणि चांगल्या संधी मिळवण्यासाठी कृपया तुमची प्रोफाईल माहिती पूर्ण भरा.</p>
+        <h3 style="font-size:18px; color:var(--primary); font-weight:800; margin-bottom:8px;">प्रोफाईल अपडेट करा</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:24px; line-height:1.6;">कृपया तुमची प्रोफाईल माहिती पूर्ण भरा. त्यानंतरच आपण पुढे पाहू शकता आणि नोकरीसाठी अर्ज करू शकता.</p>
         <div style="display:flex; gap:12px;">
-            <button onclick="closeProfilePopup()" style="flex:1; padding:12px; border-radius:14px; border:2px solid #e2e8f0; background:white; color:#64748b; font-weight:700; cursor:pointer;">नंतर करूया</button>
-            <button onclick="window.location.href='profile.html'" style="flex:1; padding:12px; border-radius:14px; border:none; background:var(--primary); color:white; font-weight:700; cursor:pointer; box-shadow:0 6px 15px rgba(0,51,102,0.25);">अपडेट करा</button>
+            <button onclick="window.location.href='profile.html'" style="width:100%; padding:12px; border-radius:14px; border:none; background:var(--primary); color:white; font-weight:700; cursor:pointer; box-shadow:0 6px 15px rgba(0,51,102,0.25);">प्रोफाईल अपडेट करा</button>
         </div>
     </div>
 </div>
 
-<!-- Popup Message Modal -->
 <div class="modal-overlay" id="popupMessageModal">
     <div class="popup-msg-box">
         <img id="popupMsgImage" src="" class="popup-msg-img" style="display:none;">
-        <div class="popup-msg-body">
-            <h3 id="popupMsgTitle"></h3>
-            <p id="popupMsgText"></p>
-            <button onclick="closePopupMessage()" style="width:100%; padding:12px; border:none; border-radius:14px; background:var(--primary); color:white; font-weight:700; cursor:pointer;">ठीक आहे</button>
-        </div>
+        <div class="popup-msg-body"><h3 id="popupMsgTitle"></h3><p id="popupMsgText"></p><button onclick="closePopupMessage()" style="width:100%; padding:12px; border:none; border-radius:14px; background:var(--primary); color:white; font-weight:700; cursor:pointer;">ठीक आहे</button></div>
     </div>
 </div>
 
@@ -327,6 +392,43 @@
         <button onclick="window.location.href='notifications.html'" style="width:100%; margin-top:12px; padding:12px; border:none; border-radius:12px; background:var(--primary); color:white; font-weight:700; cursor:pointer;">सर्व सूचना पहा</button>
     </div>
 </div>
+
+<div id="fullScreenInstallModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 26, 51, 0.96); z-index: 10000; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(10px);">
+    <div style="background: white; width: 100%; max-width: 380px; border-radius: 28px; padding: 35px 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.4); animation: slideUp 0.4s ease-out;">
+        
+        <div style="width: 85px; height: 85px; background: linear-gradient(135deg, #1e88e5, #003366); border-radius: 24px; margin: 0 auto 22px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(30,136,229,0.4);">
+            <i class="fa-solid fa-briefcase" style="font-size: 40px; color: white;"></i>
+        </div>
+
+        <h2 style="font-size: 22px; font-weight: 800; color: #003366; margin-bottom: 10px; line-height: 1.3;">सातारा जॉब्स ॲप<br>इन्स्टॉल करा!</h2>
+        <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 24px;">साताऱ्यातील सर्व सरकारी व खाजगी नोकऱ्यांचे अपडेट्स थेट मोबाईल स्क्रीनवर मोफत मिळवा.</p>
+
+        <div style="text-align: left; background: #f8fafc; padding: 16px; border-radius: 18px; margin-bottom: 28px; border: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; font-weight: 700; color: #334155;">
+                <i class="fa-solid fa-circle-check" style="color: #16a34a; font-size: 16px;"></i> रोज नवीन नोकऱ्यांचे अपडेट्स
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; font-weight: 700; color: #334155;">
+                <i class="fa-solid fa-circle-check" style="color: #16a34a; font-size: 16px;"></i> सुपरफास्ट नोटिफिकेशन (Alerts)
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; color: #334155;">
+                <i class="fa-solid fa-circle-check" style="color: #16a34a; font-size: 16px;"></i> १००% मोफत आणि सुरक्षित ॲप
+            </div>
+        </div>
+
+        <button onclick="triggerFullInstall()" style="width: 100%; background: linear-gradient(135deg, #1e88e5, #003366); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 22px rgba(0,51,102,0.3); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <i class="fa-solid fa-download"></i> ॲप इन्स्टॉल करा
+        </button>
+        
+        <span onclick="closeInstallModal()" style="font-size: 13px; color: #94a3b8; font-weight: 600; cursor: pointer; text-decoration: underline; display: inline-block;">नंतर करतो / वेबसाईटवरच पहा</span>
+    </div>
+</div>
+
+<style>
+    @keyframes slideUp {
+        from { transform: translateY(60px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -349,27 +451,45 @@
     let savedJobs = [];
     let isProfileCompleted = false; 
     let userPhone = '';
-
     let totalJobsCount = 0;
     let premiumJobsCount = 0;
     let totalCompaniesCount = 0;
+    let currentJobTab = 'all';
+
+    let statsSliderInterval = null;
+    let allSliderSlides = [];
+    let currentSliderIndex = 0;
+    let categoryInterval = null;
 
     function escapeHTML(str) {
         return String(str || '').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    }
+
+    function isGovtJobExpired(dateStr) {
+        if (!dateStr) return false;
+        
+        const marathiMonths = { 
+            "जानेवारी": "Jan", "फेब्रुवारी": "Feb", "मार्च": "Mar", "एप्रिल": "Apr", "मे": "May", "जून": "Jun", 
+            "जुलै": "Jul", "ऑगस्ट": "Aug", "सप्टेंबर": "Sep", "ऑक्टोबर": "Oct", "नोव्हेंबर": "Nov", "डिसेंबर": "Dec" 
+        };
+        
+        let engDateStr = String(dateStr).trim();
+        for (let key in marathiMonths) {
+            engDateStr = engDateStr.replace(new RegExp(key, 'g'), marathiMonths[key]);
+        }
+        
+        const parsedDate = new Date(engDateStr);
+        if (isNaN(parsedDate.getTime())) return false; 
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return parsedDate < today;
     }
 
     setTimeout(() => { document.getElementById('loader').style.display='none'; }, 10000);
 
     function showProfilePopup() { document.getElementById('profilePopup').style.display = 'flex'; }
     function closeProfilePopup() { document.getElementById('profilePopup').style.display = 'none'; }
-
-    let scrollPopupShown = false;
-    window.addEventListener('scroll', () => {
-        if (!isProfileCompleted && !scrollPopupShown && window.scrollY > 2400) {
-            showProfilePopup();
-            scrollPopupShown = true; 
-        }
-    });
 
     let unreadCount = 0;
     function updateNotifBadge() {
@@ -424,7 +544,6 @@
 
     function closeNotificationModal() { document.getElementById('notifModal').style.display = 'none'; }
 
-    // ---- POPUP MESSAGE ----
     function loadPopupMessages() {
         const phone = localStorage.getItem("user_phone");
         if (!phone || sessionStorage.getItem('popupShown')) return;
@@ -450,11 +569,8 @@
           }).catch(err => console.error("Popup load error:", err));
     }
 
-    function closePopupMessage() {
-        document.getElementById('popupMessageModal').style.display = 'none';
-    }
+    function closePopupMessage() { document.getElementById('popupMessageModal').style.display = 'none'; }
 
-    // ---- Rewards Panel ----
     function openRewardsPanel() {
         document.getElementById('rewardsPanel').classList.add('open');
         document.getElementById('rewardsOverlay').classList.add('active');
@@ -464,7 +580,32 @@
         document.getElementById('rewardsOverlay').classList.remove('active');
     }
 
-    // ---- मेंबरशिप कार्ड (होम + पॅनल) ----
+    function showJobsTab() {
+        document.getElementById('jobsContainer').style.display = 'block';
+        document.getElementById('secFeaturesUser').style.display = 'none';
+        document.getElementById('navHome').classList.add('active');
+        document.getElementById('navFeatures').classList.remove('active');
+    }
+    function showFeaturesTab() {
+        document.getElementById('jobsContainer').style.display = 'none';
+        document.getElementById('secFeaturesUser').style.display = 'block';
+        document.getElementById('navHome').classList.remove('active');
+        document.getElementById('navFeatures').classList.add('active');
+    }
+
+    function switchJobTab(tab) {
+        currentJobTab = tab;
+        document.getElementById('tabAll').classList.toggle('active', tab === 'all');
+        document.getElementById('tabPrivate').classList.toggle('active', tab === 'homeTabPrivate');
+        document.getElementById('tabGovt').classList.toggle('active', tab === 'homeTabGovt');
+        
+        let filterVal = 'all';
+        if (tab === 'homeTabPrivate') filterVal = 'private';
+        else if (tab === 'homeTabGovt') filterVal = 'govt';
+        
+        renderJobsFiltered(filterVal);
+    }
+
     async function loadMembershipCard() {
         if (!userPhone) return;
         const doc = await db.collection("users").doc(userPhone).get();
@@ -473,7 +614,6 @@
         const plan = user.membershipPlan || 'free';
         const planNames = { free: 'फ्री', silver: '🥈 सिल्वर', gold: '🥇 गोल्ड' };
         const expiry = user.membershipExpiry ? user.membershipExpiry.toDate().toLocaleDateString('mr-IN') : 'आजीवन';
-        // होम कार्ड
         const homePlan = document.getElementById('homeMembershipPlan');
         const homeExpiry = document.getElementById('homeMembershipExpiry');
         const homeBadge = document.getElementById('homeMembershipBadge');
@@ -481,7 +621,6 @@
         if (homeExpiry) homeExpiry.innerText = expiry;
         if (homeBadge) homeBadge.innerText = planNames[plan] || 'फ्री';
         document.getElementById('membershipCardHome').style.display = 'flex';
-        // पॅनल कार्ड
         const panelPlan = document.getElementById('panelMembershipPlan');
         const panelExpiry = document.getElementById('panelMembershipExpiry');
         const panelBadge = document.getElementById('panelMembershipBadge');
@@ -491,7 +630,6 @@
         if (document.getElementById('panelMembershipCard')) document.getElementById('panelMembershipCard').style.display = 'flex';
     }
 
-    // ---- बॅज डिस्प्ले (होम + पॅनल) ----
     function loadBadges() {
         if (!userPhone) return;
         db.collection("settings").doc("badges").get().then(badgeDoc => {
@@ -508,7 +646,7 @@
                 const u = userDoc.data();
                 const shares = u.totalShares || 0;
                 const apps = u.totalApplicationsViaReferral || 0;
-                const hires = u.totalHiringsViaReferral || 0;
+                const hires = u.totalHiringsReferral || 0;
 
                 const badgeList = [
                     { name: '🥉 शेअरर', earned: shares >= share1, progress: Math.min(shares, share1), target: share1 },
@@ -525,19 +663,14 @@
                     return `<span class="badge-chip ${cls}">${b.name}${progressText}</span>`;
                 }).join('');
 
-                // पॅनल बॅज
                 const panelContainer = document.getElementById('panelBadgesContainer');
-                if (panelContainer) {
-                    panelContainer.innerHTML = badgesHTML;
-                }
-                // होम पेजवर बॅज दाखवायचे नाहीत — तो कंटेनर लपवा
+                if (panelContainer) panelContainer.innerHTML = badgesHTML;
                 const homeContainer = document.getElementById('badgesContainer');
                 if (homeContainer) homeContainer.style.display = 'none';
             });
         });
     }
 
-    // ---- लीडरबोर्ड (फक्त पॅनल) ----
     function loadLeaderboard() {
         db.collection("users")
           .orderBy("weeklyShares", "desc")
@@ -560,14 +693,9 @@
                   if (rank === 1) rankClass = 'rank-1';
                   else if (rank === 2) rankClass = 'rank-2';
                   else if (rank === 3) rankClass = 'rank-3';
-                  html += `<div class="leaderboard-row">
-                      <span class="leaderboard-rank ${rankClass}">${rank}</span>
-                      <span style="flex:1; font-weight:600;">${name}</span>
-                      <span style="color:var(--muted);">${shares} शेअर्स</span>
-                  </div>`;
+                  html += `<div class="leaderboard-row"><span class="leaderboard-rank ${rankClass}">${rank}</span><span style="flex:1; font-weight:600;">${name}</span><span style="color:var(--muted);">${shares} शेअर्स</span></div>`;
               });
               if (panelList) panelList.innerHTML = html;
-              // होम पेजवरचा लीडरबोर्ड लपवा
               const homeLB = document.getElementById('leaderboardCard');
               if (homeLB) homeLB.style.display = 'none';
           });
@@ -578,9 +706,18 @@
             userPhone = localStorage.getItem("user_phone") || '';
             if (userPhone) {
                 const profDoc = await db.collection("users").doc(userPhone).get();
-                if (profDoc.exists && profDoc.data().profileCompleted) isProfileCompleted = true;
+                if (profDoc.exists) {
+                    const uData = profDoc.data();
+                    
+                    if (uData.role === 'employer') {
+                        isProfileCompleted = true; 
+                    } 
+                    else if (uData.profileCompleted) {
+                        isProfileCompleted = true;
+                    } 
+                    // 15 सेकंदाचा रीडायरेक्ट कोड येथून काढून टाकला आहे, जेणेकरून युझर आरामात जॉब्स पाहू शकतील.
+                }
             }
-
             try {
                 await loadSavedJobs(user.uid);
                 loadMembershipCard();
@@ -596,7 +733,14 @@
                 document.getElementById('loader').style.display='none';
             }
         } else {
-            window.location.href = "index.html";
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('fromJob') === 'true') {
+                loadJobs();
+                loadApprovedAdBookings();
+                document.getElementById('loader').style.display = 'none';
+            } else {
+                window.location.href = "index.html";
+            }
         }
     });
 
@@ -608,7 +752,7 @@
     }
 
     function listenTotalCompanies() {
-        db.collection("users").where("role", "==", "employer").onSnapshot(snap => {
+        db.collection("users").where("role","==","employer").onSnapshot(snap => {
             totalCompaniesCount = snap.size;
             if (document.getElementById('totalCompaniesCount')) {
                 document.getElementById('totalCompaniesCount').innerText = totalCompaniesCount;
@@ -616,25 +760,9 @@
         });
     }
 
-    // ---------- USER-SPECIFIC SHUFFLE & ROTATION ----------
     function getUserHash() {
         const phone = localStorage.getItem("user_phone") || '0';
         return phone.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    }
-
-    function getRotationIndex(key, length) {
-        if (length === 0) return 0;
-        let stored = localStorage.getItem(key);
-        if (stored === null) {
-            const hash = getUserHash();
-            const startIndex = hash % length;
-            localStorage.setItem(key, startIndex);
-            return startIndex;
-        }
-        let index = parseInt(stored);
-        if (isNaN(index) || index >= length) index = 0;
-        localStorage.setItem(key, (index + 1) % length);
-        return index;
     }
 
     function shuffleArray(array, seed) {
@@ -647,60 +775,38 @@
         return sorted;
     }
 
-    let statsSliderInterval = null;
-    let allSliderSlides = [];
-    let currentSliderIndex = 0;
-
     function buildStatsSliderTrack() {
         const track = document.getElementById('statsSliderTrack');
         const dotsContainer = document.getElementById('statsSliderDots');
         track.innerHTML = '';
         dotsContainer.innerHTML = '';
-
         allSliderSlides.forEach((slide, index) => {
             const slideDiv = document.createElement('div');
             if (slide.type === 'stats') {
                 slideDiv.className = 'stats-slide';
                 slideDiv.innerHTML = `
-                    <div class="stats-item">
-                        <i class="fa-solid fa-briefcase" style="color:var(--secondary);"></i>
-                        <h3 id="totalJobsCount">${totalJobsCount}</h3>
-                        <p>एकूण नोकऱ्या</p>
-                    </div>
+                    <div class="stats-item"><i class="fa-solid fa-briefcase" style="color:var(--secondary);"></i><h3 id="totalJobsCount">${totalJobsCount}</h3><p>एकूण नोकऱ्या</p></div>
                     <div class="stats-divider"></div>
-                    <div class="stats-item">
-                        <i class="fa-solid fa-star" style="color:var(--premium);"></i>
-                        <h3 id="premiumJobsCount">${premiumJobsCount}</h3>
-                        <p>प्रीमियम</p>
-                    </div>
+                    <div class="stats-item"><i class="fa-solid fa-star" style="color:var(--premium);"></i><h3 id="premiumJobsCount">${premiumJobsCount}</h3><p>प्रीमियम</p></div>
                     <div class="stats-divider"></div>
-                    <div class="stats-item">
-                        <i class="fa-solid fa-building" style="color:#8B5CF6;"></i>
-                        <h3 id="totalCompaniesCount">${totalCompaniesCount}</h3>
-                        <p>कंपन्या</p>
-                    </div>
-                `;
+                    <div class="stats-item"><i class="fa-solid fa-building" style="color:#8B5CF6;"></i><h3 id="totalCompaniesCount">${totalCompaniesCount}</h3><p>कंपन्या</p></div>`;
             } else {
                 slideDiv.className = 'ad-slide';
-                slideDiv.innerHTML = slide.isVideo 
-                    ? `<video src="${slide.media}" muted loop playsinline></video>`
-                    : `<img src="${slide.media}">`;
+                slideDiv.innerHTML = slide.isVideo ? `<video src="${slide.media}" muted loop playsinline></video>` : `<img src="${slide.media}">`;
             }
             track.appendChild(slideDiv);
-
             const dot = document.createElement('span');
             dot.className = 'slider-dot';
             dotsContainer.appendChild(dot);
         });
-
-        const phone = localStorage.getItem("user_phone") || '0';
-        const hash = phone.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hash = getUserHash();
         currentSliderIndex = hash % allSliderSlides.length;
         goToStatsSlide(currentSliderIndex);
     }
 
     function goToStatsSlide(index) {
         const track = document.getElementById('statsSliderTrack');
+        if (!track) return;
         track.style.transform = `translateX(-${index * 100}%)`;
         const dots = document.querySelectorAll('#statsSliderDots .slider-dot');
         dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
@@ -716,8 +822,6 @@
         }, 3000);
     }
 
-    let categoryInterval = null;
-
     function isAdExpired(ad) {
         if (!ad.approvedAt) return false;
         const approvedDate = ad.approvedAt.toDate ? ad.approvedAt.toDate() : new Date(ad.approvedAt);
@@ -730,74 +834,61 @@
         db.collection("ad_bookings").where("status", "==", "approved").onSnapshot((snap) => {
             if (categoryInterval) clearInterval(categoryInterval);
             if (statsSliderInterval) clearInterval(statsSliderInterval);
-
             document.getElementById('categoryAdContainer').style.display = 'none';
             document.getElementById('urgentBadgeContainer').style.display = 'none';
             if (!sessionStorage.getItem('splashShown')) document.getElementById('splashAdModal').style.display = 'none';
-
+            
             const activeAds = [];
-            snap.forEach(doc => {
-                const ad = doc.data();
-                if (!isAdExpired(ad)) {
-                    activeAds.push(ad);
-                }
-            });
-
+            snap.forEach(doc => { const ad = doc.data(); if (!isAdExpired(ad)) activeAds.push(ad); });
+            
             if (activeAds.length === 0) {
                 allSliderSlides = [{ type: 'stats' }];
                 buildStatsSliderTrack();
                 startStatsSliderAutoPlay();
                 return;
             }
-
-            const splashPool = [];
-            const stickyPool = [];
-            const categoryPool = [];
-            const urgentPool = [];
-
+            
+            const splashPool = [], stickyPool = [], categoryPool = [], urgentPool = [];
             activeAds.forEach(ad => {
                 const type = ad.adType || '';
                 const media = ad.mediaUrl || '';
                 if (!media) return;
-                const isVideo = /\.(mp4|webm|ogg)$/i.test(media);
+                
+                const isVideo = (type === 'Video Ad') || /\.(mp4|webm|ogg|mov)$/i.test(media);
+                
                 const adObj = { media, isVideo };
-
                 if (type === 'Splash Ad' || type === 'Video Ad') splashPool.push(adObj);
                 else if (type === 'Sticky Ad') stickyPool.push(adObj);
                 else if (type === 'Category Ad') categoryPool.push(adObj);
                 else if (type === 'Urgent Badge') urgentPool.push(adObj);
             });
-
+            
             if (splashPool.length > 0 && !sessionStorage.getItem('splashShown')) {
-                const idx = getRotationIndex('splashIndex', splashPool.length);
-                const ad = splashPool[idx];
-                document.getElementById('splashMediaContainer').innerHTML = ad.isVideo 
-                    ? `<video src="${ad.media}" autoplay muted playsinline style="max-width:100%; max-height:100%;"></video>`
-                    : `<img src="${ad.media}" style="max-width:100%; max-height:100%;">`;
+                const randomIdx = Math.floor(Math.random() * splashPool.length);
+                const ad = splashPool[randomIdx];
+                document.getElementById('splashMediaContainer').innerHTML = ad.isVideo ? `<video src="${ad.media}" autoplay muted loop playsinline style="max-width:100%; max-height:100%; object-fit:contain;"></video>` : `<img src="${ad.media}" style="max-width:100%; max-height:100%; object-fit:contain;">`;
                 document.getElementById('splashAdModal').style.display = 'flex';
             }
-
+            
             if (categoryPool.length > 0) {
                 const hash = getUserHash();
                 let catIdx = hash % categoryPool.length;
                 const showCategory = () => {
                     const ad = categoryPool[catIdx];
-                    document.getElementById('categoryAdContainer').innerHTML = 
-                        `<div class="category-ad-box">${ad.isVideo ? `<video src="${ad.media}" autoplay muted loop playsinline></video>` : `<img src="${ad.media}">`}</div>`;
+                    document.getElementById('categoryAdContainer').innerHTML = `<div class="category-ad-box">${ad.isVideo ? `<video src="${ad.media}" autoplay muted loop playsinline style="width:100%; max-height:120px; object-fit:cover;"></video>` : `<img src="${ad.media}">`}</div>`;
                     document.getElementById('categoryAdContainer').style.display = 'block';
                     catIdx = (catIdx + 1) % categoryPool.length;
                 };
                 showCategory();
                 categoryInterval = setInterval(showCategory, 5000);
             }
-
+            
             if (urgentPool.length > 0) {
                 const ad = urgentPool[0];
-                document.getElementById('urgentBadgeContainer').innerHTML = 
-                    `<div class="urgent-badge-box"><img src="${ad.media}"><span style="font-size:13px; font-weight:700; color:#c2410c;">⚡ Urgent</span></div>`;
+                document.getElementById('urgentBadgeContainer').innerHTML = `<div class="urgent-badge-box"><img src="${ad.media}"><span style="font-size:13px; font-weight:700; color:#c2410c;">⚡ Urgent</span></div>`;
                 document.getElementById('urgentBadgeContainer').style.display = 'block';
             }
-
+            
             allSliderSlides = [{ type: 'stats' }];
             if (stickyPool.length > 0) {
                 const hash = getUserHash();
@@ -805,6 +896,7 @@
                 const reordered = [...stickyPool.slice(stickyStart), ...stickyPool.slice(0, stickyStart)];
                 reordered.forEach(ad => allSliderSlides.push({ type: 'ad', ...ad }));
             }
+            
             buildStatsSliderTrack();
             startStatsSliderAutoPlay();
         });
@@ -836,7 +928,12 @@
             const premiumEl = document.getElementById('premiumJobsCount');
             if (totalEl) totalEl.innerText = total;
             if (premiumEl) premiumEl.innerText = premium;
-            renderJobs(allJobs);
+            
+            let filterVal = 'all';
+            if (currentJobTab === 'homeTabPrivate') filterVal = 'private';
+            else if (currentJobTab === 'homeTabGovt') filterVal = 'govt';
+            
+            renderJobsFiltered(filterVal);
             document.getElementById('loader').style.display = 'none';
         }, (error) => {
             console.log(error);
@@ -844,74 +941,228 @@
         });
     }
 
-    function renderJobs(list) {
+    function renderJobsFiltered(filterType) {
         const container = document.getElementById('jobsContainer');
-        if (!list.length) {
-            container.innerHTML = `<div class="empty-box" style="text-align:center;padding:60px 20px;"><i class="fa-solid fa-folder-open" style="font-size:48px;color:#cbd5e1;"></i><p style="margin-top:10px;color:#64748b;">सध्या नोकऱ्या उपलब्ध नाहीत</p></div>`;
-            return;
-        }
-        let premiumJobs = list.filter(j => j.isPremium);
-        const regularJobs = list.filter(j => !j.isPremium);
+        let filtered = allJobs;
         
-        if (premiumJobs.length > 0) {
-            premiumJobs = shuffleArray(premiumJobs, userPhone || '0');
+        if (filterType === 'private') {
+            filtered = allJobs.filter(j => !j.isGovtJob);
+        } else if (filterType === 'govt') {
+            filtered = allJobs.filter(j => j.isGovtJob);
         }
 
+        if (!filtered.length) {
+            const emptyMsg = filterType === 'govt'
+                ? '<i class="fa-solid fa-landmark" style="font-size:48px;color:#8b5cf6;"></i><p style="margin-top:10px;color:#6b21a8;">सध्या सरकारी नोकऱ्या उपलब्ध नाहीत</p>'
+                : (filterType === 'private' ? '<i class="fa-solid fa-briefcase" style="font-size:48px;color:var(--secondary);"></i><p style="margin-top:10px;color:var(--muted);">सध्या खाजगी नोकऱ्या उपलब्ध नाहीत</p>' : '<i class="fa-solid fa-folder-open" style="font-size:48px;color:#cbd5e1;"></i><p style="margin-top:10px;color:#64748b;">सध्या नोकऱ्या उपलब्ध नाहीत</p>');
+            container.innerHTML = `<div class="empty-box" style="text-align:center;padding:60px 20px;">${emptyMsg}</div>`;
+            return;
+        }
+
+        let premiumJobs = filtered.filter(j => j.isPremium && !j.isGovtJob);
+        let regularPrivateJobs = filtered.filter(j => !j.isPremium && !j.isGovtJob);
+        let govtJobsList = filtered.filter(j => j.isGovtJob);
+
+        regularPrivateJobs.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+        govtJobsList.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+        if (premiumJobs.length > 0) premiumJobs = shuffleArray(premiumJobs, userPhone || '0');
+
         let html = '';
-        if (premiumJobs.length) {
-            html += `<div class="section-title"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Premium Jobs</div>`;
-            premiumJobs.forEach(job => html += buildCard(job, true));
+        
+        if (filterType === 'all' || filterType === 'private') {
+            if (premiumJobs.length) {
+                html += `<div class="section-title"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Premium Private Jobs</div>`;
+                premiumJobs.forEach(job => html += buildCard(job, true, false));
+            }
+            if (regularPrivateJobs.length) {
+                html += `<div class="section-title"><i class="fa-solid fa-briefcase"></i> Regular Private Jobs</div>`;
+                regularPrivateJobs.forEach(job => html += buildCard(job, false, false));
+            }
         }
-        if (regularJobs.length) {
-            html += `<div class="section-title"><i class="fa-solid fa-briefcase"></i> Regular Jobs</div>`;
-            regularJobs.forEach(job => html += buildCard(job, false));
+
+        if (filterType === 'all' || filterType === 'govt') {
+            if (govtJobsList.length) {
+                html += `<div class="section-title"><i class="fa-solid fa-landmark" style="color:var(--govt-purple);"></i> Government Jobs (सरकारी नोकरी)</div>`;
+                govtJobsList.forEach(job => html += buildCard(job, false, true));
+            }
         }
-        html += `<div class="view-more-btn" style="width:100%;padding:12px;margin-top:14px;border-radius:16px;border:1px dashed var(--primary);background:#eff6ff;color:var(--primary);font-weight:800;text-align:center;" onclick="window.location.href='jobs.html'">अधिक नोकऱ्या पाहा</div>`;
+
+        if (filterType === 'all') {
+            html += `<div class="view-more-btn" style="width:100%;padding:12px;margin-top:14px;border-radius:16px;border:1px dashed var(--primary);background:#eff6ff;color:var(--primary);font-weight:800;text-align:center;" onclick="window.location.href='jobs.html'">अधिक नोकऱ्या पाहा</div>`;
+        }
+        
         container.innerHTML = html;
     }
 
-    function buildCard(job, isPremium) {
+    function buildCard(job, isPremium, isGovt) {
         const saved = savedJobs.includes(String(job.id));
         const date = job.createdAt ? new Date(job.createdAt.toMillis()).toLocaleDateString('mr-IN', { day:'numeric', month:'short' }) : 'आत्ताच';
         let tagHtml = '';
-        if (job.isUrgent) {
-            tagHtml = `<div class="urgent-tag">⚡ Urgent</div>`;
-        } else if (isPremium) {
-            tagHtml = `<div class="premium-tag">Premium</div>`;
+        
+        if (isGovt) {
+            tagHtml = `<div class="govt-tag">🏛️ Govt Job</div>`;
+            const isExpired = isGovtJobExpired(job.lastDate);
+            let actionHtml = '';
+            
+            if (isExpired) {
+                actionHtml = `<button class="action-btn" style="background:#e2e8f0; color:#64748b; border:1px solid #cbd5e1; cursor:not-allowed;" disabled>मुदत संपली</button>`;
+            } else {
+                actionHtml = `
+                    <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">View</button>
+                    <button class="action-btn apply-btn" onclick="event.stopPropagation(); window.open('${escapeHTML(job.applyLink)}', '_blank')">Apply Now</button>
+                    <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i> शेअर</button>
+                `;
+            }
+
+            return `
+            <div class="job-card govt-job-card" data-id="${job.id}" onclick="openDetails(this.dataset.id)">
+                ${tagHtml}
+                <div class="job-icon" style="background:#f3e8ff;color:var(--govt-purple);"><i class="fa-solid fa-landmark"></i></div>
+                <div class="job-content">
+                    <div class="job-title">${escapeHTML(job.title)}</div>
+                    <div class="company">${escapeHTML(job.company)}</div>
+                    <div class="job-meta-row">
+                        <span><i class="fa-solid fa-calendar-days"></i> अंतिम तारीख: ${escapeHTML(job.lastDate || '-')}</span>
+                        <span><i class="fa-solid fa-users"></i> जागा: ${escapeHTML(job.vacancies || 'अनेक')}</span>
+                    </div>
+                    <div class="action-row">
+                        <div class="job-date">पोस्ट: ${date}</div>
+                        ${actionHtml}
+                    </div>
+                </div>
+                <div class="save-btn ${saved ? 'saved' : ''}" onclick="toggleSave(event,'${job.id}',this)"><i class="fa-solid fa-heart"></i></div>
+            </div>`;
+        } else {
+            if (job.isUrgent) tagHtml += `<div class="urgent-tag">⚡ Urgent</div>`;
+            else if (isPremium) tagHtml += `<div class="premium-tag">Premium</div>`;
+            if (job.hiringModel === 'performance') tagHtml += `<div class="hiring-guarantee-tag">🎯 Guaranteed Hiring</div>`;
+            const cardClass = job.hiringModel === 'performance' ? 'hiring-guarantee-card' : (isPremium ? 'premium-card' : '');
+            return `
+            <div class="job-card ${cardClass}" data-id="${job.id}" onclick="openDetails(this.dataset.id)">
+                ${tagHtml}
+                <div class="job-icon"><i class="fa-solid fa-building"></i></div>
+                <div class="job-content">
+                    <div class="job-title">${escapeHTML(job.title)}</div>
+                    <div class="company">${escapeHTML(job.company || job.companyName || 'कंपनीची माहिती नाही')}</div>
+                    <div class="job-meta-row">
+                        <span><i class="fa-solid fa-location-dot"></i> ${escapeHTML(job.location || 'Satara')}</span>
+                        <span><i class="fa-solid fa-indian-rupee-sign"></i> ${escapeHTML(job.salary || 'Not Mentioned')}</span>
+                        <span><i class="fa-solid fa-graduation-cap"></i> ${escapeHTML(job.qualification || 'Any')}</span>
+                    </div>
+                    <div class="action-row">
+                        <div class="job-date">पोस्ट: ${date}</div>
+                        <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">View</button>
+                        <button class="action-btn apply-btn" onclick="event.stopPropagation(); applyJob('${job.id}')">Apply</button>
+                        <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i> शेअर</button>
+                    </div>
+                </div>
+                <div class="save-btn ${saved ? 'saved' : ''}" onclick="toggleSave(event,'${job.id}',this)"><i class="fa-solid fa-heart"></i></div>
+            </div>`;
         }
-        return `
-        <div class="job-card ${isPremium ? 'premium-card' : ''}">
-            ${tagHtml}
-            <div class="job-icon"><i class="fa-solid fa-building"></i></div>
-            <div class="job-content">
-                <div class="job-title">${escapeHTML(job.title)}</div>
-                <div class="company">${escapeHTML(job.company)}</div>
-                <div class="job-meta-row">
-                    <span><i class="fa-solid fa-location-dot"></i> ${escapeHTML(job.location || 'Satara')}</span>
-                    <span><i class="fa-solid fa-indian-rupee-sign"></i> ${escapeHTML(job.salary || 'Not Mentioned')}</span>
-                    <span><i class="fa-solid fa-graduation-cap"></i> ${escapeHTML(job.qualification || 'Any')}</span>
-                </div>
-                <div class="action-row">
-                    <div class="job-date">पोस्ट: ${date}</div>
-                    <button class="action-btn view-btn" onclick="openDetails('${job.id}')">View</button>
-                    <button class="action-btn apply-btn" onclick="applyJob('${job.id}')">Apply</button>
-                </div>
-            </div>
-            <div class="save-btn ${saved ? 'saved' : ''}" onclick="toggleSave(event,'${job.id}',this)">
-                <i class="fa-solid fa-heart"></i>
-            </div>
-        </div>`;
     }
+
+    function shareJob(jobId) {
+        const phone = localStorage.getItem("user_phone") || '0';
+        const link = `https://satara-jobs-ed6ab.web.app/job-details.html?id=${jobId}&ref=${phone}`;
+        const job = allJobs.find(j => String(j.id) === String(jobId)) || {};
+        
+        let text = '';
+        if (job.isGovtJob) {
+            text = `🏛️ *सरकारी नोकरीची मोठी संधी!* 🏛️\n\n🇮🇳 *विभाग (Dept):* ${job.company || 'माहिती नाही'}\n📌 *पद (Post):* ${job.title || 'माहिती नाही'}\n🎓 *शिक्षण:* ${job.qualification || 'Any'}\n🗓️ *अंतिम तारीख:* ${job.lastDate || 'लवकरच'}\n\nसविस्तर माहिती आणि थेट ऑनलाईन अर्ज करण्यासाठी खालील लिंकवर क्लिक करा:\n👉 ${link}`;
+        } else {
+            const compName = job.company || job.companyName || 'Verified Employer';
+            const salAmt = job.salary ? `₹ ${job.salary}` : "Negotiable";
+            const loc = job.location || "Satara";
+            text = `*नव्या नोकरीची सुवर्णसंधी!* 🚀\n\n📌 *पद (Post):* ${job.title || 'माहिती नाही'}\n🏢 *कंपनी (Company):* ${compName}\n💰 *पगार (Salary):* ${salAmt}\n📍 *लोकेशन (Location):* ${loc}\n\nपूर्ण माहिती पाहण्यासाठी आणि अर्ज करण्यासाठी खालील लिंकवर क्लिक करा:\n👉 ${link}`;
+        }
+        
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        
+        if (userPhone) {
+            db.collection("users").doc(userPhone).set({
+                totalShares: firebase.firestore.FieldValue.increment(1),
+                weeklyShares: firebase.firestore.FieldValue.increment(1),
+                totalPoints: firebase.firestore.FieldValue.increment(1)
+            }, { merge: true }).catch(() => {});
+        }
+    }
+
+    (function captureReferrerFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if (ref) localStorage.setItem('jobReferrerPhone', ref);
+    })();
 
     function searchJobs() {
         const q = document.getElementById('searchInput').value.toLowerCase().trim();
-        if (!q) { renderJobs(allJobs); return; }
+        if (!q) {
+            let filterVal = 'all';
+            if (currentJobTab === 'homeTabPrivate') filterVal = 'private';
+            else if (currentJobTab === 'homeTabGovt') filterVal = 'govt';
+            renderJobsFiltered(filterVal);
+            return;
+        }
         const filtered = allJobs.filter(j => {
             return String(j.title || '').toLowerCase().includes(q) ||
             String(j.company || '').toLowerCase().includes(q) ||
             String(j.location || '').toLowerCase().includes(q);
         });
-        renderJobs(filtered);
+        
+        let filteredByType = filtered;
+        if (currentJobTab === 'homeTabPrivate') filteredByType = filtered.filter(j => !j.isGovtJob);
+        else if (currentJobTab === 'homeTabGovt') filteredByType = filtered.filter(j => j.isGovtJob);
+        
+        renderJobsFilteredDirect(filteredByType);
+    }
+
+    function renderJobsFilteredDirect(filteredList) {
+        const container = document.getElementById('jobsContainer');
+        
+        let filterType = 'all';
+        if (currentJobTab === 'homeTabPrivate') filterType = 'private';
+        else if (currentJobTab === 'homeTabGovt') filterType = 'govt';
+
+        if (!filteredList.length) {
+            const emptyMsg = filterType === 'govt'
+                ? '<i class="fa-solid fa-landmark" style="font-size:48px;color:#8b5cf6;"></i><p style="margin-top:10px;color:#6b21a8;">सध्या सरकारी नोकऱ्या उपलब्ध नाहीत</p>'
+                : (filterType === 'private' ? '<i class="fa-solid fa-briefcase" style="font-size:48px;color:var(--secondary);"></i><p style="margin-top:10px;color:var(--muted);">सध्या खाजगी नोकऱ्या उपलब्ध नाहीत</p>' : '<i class="fa-solid fa-folder-open" style="font-size:48px;color:#cbd5e1;"></i><p style="margin-top:10px;color:#64748b;">सध्या नोकऱ्या उपलब्ध नाहीत</p>');
+            container.innerHTML = `<div class="empty-box" style="text-align:center;padding:60px 20px;">${emptyMsg}</div>`;
+            return;
+        }
+
+        let premiumJobs = filteredList.filter(j => j.isPremium && !j.isGovtJob);
+        let regularPrivateJobs = filteredList.filter(j => !j.isPremium && !j.isGovtJob);
+        let govtJobsList = filteredList.filter(j => j.isGovtJob);
+
+        regularPrivateJobs.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+        govtJobsList.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+        if (premiumJobs.length > 0) premiumJobs = shuffleArray(premiumJobs, userPhone || '0');
+
+        let html = '';
+        
+        if (filterType === 'all' || filterType === 'private') {
+            if (premiumJobs.length) {
+                html += `<div class="section-title"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Premium Private Jobs</div>`;
+                premiumJobs.forEach(job => html += buildCard(job, true, false));
+            }
+            if (regularPrivateJobs.length) {
+                html += `<div class="section-title"><i class="fa-solid fa-briefcase"></i> Regular Private Jobs</div>`;
+                regularPrivateJobs.forEach(job => html += buildCard(job, false, false));
+            }
+        }
+
+        if (filterType === 'all' || filterType === 'govt') {
+            if (govtJobsList.length) {
+                html += `<div class="section-title"><i class="fa-solid fa-landmark" style="color:var(--govt-purple);"></i> Government Jobs (सरकारी नोकरी)</div>`;
+                govtJobsList.forEach(job => html += buildCard(job, false, true));
+            }
+        }
+
+        if (filterType === 'all') {
+            html += `<div class="view-more-btn" style="width:100%;padding:12px;margin-top:14px;border-radius:16px;border:1px dashed var(--primary);background:#eff6ff;color:var(--primary);font-weight:800;text-align:center;" onclick="window.location.href='jobs.html'">अधिक नोकऱ्या पाहा</div>`;
+        }
+        
+        container.innerHTML = html;
     }
 
     async function toggleSave(e, jobId, el) {
@@ -940,6 +1191,15 @@
 
     async function applyJob(jobId) {
         try {
+            const jobDoc = await db.collection("jobs").doc(jobId).get();
+            if (!jobDoc.exists) { alert("नोकरी उपलब्ध नाही"); return; }
+            const job = jobDoc.data();
+
+            if (job.isGovtJob && job.applyLink) {
+                window.open(job.applyLink, '_blank');
+                return;
+            }
+
             const user = auth.currentUser;
             if (!user) { window.location.href = 'index.html'; return; }
             if (!isProfileCompleted) {
@@ -948,26 +1208,123 @@
                     const profDoc = await db.collection("users").doc(phone).get();
                     if(profDoc.exists && profDoc.data().profileCompleted) isProfileCompleted = true;
                 }
-                if(!isProfileCompleted) { showProfilePopup(); return; }
+                if(!isProfileCompleted) { 
+                    alert("नोकरीसाठी अर्ज करण्यासाठी कृपया तुमची प्रोफाईल आणि रेझ्युमे पूर्ण करा.");
+                    window.location.replace("profile.html?compulsory=true");
+                    return; 
+                }
             }
             const phone = localStorage.getItem("user_phone");
+            
+            const userDoc = await db.collection("users").doc(phone).get();
+            const userData = userDoc.data() || {};
+            
             const already = await db.collection("applications").where("jobId","==",jobId).where("applicantPhone","==",phone).get();
             if (!already.empty) { alert("आधीच अर्ज केला आहे"); return; }
-            const jobDoc = await db.collection("jobs").doc(jobId).get();
-            if (!jobDoc.exists) { alert("नोकरी उपलब्ध नाही"); return; }
-            const job = jobDoc.data();
-            await db.collection("applications").add({
-                jobId: jobId, applicantPhone: phone, jobTitle: job.title || '', companyName: job.company || '',
-                status: "Pending", appliedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("अर्ज यशस्वी 🎉");
+            
+            const referrerPhone = localStorage.getItem('jobReferrerPhone') || '';
+            
+            const appData = {
+                jobId: jobId, 
+                applicantPhone: phone, 
+                applicantName: userData.name || 'उमेदवार',
+                applicantEmail: userData.email || '',
+                applicantQualification: userData.qualification || '',
+                applicantExperience: userData.experience || '',
+                applicantSkills: userData.skills || '',
+                applicantCity: userData.city || '',
+                resumeUrl: userData.resumeUrl || userData.resume || '—', 
+                applicantResume: userData.resumeUrl || userData.resume || '—', 
+                jobTitle: job.title || '', 
+                companyName: job.company || '',
+                employerPhone: job.phone || job.employerPhone || '',
+                realHrPhone: job.realHrPhone || '',
+                status: "Pending", 
+                appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            if (referrerPhone && referrerPhone !== phone) {
+                appData.referrerPhone = referrerPhone;
+                db.collection("users").doc(referrerPhone).set({
+                    totalApplicationsViaReferral: firebase.firestore.FieldValue.increment(1)
+                }, { merge: true }).catch(() => {});
+                localStorage.removeItem('jobReferrerPhone');
+            }
+            
+            await db.collection("applications").add(appData);
+            
+            const empPhone = job.phone || job.employerPhone || '';
+            if (empPhone !== "9579535290" && !job.postedByAdmin) {
+                await db.collection("notifications").add({
+                    recipientPhone: empPhone,
+                    recipientRole: 'employer',
+                    type: 'new_application',
+                    title: 'नवीन अर्ज आला आहे! 🚀',
+                    message: `${userData.name || 'एका उमेदवाराने'} तुमच्या '${job.title || 'नोकरी'}' साठी अर्ज केला आहे.`,
+                    relatedId: jobId,
+                    isRead: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            
+            alert("अर्ज यशस्वी 🎉 आमची टीम किंवा कंपनी लवकरच तुमच्याशी संपर्क साधेल.");
         } catch (e) { console.log(e); alert("Apply failed"); }
     }
 
     function logoutUser() { auth.signOut().then(() => { window.location.href = 'index.html'; }); }
 </script>
 
-<!-- Service Worker Registration -->
+<script>
+    let deferredPrompt;
+    let hasShownPopup = false;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        if (!hasShownPopup) {
+            setTimeout(() => {
+                if (deferredPrompt) {
+                    showFullScreenModal();
+                }
+            }, 5000);
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        if (hasShownPopup) return;
+
+        if (window.scrollY > (window.innerHeight * 1.5)) {
+            if (deferredPrompt) {
+                showFullScreenModal();
+            }
+        }
+    });
+
+    function showFullScreenModal() {
+        document.getElementById('fullScreenInstallModal').style.display = 'flex';
+        hasShownPopup = true;
+    }
+
+    function triggerFullInstall() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User installed the app');
+                }
+                closeInstallModal();
+                deferredPrompt = null;
+            });
+        }
+    }
+
+    function closeInstallModal() {
+        document.getElementById('fullScreenInstallModal').style.display = 'none';
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+</script>
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
@@ -975,6 +1332,5 @@
       .catch(err => console.log('SW error', err));
   }
 </script>
-
 </body>
 </html>

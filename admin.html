@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Panel - सातारा जॉब्स | पूर्ण नियंत्रण</title>
-    <!-- manifest link -->
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
     <style>
         :root {
@@ -36,7 +34,6 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
         body { background:var(--bg); color:var(--text); height:100vh; overflow:hidden; }
 
-        /* Lock Screen */
         #adminAuthLockOverlay {
             position:fixed; inset:0; background:var(--primary-dark); z-index:999999;
             display:flex; align-items:center; justify-content:center; padding:20px;
@@ -48,7 +45,6 @@
         .lock-card h2 { font-size:22px; font-weight:800; color:var(--primary-dark); margin-bottom:6px; }
         .lock-card p { font-size:13px; color:var(--text-secondary); margin-bottom:24px; }
 
-        /* Admin Wrapper */
         .admin-wrapper { display:flex; height:100vh; width:100%; }
         .sidebar {
             width:280px; background:var(--primary-dark); height:100vh; color:white;
@@ -187,7 +183,6 @@
         .filter-chip { padding:8px 16px; border-radius:20px; border:1.5px solid var(--border); background:var(--card-bg); font-size:12px; font-weight:700; cursor:pointer; transition:var(--transition); }
         .filter-chip.active { background:var(--primary-dark); color:white; border-color:var(--primary-dark); }
 
-        /* Notification Modal */
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
         .modal-content { background:white; width:95%; max-width:600px; max-height:85vh; border-radius:20px; padding:25px; overflow-y:auto; position:relative; box-shadow:0 16px 40px rgba(0,0,0,0.08); }
         .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; position:sticky; top:-25px; background:white; z-index:10; margin-top:-10px; padding-top:10px; }
@@ -200,11 +195,22 @@
         .notif-item.unread { background:#eff6ff; font-weight:700; }
         .notif-item .time { font-size:10px; color:var(--muted); margin-top:4px; }
 
-        /* Crop Modal */
         #cropModal .modal-content { max-width:90%; max-height:90vh; }
         #cropImageContainer { max-height:70vh; overflow:hidden; }
         #cropImageContainer img { max-width:100%; display:block; }
         .crop-actions { margin-top:15px; display:flex; gap:10px; justify-content:flex-end; }
+
+        /* AI Auto-fill styles */
+        .ai-magic-btn {
+            background: linear-gradient(135deg, #8B5CF6, #D946EF);
+            color: white; border: none; padding: 12px 20px; border-radius: 12px;
+            font-weight: 800; font-size: 14px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 8px; width: 100%;
+            margin-bottom: 20px; box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3);
+            transition: var(--transition);
+        }
+        .ai-magic-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(217, 70, 239, 0.4); }
+        .ai-magic-btn:active { transform: scale(0.98); }
 
         @media (max-width:768px) {
             .analytics-grid { grid-template-columns:1fr 1fr; }
@@ -215,7 +221,6 @@
 </head>
 <body>
 
-<!-- लपवलेल्या लिंक्स (APK पॅकेजिंग साठी) -->
 <a href="index.html" style="display:none;">लॉगिन</a>
 <a href="home.html" style="display:none;">होम</a>
 <a href="company.html" style="display:none;">कंपनी</a>
@@ -227,7 +232,7 @@
         <div style="width:80px;height:80px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
             <img src="1778817504151.png" style="width:100%;height:100%;object-fit:contain;">
         </div>
-        <h2>ॲडमीन कंट्रोल पॅनल</h2>
+        <h2>ॲडमीन CONTROL रूम</h2>
         <p>अधिकृत नंबर व पासवर्ड टाका.</p>
         <div style="text-align:left;">
             <label style="font-size:11px;font-weight:700;color:var(--text-secondary);">ॲडमीन मोबाईल नंबर *</label>
@@ -269,10 +274,16 @@
             <button class="tab-btn" id="tabMembershipSettingsBtn" onclick="handleMenuClick('membership_settings')"><i class="fa-solid fa-sliders"></i><span>१६. मेंबरशिप सेटिंग्ज</span></button>
             <button class="tab-btn" id="tabReferralPaymentTrackerBtn" onclick="handleMenuClick('referral_payment_tracker')"><i class="fa-solid fa-hand-holding-dollar"></i><span>१७. रेफरल पेमेंट ट्रॅकर</span></button>
             <button class="tab-btn" id="tabAllMembershipBtn" onclick="handleMenuClick('all_membership')"><i class="fa-solid fa-id-card"></i><span>१८. सर्व मेंबरशिप स्टेटस</span></button>
+            <button class="tab-btn" id="tabGovtJobsBtn" onclick="handleMenuClick('govt_jobs')"><i class="fa-solid fa-landmark"></i><span>१९. सरकारी नोकऱ्या 🏛️</span></button>
+            <button class="tab-btn" id="tabAdminAdsStatusBtn" onclick="handleMenuClick('admin_ads_status')"><i class="fa-solid fa-rectangle-list"></i><span>२०. ॲडमिन जाहिरात स्टेटस</span></button>
+            <button class="tab-btn" id="tabJobApplicationsBtn" onclick="handleMenuClick('job_applications')"><i class="fa-solid fa-users-viewfinder"></i><span>२१. जॉब नुसार आलेले अर्ज</span></button>
+            <button class="tab-btn" id="tabAdminJobsAppsBtn" onclick="handleMenuClick('admin_jobs_apps')"><i class="fa-solid fa-user-shield"></i><span>२२. ॲडमिन जॉब्स व अर्ज</span></button>
             <button class="tab-btn" id="tabAllEmpBtn" onclick="handleMenuClick('all_employers')"><i class="fa-solid fa-list"></i><span>सर्व मालक यादी</span></button>
             <button class="tab-btn" id="tabAllSeekersBtn" onclick="handleMenuClick('all_seekers')"><i class="fa-solid fa-users"></i><span>सर्व उमेदवार यादी</span></button>
             <button class="tab-btn" id="tabClearMobileBtn" onclick="handleMenuClick('clear_mobile')"><i class="fa-solid fa-eraser"></i><span>🔍 मोबाईल क्लियर करा</span></button>
             <button class="tab-btn" id="tabAllJobsBtn" onclick="handleMenuClick('all_jobs')"><i class="fa-solid fa-briefcase"></i><span>📋 सर्व जॉब्स (डिलीट)</span></button>
+            <button class="tab-btn" id="tabTodaysAppsBtn" onclick="handleMenuClick('todays_apps')"><i class="fa-solid fa-calendar-day"></i><span>आजचे नवीन अर्ज</span></button>
+            <button class="tab-btn" id="tabApiSettingsBtn" onclick="handleMenuClick('api_settings')"><i class="fa-solid fa-key"></i><span>२३. AI आणि API सेटिंग्ज</span></button>
         </div>
     </div>
 
@@ -316,7 +327,7 @@
                 <div class="section-title">ॲडमिन कडून नवीन जॉब पोस्ट करा</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                     <div><label style="font-size:11px;font-weight:700;">पद *</label><input id="adminJobTitle" class="form-input-admin" placeholder="Job Title"></div>
-                    <div><label style="font-size:11px;font-weight:700;">कंपनी *</label><input id="adminJobCompany" class="form-input-admin" placeholder="Company"></div>
+                    <div><label style="font-size:11px;font-weight:700;">COMPANY *</label><input id="adminJobCompany" class="form-input-admin" placeholder="Company"></div>
                     <div><label style="font-size:11px;font-weight:700;">लोकेशन *</label><input id="adminJobLocation" class="form-input-admin" placeholder="Location"></div>
                     <div><label style="font-size:11px;font-weight:700;">पगार</label><input id="adminJobSalary" class="form-input-admin" placeholder="Salary"></div>
                     <div><label style="font-size:11px;font-weight:700;">शिक्षण *</label><input id="adminJobQualification" class="form-input-admin" placeholder="Qualification"></div>
@@ -327,14 +338,169 @@
                 <button class="admin-save-btn" onclick="adminPostJob()" style="margin-top:16px;">थेट लाईव्ह पोस्ट करा</button>
             </div>
 
+            <div id="govtJobsTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-landmark"></i> सरकारी नोकरी पोस्ट करा (Government Jobs)</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">इथून पोस्ट केलेल्या नोकऱ्या ॲपमध्ये 'सरकारी नोकरी' च्या वेगळ्या सेक्शनमध्ये दिसतील.</p>
+                
+                <div style="background:#fef5fd; border:1px solid #f0abfc; padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <label style="font-size:12px; font-weight:800; color:#86198f;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI ऑटो-फिल (जाहिरातीचा फोटो निवडा)</label>
+                    <input type="file" id="aiImageInput" class="form-input-admin" accept="image/*" style="margin-top:8px; border-color:#f0abfc; background:white;">
+                    <button class="ai-magic-btn" id="aiAutoFillBtn" onclick="runAIAutoFill()">
+                        <i class="fa-solid fa-robot"></i> AI ने फॉर्म भरा (जादू पहा)
+                    </button>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div><label style="font-size:11px;font-weight:700;">विभागाचे नाव (उदा. महाराष्ट्र शासन) *</label><input id="govtDept" class="form-input-admin" placeholder="Department Name"></div>
+                    <div><label style="font-size:11px;font-weight:700;">पदाचे नाव (उदा. तलाठी) *</label><input id="govtPost" class="form-input-admin" placeholder="Post Name"></div>
+                    <div><label style="font-size:11px;font-weight:700;">शेवटची तारीख (Last Date) *</label><input id="govtLastDate" class="form-input-admin" placeholder="उदा. 25 মজून 2026"></div>
+                    <div><label style="font-size:11px;font-weight:700;">अप्लाय लिंक (Official Link) *</label><input id="govtLink" type="url" class="form-input-admin" placeholder="https://..."></div>
+                    
+                    <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">एकूण जागा (Optional)</label><input id="govtVacancies" class="form-input-admin" placeholder="उदा. 376"></div>
+                    <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">शैक्षणिक पात्रता (Optional)</label><input id="govtEdu" class="form-input-admin" placeholder="Qualification"></div>
+                    <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">वयोमर्यादा (Optional)</label><input id="govtAge" class="form-input-admin" placeholder="Age Limit"></div>
+                    <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">अर्ज फी (Optional)</label><input id="govtFee" class="form-input-admin" placeholder="उदा. Open 1000/-, Res 900/-"></div>
+                    
+                    <div style="grid-column:span 2;"><label style="font-size:11px;font-weight:700;color:var(--text-muted);">अधिकृत जाहिरात PDF (Upload Notification) (Optional)</label><input type="file" id="govtPdf" class="form-input-admin" accept="application/pdf"></div>
+                </div>
+                <button class="admin-save-btn" id="govtSubmitBtn" onclick="postGovtJob()" style="margin-top:16px; width:100%;"><i class="fa-solid fa-paper-plane"></i> सरकारी नोकरी पब्लिश करा</button>
+            </div>
+
             <div id="uploadAdsTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-rectangle-ad"></i> जाहिरात बुकिंग व्यवस्थापन</div><button class="csv-download-btn" onclick="downloadTableAsCSV('adminAdBookingsList','ad_bookings')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                
+                <div style="background:#f8fafc; border-radius:12px; padding:16px; margin-bottom:20px; border:1px solid #e2e8f0;">
+                    <div style="font-size:13px; font-weight:800; color:var(--primary-dark); margin-bottom:12px;"><i class="fa-solid fa-plus-circle"></i> नवीन जाहिरात बुकिंग करा (Admin)</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:700;">जाहिरातीचा प्रकार *</label>
+                            <select id="adminAdType" class="form-input-admin">
+                                <option value="Splash Ad">Splash Ad (पूर्ण स्क्रीन)</option>
+                                <option value="Sticky Ad">Sticky Ad (तळाशी)</option>
+                                <option value="Category Ad">Category Ad (लिस्टमध्ये)</option>
+                                <option value="Video Ad">Video Ad (व्हिडिओ)</option>
+                                <option value="Urgent Badge">Urgent Badge (टॅग)</option>
+                            </select>
+                        </div>
+                        <div><label style="font-size:11px; font-weight:700;">किती दिवसांसाठी? *</label><input type="number" id="adminAdDays" class="form-input-admin" placeholder="उदा. 30" min="1"></div>
+                        <div><label style="font-size:11px; font-weight:700;">COMPANYचे नाव *</label><input type="text" id="adminAdCompany" class="form-input-admin" placeholder="COMPANYचे नाव"></div>
+                        <div><label style="font-size:11px; font-weight:700;">संपर्क क्रमांक *</label><input type="tel" id="adminAdContact" class="form-input-admin" placeholder="मोबाईल नंबर" maxlength="10"></div>
+                        <div style="grid-column:span 2;">
+                            <label style="font-size:11px; font-weight:700;">जाहिरात फाईल (इमेज/व्हिडिओ) *</label>
+                            <input type="file" id="adminAdMediaFile" class="form-input-admin" accept="image/*,video/*">
+                        </div>
+                    </div>
+                    <button class="admin-save-btn" id="adminAdSubmitBtn" onclick="adminSubmitAdBooking()" style="margin-top:10px;">थेट मंजूर जाहिरात पोस्ट करा</button>
+                </div>
+
                 <div style="margin-bottom: 20px; display: flex; gap: 10px;">
                     <button onclick="loadAdminAdBookings('pending')" class="tab-btn active" id="btnPendingAds" style="width:auto;">⏳ प्रलंबित</button>
                     <button onclick="loadAdminAdBookings('approved')" class="tab-btn" id="btnApprovedAds" style="width:auto;">✅ मंजूर</button>
                     <button onclick="loadAdminAdBookings('all')" class="tab-btn" id="btnAllAds" style="width:auto;">📋 सर्व</button>
                 </div>
-                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>संपर्क</th><th>प्रकार</th><th>दिवस</th><th>स्टेटस</th><th>मीडिया</th><th>कृती</th></tr></thead><tbody id="adminAdBookingsList"></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>COMPANY</th><th>संपर्क</th><th>प्रकार</th><th>दिवस</th><th>स्टेटस</th><th>मीडिया</th><th>कृती</th></tr></thead><tbody id="adminAdBookingsList"></tbody></table></div>
+            </div>
+            
+            <div id="adminAdsStatusTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card">
+                    <div class="section-title"><i class="fa-solid fa-rectangle-list"></i> ॲडमिनने टाकलेल्या जाहिरातींचे स्टेटस</div>
+                    <button class="csv-download-btn" onclick="downloadTableAsCSV('adminAdsStatusTableBody','admin_ads_status')"><i class="fa-solid fa-download"></i> CSV डाऊनलोड</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>COMPANY चे नाव</th>
+                                <th>जाहिरातीचा प्रकार</th>
+                                <th>किती दिवस</th>
+                                <th>सध्याचे स्टेटस</th>
+                                <th>पोस्ट केलेली तारीख</th>
+                                <th>कृती</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAdsStatusTableBody">
+                            <tr><td colspan="6" class="empty-text">लोड होत आहे...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="jobApplicationsTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card">
+                    <div class="section-title"><i class="fa-solid fa-users-viewfinder"></i> जॉब नुसार आलेले अर्ज (Job-wise Applications)</div>
+                </div>
+                <div style="margin-bottom: 20px; background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <label style="font-size:13px; font-weight:800; color:var(--primary-dark); display:block; margin-bottom:8px;">कोणतीही नोकरी / कंपनी निवडा:</label>
+                    <select id="jobSelectDropdown" class="form-input-admin" onchange="fetchApplicantsForJob(this.value)">
+                        <option value="">-- लोडींग होत आहे... --</option>
+                    </select>
+                </div>
+                
+                <div id="waBtnContainer" style="display:none; text-align:right; margin-bottom:12px;">
+                    <button id="btnSendWa" class="csv-download-btn" style="background:#25D366; font-size:13px; padding:10px 16px;" onclick="sendSelectedViaWhatsApp()">
+                        <i class="fa-brands fa-whatsapp"></i> निवडलेले अर्ज कंपनीला पाठवा
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align:center;"><input type="checkbox" id="selectAllApps" onclick="toggleAllApps(this)" title="सर्व पेंडिंग निवडा"></th>
+                                <th>उमेदवाराचे नाव</th>
+                                <th>मोबाईल नंबर</th>
+                                <th>अर्ज केल्याची तारीख/वेळ</th>
+                                <th>रेझ्युमे / प्रोफाईल</th>
+                                <th>स्थिती (Status)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobApplicantsTableBody">
+                            <tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून जॉब निवडा.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="adminJobsAppsTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card">
+                    <div class="section-title"><i class="fa-solid fa-user-shield"></i> ॲडमिन जॉब्स आणि आलेले अर्ज</div>
+                </div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">या सेक्शनमध्ये फक्त तेच जॉब्स दिसतील जे ॲडमिन पॅनलमधून टाकले गेले आहेत.</p>
+                
+                <div style="margin-bottom: 20px; background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <label style="font-size:13px; font-weight:800; color:var(--primary-dark); display:block; margin-bottom:8px;">ॲडमिनने टाकलेला जॉब निवडा:</label>
+                    <select id="adminJobSelectDropdown" class="form-input-admin" onchange="fetchApplicantsForAdminJob(this.value)">
+                        <option value="">-- लोडींग होत आहे... --</option>
+                    </select>
+                </div>
+                
+                <div id="adminWaBtnContainer" style="display:none; text-align:right; margin-bottom:12px; background:#ecfdf5; padding:10px; border-radius:10px; border:1px solid #a7f3d0;">
+                    <div style="display:flex; gap:10px; justify-content:flex-end; align-items:center; flex-wrap:wrap;">
+                        <label style="font-size:12px; font-weight:700; color:#065f46; display:inline-block; margin-right:10px;">कंपनीच्या मालकाचा मोबाईल नंबर:</label>
+                        <input type="tel" id="adminCustomWaNumber" class="form-input-admin" placeholder="10 अंकी नंबर" maxlength="10" style="width:150px; display:inline-block; margin:0 10px 0 0; padding:8px;">
+                        <button id="btnSendAdminWa" class="csv-download-btn" style="background:#25D366; font-size:13px; padding:8px 16px; margin:0;" onclick="sendAdminSelectedViaWhatsApp()">
+                            <i class="fa-brands fa-whatsapp"></i> निवडलेले अर्ज पाठवा
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align:center;"><input type="checkbox" id="selectAllAdminApps" onclick="toggleAllAdminApps(this)" title="सर्व पेंडिंग निवडा"></th>
+                                <th>उमेदवाराचे नाव</th>
+                                <th>मोबाईल नंबर</th>
+                                <th>अर्ज केल्याची तारीख/वेळ</th>
+                                <th>रेझ्युमे / प्रोफाईल</th>
+                                <th>स्थिती (Status)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminJobApplicantsTableBody">
+                            <tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून ॲडमिन जॉब निवडा.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="ratesTabSection" class="main-card" style="display:none;">
@@ -346,11 +512,20 @@
                     <div class="rate-sub-card"><div class="size-info-text">Urgent</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valUrgent" class="form-input-admin" placeholder="₹"><input id="valUrgentDays" class="form-input-admin" placeholder="दिवस"></div></div>
                     <div class="rate-sub-card"><div class="size-info-text">Video</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valVideoRate" class="form-input-admin" placeholder="₹"><input id="valVideoDays" class="form-input-admin" placeholder="दिवस"></div></div>
                 </div>
-                <div class="section-title" style="margin-top: 30px;">प्रीमियम जॉब प्लॅन दर (कंपनी पेज)</div>
+                <div class="section-title" style="margin-top: 30px;">प्रीमियम जॉब प्लॅन दर (COMPANY पेज)</div>
                 <div class="rates-grid-wrapper">
                     <div class="rate-sub-card"><div class="size-info-text" style="background:#FEF3C7; color:#D97706;">प्लॅन 1</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valPremiumPlan1Price" class="form-input-admin" placeholder="₹"><input id="valPremiumPlan1Days" class="form-input-admin" placeholder="दिवस"></div></div>
                     <div class="rate-sub-card"><div class="size-info-text" style="background:#FEF3C7; color:#D97706;">प्लॅन 2</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valPremiumPlan2Price" class="form-input-admin" placeholder="₹"><input id="valPremiumPlan2Days" class="form-input-admin" placeholder="दिवस"></div></div>
                     <div class="rate-sub-card"><div class="size-info-text" style="background:#FEF3C7; color:#D97706;">प्लॅन 3</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input id="valPremiumPlan3Price" class="form-input-admin" placeholder="₹"><input id="valPremiumPlan3Days" class="form-input-admin" placeholder="दिवस"></div></div>
+                </div>
+                <div class="section-title" style="margin-top: 30px;">परफॉर्मन्स कमिशन सेटिंग्ज</div>
+                <div class="rates-grid-wrapper">
+                    <div class="rate-sub-card">
+                        <div class="size-info-text" style="background:#ECFDF5; color:#065F46;">🎯 हायरिंग कमिशन</div>
+                        <label style="font-size:11px;font-weight:700;">कमिशन टक्केवारी (%)</label>
+                        <input id="valCommissionPercentage" class="form-input-admin" placeholder="10" type="number" min="0" max="100">
+                        <small style="color: var(--text-muted);">ही टक्केवारी पहिल्या महिन्याच्या पगारावर लागू होईल.</small>
+                    </div>
                 </div>
                 <button class="admin-save-btn" onclick="saveAdRates()" style="margin-top:20px;width:100%;">सर्व दर सेव्ह करा</button>
             </div>
@@ -376,7 +551,7 @@
 
             <div id="paymentVerificationTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-check-double"></i> पेमेंट व्हेरिफिकेशन</div><button class="csv-download-btn" onclick="downloadTableAsCSV('paymentVerificationBody','payment_verification')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>प्रकार</th><th>कंपनी</th><th>मोबाईल</th><th>रक्कम (₹)</th><th>स्क्रीनशॉट</th><th>कृती</th></tr></thead><tbody id="paymentVerificationBody"></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>प्रकार</th><th>COMPANY</th><th>मोबाईल</th><th>रक्कम (₹)</th><th>स्क्रीनशॉट</th><th>कृती</th></tr></thead><tbody id="paymentVerificationBody"></tbody></table></div>
             </div>
 
             <div id="upiSettingsTabSection" class="main-card" style="display:none;">
@@ -417,8 +592,8 @@
                         </div>
                         <div><label style="font-size:11px; font-weight:700;">कोणाला दाखवायचे? *</label>
                             <select id="popupTarget" class="form-input-admin">
-                                <option value="all">सर्व (कंपनी + युजर)</option>
-                                <option value="employer">फक्त कंपनी</option>
+                                <option value="all">सर्व (COMPANY + युजर)</option>
+                                <option value="employer">फक्त COMPANY</option>
                                 <option value="seeker">फक्त युजर</option>
                             </select>
                         </div>
@@ -427,14 +602,13 @@
                 </div>
                 <div style="font-size:13px; font-weight:800; color:var(--primary-dark); margin-bottom:10px;"><i class="fa-solid fa-list"></i> पाठवलेले मेसेज</div>
                 <div style="display:flex; justify-content:flex-end; margin-bottom:10px;"><button class="csv-download-btn" onclick="downloadTableAsCSV('popupMessagesTableBody','popup_messages')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>शीर्षक</th><th>मेसेज</th><th>टार्गेट</th><th>मीडिया</th><th>वेळ</th><th>कृती</th></tr></thead><tbody id="popupMessagesTableBody"><tr><td colspan="6" class="empty-text">अजून कोणताही मेसेज नाही.</td></tr></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>शीर्षक</th><th>मेसेज</th><th>टार्गेट</th><th>MEDIA</th><th>वेळ</th><th>कृती</th></tr></thead><tbody id="popupMessagesTableBody"><tr><td colspan="6" class="empty-text">अजून कोणताही मेसेज नाही.</td></tr></tbody></table></div>
             </div>
 
             <div id="biAnalyticsTabSection" class="main-card" style="display:none;">
                 <div class="section-title">बिझनेस इंटेलिजन्स</div><p>AI अंदाज आणि मेट्रिक्स लवकरच...</p>
             </div>
 
-            <!-- १३. हायरिंग ट्रॅकर -->
             <div id="hiringTrackerTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-magnifying-glass-chart"></i> हायरिंग ट्रॅकर</div><button class="csv-download-btn" onclick="downloadTableAsCSV('hiringTrackerBody','hiring_tracker')"><i class="fa-solid fa-download"></i> CSV</button></div>
                 <div class="filter-bar">
@@ -443,16 +617,14 @@
                     <button class="filter-chip" onclick="filterHiringTracker('hired',this)">✅ हायर्ड</button>
                     <button class="filter-chip" onclick="filterHiringTracker('followup',this)">📞 फॉलो-अप (७+ दिवस)</button>
                 </div>
-                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>पद</th><th>उमेदवार</th><th>अर्ज तारीख</th><th>स्टेटस</th><th>कमिशन</th><th>कृती</th></tr></thead><tbody id="hiringTrackerBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>COMPANY</th><th>पद</th><th>उमेदवार</th><th>अर्ज तारीख</th><th>स्टेटस</th><th>कमिशन</th><th>कृती</th></tr></thead><tbody id="hiringTrackerBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
             </div>
 
-            <!-- १४. मेंबरशिप अपग्रेड विनंत्या -->
             <div id="membershipRequestsTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-arrow-up-from-bracket"></i> मेंबरशिप अपग्रेड विनंत्या</div><button class="csv-download-btn" onclick="downloadTableAsCSV('membershipRequestsBody','membership_requests')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>मोबाईल</th><th>सध्याचा प्लॅन</th><th>विनंती प्लॅन</th><th>स्क्रीनशॉट</th><th>तारीख</th><th>कृती</th></tr></thead><tbody id="membershipRequestsBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>COMPANY</th><th>मोबाईल</th><th>सध्याचा प्लॅन</th><th>विनंती प्लॅन</th><th>स्क्रीनशॉट</th><th>तारीख</th><th>कृती</th></tr></thead><tbody id="membershipRequestsBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
             </div>
 
-            <!-- १५. बॅज सेटिंग्ज -->
             <div id="badgeSettingsTabSection" class="main-card" style="display:none;">
                 <div class="section-title"><i class="fa-solid fa-award"></i> बॅज सेटिंग्ज</div>
                 <div class="rates-grid-wrapper">
@@ -480,7 +652,6 @@
                 <button class="admin-save-btn" onclick="saveBadgeSettings()" style="margin-top:20px;width:100%;">बॅज सेटिंग्ज सेव्ह करा</button>
             </div>
 
-            <!-- १६. मेंबरशिप सेटिंग्ज -->
             <div id="membershipSettingsTabSection" class="main-card" style="display:none;">
                 <div class="section-title"><i class="fa-solid fa-sliders"></i> मेंबरशिप सेटिंग्ज</div>
                 <div class="section-title" style="margin-top:10px; background:#E0F2FE; border-left-color:#0284C7;">👤 उमेदवार (Seeker) प्लॅन</div>
@@ -496,7 +667,7 @@
                         <label style="font-size:11px;font-weight:700;">दररोज अर्ज मर्यादा</label><input id="seekerGoldDailyApps" class="form-input-admin" placeholder="999">
                     </div>
                 </div>
-                <div class="section-title" style="margin-top:20px; background:#FEF3C7; border-left-color:#D97706;">🏢 कंपनी (Employer) प्लॅन</div>
+                <div class="section-title" style="margin-top:20px; background:#FEF3C7; border-left-color:#D97706;">🏢 COMPANY (Employer) प्लॅन</div>
                 <div class="rates-grid-wrapper">
                     <div class="rate-sub-card">
                         <div class="size-info-text" style="background:#E0F2FE;color:#0284C7;">🥈 सिल्वर</div>
@@ -506,7 +677,7 @@
                         <label style="font-size:11px;font-weight:700;">जॉब व्हॅलिडिटी (दिवस)</label><input id="employerSilverValidity" class="form-input-admin" placeholder="60">
                     </div>
                     <div class="rate-sub-card">
-                        <div class="size-info-text" style="background:#FEF3C7;color:#D97706;">🥇 गोल्ड</div>
+                        <div class="size-info-text" style="background:#FEF3C7;color:#D97706;">🥇 GOLD</div>
                         <label style="font-size:11px;font-weight:700;">किंमत (₹/महिना)</label><input id="employerGoldPrice" class="form-input-admin" placeholder="199">
                         <label style="font-size:11px;font-weight:700;">जॉब पोस्ट मर्यादा</label><input id="employerGoldJobPosts" class="form-input-admin" placeholder="999">
                         <label style="font-size:11px;font-weight:700;">अर्ज व्ह्यू मर्यादा</label><input id="employerGoldAppViews" class="form-input-admin" placeholder="999">
@@ -517,15 +688,14 @@
                     <div class="rate-sub-card">
                         <div class="size-info-text" style="background:#F1F5F9;color:#475569;">🆓 फ्री प्लॅन</div>
                         <label style="font-size:11px;font-weight:700;">उमेदवार दररोज अर्ज</label><input id="freeSeekerDailyApps" class="form-input-admin" placeholder="5">
-                        <label style="font-size:11px;font-weight:700;">कंपनी जॉब पोस्ट</label><input id="freeEmployerJobPosts" class="form-input-admin" placeholder="1">
-                        <label style="font-size:11px;font-weight:700;">कंपनी अर्ज व्ह्यू</label><input id="freeEmployerAppViews" class="form-input-admin" placeholder="20">
-                        <label style="font-size:11px;font-weight:700;">कंपनी जॉब व्हॅलिडिटी (दिवस)</label><input id="freeEmployerValidity" class="form-input-admin" placeholder="30">
+                        <label style="font-size:11px;font-weight:700;">COMPANY जॉब पोस्ट</label><input id="freeEmployerJobPosts" class="form-input-admin" placeholder="1">
+                        <label style="font-size:11px;font-weight:700;">COMPANY अर्ज व्ह्यू</label><input id="freeEmployerAppViews" class="form-input-admin" placeholder="20">
+                        <label style="font-size:11px;font-weight:700;">COMPANY जॉब व्हॅलिडिटी (दिवस)</label><input id="freeEmployerValidity" class="form-input-admin" placeholder="30">
                     </div>
                 </div>
                 <button class="admin-save-btn" onclick="saveMembershipSettings()" style="margin-top:20px;width:100%;">मेंबरशिप सेटिंग्ज सेव्ह करा</button>
             </div>
 
-            <!-- १७. रेफरल पेमेंट ट्रॅकर -->
             <div id="referralPaymentTrackerTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-hand-holding-dollar"></i> रेफरल पेमेंट ट्रॅकर</div><button class="csv-download-btn" onclick="downloadTableAsCSV('referralPaymentBody','referral_payments')"><i class="fa-solid fa-download"></i> CSV</button></div>
                 <div class="filter-bar">
@@ -533,23 +703,38 @@
                     <button class="filter-chip" onclick="filterReferralPayments('unpaid',this)">❌ अनपेड</button>
                     <button class="filter-chip" onclick="filterReferralPayments('paid',this)">✅ पेड</button>
                 </div>
-                <div class="table-responsive"><table><thead><tr><th>रेफरर</th><th>उमेदवार</th><th>जॉब</th><th>कंपनी</th><th>बक्षीस (₹)</th><th>स्टेटस</th><th>कृती</th></tr></thead><tbody id="referralPaymentBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>रेफरर</th><th>उमेदवार</th><th>जॉब</th><th>COMPANY</th><th>बक्षीस (₹)</th><th>स्टेटस</th><th>कृती</th></tr></thead><tbody id="referralPaymentBody"><tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
             </div>
 
-            <!-- १८. सर्व मेंबरशिप स्टेटस -->
             <div id="allMembershipTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title"><i class="fa-solid fa-id-card"></i> सर्व यूजर्सची मेंबरशिप स्टेटस</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allMembershipTableBody','all_membership')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>मोबाईल</th><th>नाव / कंपनी</th><th>रोल</th><th>प्लॅन</th><th>एक्सपायरी</th><th>स्टेटस</th></tr></thead><tbody id="allMembershipTableBody"><tr><td colspan="6" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>मोबाईल</th><th>नाव / COMPANY</th><th>रोल</th><th>प्लॅन</th><th>एक्सपायरी</th><th>स्टेटस</th></tr></thead><tbody id="allMembershipTableBody"><tr><td colspan="6" class="empty-text">लोड होत आहे...</td></tr></tbody></table></div>
             </div>
 
             <div id="allEmployersTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card"><div class="section-title">सर्व मालक</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allEmployersTableBody','all_employers')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>नाव</th><th>मोबाईल</th><th>कंपनी</th><th>स्टेटस</th><th>कृती</th></tr></thead><tbody id="allEmployersTableBody"></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>नाव</th><th>मोबाईल</th><th>COMPANY</th><th>स्टेटस</th><th>कृती</th></tr></thead><tbody id="allEmployersTableBody"></tbody></table></div>
             </div>
 
             <div id="allSeekersTabSection" class="main-card" style="display:none;">
-                <div class="section-header-card"><div class="section-title">सर्व उमेदवार</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allSeekersTableBody','all_seekers')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>नाव</th><th>ईमेल</th><th>मोबाईल</th><th>कृती</th></tr></thead><tbody id="allSeekersTableBody"></tbody></table></div>
+                <div class="section-header-card"><div class="section-title">सर्व उमेदवार (एकूण प्रोफाइल यादी)</div><button class="csv-download-btn" onclick="downloadTableAsCSV('allSeekersTableBody','all_seekers')"><i class="fa-solid fa-download"></i> CSV / Excel डाऊनलोड</button></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>नाव</th>
+                                <th>मोबाईल</th>
+                                <th>ईमेल</th>
+                                <th>शिक्षण</th>
+                                <th>अनुभव</th>
+                                <th>शहर/लोकेशन</th>
+                                <th>रेझ्युमे लिंक</th>
+                                <th>कृती</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allSeekersTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="clearMobileTabSection" class="main-card" style="display:none;">
@@ -564,21 +749,69 @@
 
             <div id="allJobsTabSection" class="main-card" style="display:none;">
                 <div class="section-header-card">
-                    <div class="section-title"><i class="fa-solid fa-briefcase"></i> सर्व नोकऱ्या (एकूण: <span id="totalJobsCount">0</span>)</div>
-                    <div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchAllJobs" placeholder="कंपनी / पद / मोबाईल शोधा..." oninput="filterAllJobsTable()"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('allJobsTableBody','all_jobs')"><i class="fa-solid fa-download"></i> CSV</button></div>
+                    <div class="section-title"><i class="fa-solid fa-briefcase"></i> सर्व नोऱ्या (एकूण: <span id="totalJobsCount">0</span>)</div>
+                    <div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchAllJobs" placeholder="COMPANY / पद / मोबाईल शोधा..." oninput="filterAllJobsTable()"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('allJobsTableBody','all_jobs')"><i class="fa-solid fa-download"></i> CSV</button></div>
                 </div>
                 <div class="table-responsive">
                     <table>
-                        <thead><tr><th>कंपनी</th><th>पद</th><th>लोकेशन</th><th>पगार</th><th>मोबाईल</th><th>स्टेटस</th><th>प्रीमियम?</th><th>कृती</th></tr></thead>
+                        <thead><tr><th>COMPANY</th><th>पद</th><th>लोकेशन</th><th>पगार</th><th>मोबाईल</th><th>स्टेटस</th><th>प्रीमियम?</th><th>कृती</th></tr></thead>
                         <tbody id="allJobsTableBody"></tbody>
                     </table>
                 </div>
             </div>
+
+            <div id="todaysAppsTabSection" class="main-card" style="display:none;">
+                <div class="section-header-card">
+                    <div class="section-title"><i class="fa-solid fa-calendar-day"></i> आजचे नवीन अर्ज (Total: <span id="todaysAppsCount" style="color:var(--accent);">0</span>)</div>
+                    <button class="csv-download-btn" onclick="downloadTableAsCSV('todaysAppsTableBody','todays_applications')"><i class="fa-solid fa-download"></i> CSV डाऊनलोड</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>उमेदवाराचे नाव</th>
+                                <th>COMPANY चे नाव</th>
+                                <th>पदाचे नाव (Job Title)</th>
+                                <th>उमेदवाराचा संपर्क</th>
+                                <th>वेळ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todaysAppsTableBody">
+                            <tr><td colspan="5" class="empty-text">लोड होत आहे...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="apiSettingsTabSection" class="main-card" style="display:none;">
+                <div class="section-title"><i class="fa-solid fa-robot"></i> AI आणि Payment API सेटिंग्ज</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">येथे तुम्ही Gemini AI आणि Razorpay च्या API Keys मॅन्युअली अपडेट करू शकता.</p>
+
+                <!-- Gemini Settings -->
+                <div style="background:#f8fafc; border-radius:12px; padding:16px; border:1px solid #e2e8f0; max-width: 500px; margin-bottom: 15px;">
+                    <label style="font-size:11px; font-weight:700; color:var(--primary-dark);">Gemini API Key *</label>
+                    <input type="text" id="geminiApiKeyInput" class="form-input-admin" placeholder="AIzaSy...">
+                </div>
+
+                <!-- Razorpay Settings -->
+                <div style="background:#fffbeb; border-radius:12px; padding:16px; border:1px solid #fde68a; max-width: 500px; margin-bottom: 15px;">
+                    <div style="font-size:13px; font-weight:800; color:#b45309; margin-bottom:10px;"><i class="fa-solid fa-credit-card"></i> Razorpay Payment Gateway</div>
+                    
+                    <label style="font-size:11px; font-weight:700; color:#b45309;">Razorpay Key ID *</label>
+                    <input type="text" id="razorpayKeyIdInput" class="form-input-admin" placeholder="rzp_live_..." style="border-color:#fcd34d;">
+                    
+                    <label style="font-size:11px; font-weight:700; color:#b45309;">Razorpay Key Secret *</label>
+                    <input type="password" id="razorpayKeySecretInput" class="form-input-admin" placeholder="••••••••••••" style="border-color:#fcd34d;">
+                    <p style="font-size:10px; color:#b45309;">(ही Secret Key पूर्णपणे सुरक्षित राहील. कोणासोबतही शेअर करू नका.)</p>
+                </div>
+
+                <button class="admin-save-btn" onclick="saveAllApiKeys()" style="max-width: 500px; width: 100%;">सर्व API Keys सेव्ह करा</button>
+            </div>
+
         </div>
     </div>
 </div>
 
-<!-- Crop Modal -->
 <div class="modal-overlay" id="cropModal">
     <div class="modal-content" style="max-width:90%;">
         <div class="modal-header"><h3><i class="fa-solid fa-crop"></i> इमेज क्रॉप करा</h3><button class="close-modal" onclick="closeCropModal()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -587,7 +820,6 @@
     </div>
 </div>
 
-<!-- Notification Modal -->
 <div class="modal-overlay" id="notifModal">
     <div class="modal-content">
         <div class="modal-header"><h3>🔔 सूचना</h3><button class="close-modal" onclick="closeNotificationModal()"><i class="fa-solid fa-xmark"></i></button></div>
@@ -599,9 +831,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<!-- Cropper.js JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
 <script>
+    let dynamicGeminiApiKey = "";
+    let dynamicRazorpayKeyId = "";
+
     const firebaseConfig = {
         apiKey: "AIzaSyDVPmjmCUsJWVImkCDYVtVs52VLg0ufFtI",
         authDomain: "satara-jobs-ed6ab.firebaseapp.com",
@@ -624,12 +859,10 @@
     let hiringFilter = 'all';
     let referralFilter = 'all';
 
-    // Cropper variables
     let popupCropper = null;
     let popupMediaFile = null;
     let finalPopupCroppedFile = null;
 
-    // ---- CSV डाउनलोड फंक्शन ----
     function downloadTableAsCSV(tableId, filename) {
         const table = document.getElementById(tableId);
         if (!table) return;
@@ -637,7 +870,8 @@
         for (let row of table.rows) {
             let cols = [];
             for (let cell of row.cells) {
-                let text = cell.innerText.replace(/"/g, '""');
+                let text = cell.getAttribute('data-csv') ? cell.getAttribute('data-csv') : cell.innerText;
+                text = text.replace(/"/g, '""');
                 cols.push('"' + text + '"');
             }
             csv.push(cols.join(','));
@@ -649,7 +883,6 @@
         link.click();
     }
 
-    // ---- NOTIFICATION FUNCTIONS ----
     function addNotification(recipientPhone, recipientRole, type, title, message, relatedId = '') {
         return db.collection("notifications").add({
             recipientPhone, recipientRole, type, title, message, relatedId,
@@ -659,37 +892,34 @@
 
     function openNotificationModal() {
         db.collection("notifications")
-          .orderBy("createdAt", "desc")
-          .limit(30).get().then(snap => {
-              const list = document.getElementById('notifList');
-              list.innerHTML = '';
-              if (snap.empty) {
-                  list.innerHTML = '<p style="text-align:center; padding:20px;">कोणतीही सूचना नाही</p>';
-              } else {
-                  snap.forEach(doc => {
-                      const n = doc.data();
-                      const div = document.createElement('div');
-                      div.className = `notif-item ${n.isRead ? '' : 'unread'}`;
-                      div.innerHTML = `<strong>${n.title}</strong><p style="font-size:12px;">${n.message}</p><span class="time">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleTimeString('mr-IN') : ''}</span>`;
-                      div.onclick = () => {
-                          db.collection("notifications").doc(doc.id).update({ isRead: true });
-                          div.classList.remove('unread');
-                      };
-                      list.appendChild(div);
-                  });
-              }
-              document.getElementById('notifModal').style.display = 'flex';
-          }).catch(err => {
-              document.getElementById('notifList').innerHTML = '<p>त्रुटी: ' + err.message + '</p>';
-              document.getElementById('notifModal').style.display = 'flex';
-          });
+            .orderBy("createdAt", "desc")
+            .limit(30).get().then(snap => {
+                const list = document.getElementById('notifList');
+                list.innerHTML = '';
+                if (snap.empty) {
+                    list.innerHTML = '<p style="text-align:center; padding:20px;">कोणतीही सूचना नाही</p>';
+                } else {
+                    snap.forEach(doc => {
+                        const n = doc.data();
+                        const div = document.createElement('div');
+                        div.className = `notif-item ${n.isRead ? '' : 'unread'}`;
+                        div.innerHTML = `<strong>${n.title}</strong><p style="font-size:12px;">${n.message}</p><span class="time">${n.createdAt ? new Date(n.createdAt.toMillis()).toLocaleTimeString('mr-IN') : ''}</span>`;
+                        div.onclick = () => {
+                            db.collection("notifications").doc(doc.id).update({ isRead: true });
+                            div.classList.remove('unread');
+                        };
+                        list.appendChild(div);
+                    });
+                }
+                document.getElementById('notifModal').style.display = 'flex';
+            }).catch(err => {
+                document.getElementById('notifList').innerHTML = '<p>त्रुटी: ' + err.message + '</p>';
+                document.getElementById('notifModal').style.display = 'flex';
+            });
     }
 
-    function closeNotificationModal() {
-        document.getElementById('notifModal').style.display = 'none';
-    }
+    function closeNotificationModal() { document.getElementById('notifModal').style.display = 'none'; }
 
-    // ================== सुधारित लॉगिन ==================
     async function unlockAdminControlDashboard() {
         const phone = document.getElementById("adminAuthPhone").value.trim();
         const pass = document.getElementById("adminAuthPassword").value.trim();
@@ -780,6 +1010,45 @@
         }
     });
 
+    function loadApiKeys() {
+        db.collection("settings").doc("api_keys").onSnapshot(doc => {
+            if(doc.exists) {
+                const data = doc.data();
+                document.getElementById("geminiApiKeyInput").value = data.geminiKey || "";
+                document.getElementById("razorpayKeyIdInput").value = data.razorpayKeyId || "";
+                document.getElementById("razorpayKeySecretInput").value = data.razorpayKeySecret || "";
+                
+                dynamicGeminiApiKey = data.geminiKey || "";
+                dynamicRazorpayKeyId = data.razorpayKeyId || "";
+            }
+        });
+    }
+
+    async function saveAllApiKeys() {
+        const gKey = document.getElementById("geminiApiKeyInput").value.trim();
+        const rId = document.getElementById("razorpayKeyIdInput").value.trim();
+        const rSecret = document.getElementById("razorpayKeySecretInput").value.trim();
+        
+        const btn = document.querySelector("#apiSettingsTabSection .admin-save-btn");
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> सेव्ह होत आहे...";
+        
+        try {
+            await db.collection("settings").doc("api_keys").set({ 
+                geminiKey: gKey,
+                razorpayKeyId: rId,
+                razorpayKeySecret: rSecret
+            }, { merge: true });
+            
+            alert("✅ सर्व API Keys यशस्वीरित्या सेव्ह झाल्या!");
+            dynamicGeminiApiKey = gKey;
+            dynamicRazorpayKeyId = rId;
+        } catch(e) {
+            alert("त्रुटी: " + e.message);
+        } finally {
+            btn.innerHTML = "सर्व API Keys सेव्ह करा";
+        }
+    }
+
     function startAdminDashboardServices() {
         loadAnalytics();
         listenEmployers();
@@ -802,6 +1071,8 @@
         loadHiringTracker();
         loadReferralPayments();
         loadAllMembershipStatus();
+        loadTodaysApplications();
+        loadApiKeys();
     }
 
     function toggleSidebar() {
@@ -813,7 +1084,7 @@
         currentTab = type;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         const btnMap = {
-            employers:'tabEmpBtn', premium:'tabPremiumBtn', add_job:'tabAddJobBtn',
+            employers:'tabEmpBtn', premium:'tabPremiumBtn', add_job:'tabAddJobBtn', govt_jobs:'tabGovtJobsBtn',
             upload_ads:'tabUploadAdsBtn', rates:'tabRatesBtn', pin_campaigns:'tabPinCampaignsBtn',
             payment_verification:'tabPaymentVerificationBtn', upi_settings:'tabUpiSettingsBtn',
             inquiries:'tabInquiriesBtn', feedback:'tabFeedbackBtn', popup_message:'tabPopupMsgBtn',
@@ -821,33 +1092,42 @@
             membership_requests:'tabMembershipRequestsBtn', badge_settings:'tabBadgeSettingsBtn',
             membership_settings:'tabMembershipSettingsBtn', referral_payment_tracker:'tabReferralPaymentTrackerBtn',
             all_membership:'tabAllMembershipBtn',
+            admin_ads_status: 'tabAdminAdsStatusBtn',
+            job_applications: 'tabJobApplicationsBtn',
+            admin_jobs_apps: 'tabAdminJobsAppsBtn',
             all_employers:'tabAllEmpBtn', all_seekers:'tabAllSeekersBtn',
-            clear_mobile:'tabClearMobileBtn', all_jobs:'tabAllJobsBtn'
+            clear_mobile:'tabClearMobileBtn', all_jobs:'tabAllJobsBtn', todays_apps:'tabTodaysAppsBtn',
+            api_settings:'tabApiSettingsBtn'
         };
         if(btnMap[type]) document.getElementById(btnMap[type]).classList.add('active');
 
         const sections = [
-            'employerTabSection','premiumTabSection','addJobTabSection','uploadAdsTabSection',
+            'employerTabSection','premiumTabSection','addJobTabSection','govtJobsTabSection','uploadAdsTabSection',
             'ratesTabSection','pinCampaignsTabSection','paymentVerificationTabSection',
             'upiSettingsTabSection','inquiriesTabSection','feedbackTabSection','popupMessageTabSection',
             'biAnalyticsTabSection','hiringTrackerTabSection','membershipRequestsTabSection',
             'badgeSettingsTabSection','membershipSettingsTabSection','referralPaymentTrackerTabSection',
-            'allMembershipTabSection',
-            'allEmployersTabSection','allSeekersTabSection','clearMobileTabSection','allJobsTabSection'
+            'allMembershipTabSection','adminAdsStatusTabSection','jobApplicationsTabSection',
+            'adminJobsAppsTabSection',
+            'allEmployersTabSection','allSeekersTabSection','clearMobileTabSection','allJobsTabSection', 'todaysAppsTabSection',
+            'apiSettingsTabSection'
         ];
         sections.forEach(id => document.getElementById(id).style.display = 'none');
 
         const sectionMap = {
-            employers:'employerTabSection', premium:'premiumTabSection', add_job:'addJobTabSection',
+            employers:'employerTabSection', premium:'premiumTabSection', add_job:'addJobTabSection', govt_jobs:'govtJobsTabSection',
             upload_ads:'uploadAdsTabSection', rates:'ratesTabSection', pin_campaigns:'pinCampaignsTabSection',
             payment_verification:'paymentVerificationTabSection', upi_settings:'upiSettingsTabSection',
             inquiries:'inquiriesTabSection', feedback:'feedbackTabSection', popup_message:'popupMessageTabSection',
             bi_analytics:'biAnalyticsTabSection', hiring_tracker:'hiringTrackerTabSection',
             membership_requests:'membershipRequestsTabSection', badge_settings:'badgeSettingsTabSection',
             membership_settings:'membershipSettingsTabSection', referral_payment_tracker:'referralPaymentTrackerTabSection',
-            all_membership:'allMembershipTabSection',
+            all_membership:'allMembershipTabSection', admin_ads_status: 'adminAdsStatusTabSection',
+            job_applications: 'jobApplicationsTabSection',
+            admin_jobs_apps: 'adminJobsAppsTabSection',
             all_employers:'allEmployersTabSection', all_seekers:'allSeekersTabSection',
-            clear_mobile:'clearMobileTabSection', all_jobs:'allJobsTabSection'
+            clear_mobile:'clearMobileTabSection', all_jobs:'allJobsTabSection', todays_apps:'todaysAppsTabSection',
+            api_settings:'apiSettingsTabSection'
         };
         if (sectionMap[type]) document.getElementById(sectionMap[type]).style.display = 'block';
 
@@ -858,11 +1138,764 @@
         if (type === 'membership_settings') listenMembershipSettings();
         if (type === 'referral_payment_tracker') loadReferralPayments();
         if (type === 'all_membership') loadAllMembershipStatus();
+        if (type === 'todays_apps') loadTodaysApplications();
+        if (type === 'admin_ads_status') loadAdminAdsStatusOnly();
+        if (type === 'job_applications') loadJobDropdown();
+        if (type === 'admin_jobs_apps') loadAdminJobsDropdown(); 
 
         toggleSidebar();
     }
 
-    // ================== सर्व मेंबरशिप स्टेटस ==================
+    async function adminSubmitAdBooking() {
+        const type = document.getElementById("adminAdType").value;
+        const days = document.getElementById("adminAdDays").value;
+        const company = document.getElementById("adminAdCompany").value.trim();
+        const contact = document.getElementById("adminAdContact").value.trim();
+        const file = document.getElementById("adminAdMediaFile").files[0];
+
+        if (!days || !company || !contact || !file) {
+            alert("सर्व माहिती आणि जाहिरातीची फाईल (इमेज/व्हिडिओ) आवश्यक आहे!");
+            return;
+        }
+
+        const btn = document.getElementById("adminAdSubmitBtn");
+        btn.disabled = true;
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> पोस्ट होत आहे...";
+
+        try {
+            const mediaUrl = await uploadFileToCloudinary(file);
+            await db.collection("ad_bookings").add({
+                adType: type,
+                adDurationDays: days,
+                companyName: company,
+                contactNumber: contact,
+                mediaUrl: mediaUrl,
+                status: "approved", 
+                postedByAdmin: true,
+                submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            alert("✅ जाहिरात यशस्वीरित्या थेट मंजूर आणि पोस्ट झाली!");
+            
+            document.getElementById("adminAdDays").value = '';
+            document.getElementById("adminAdCompany").value = '';
+            document.getElementById("adminAdContact").value = '';
+            document.getElementById("adminAdMediaFile").value = '';
+            
+            loadAdminAdBookings('approved');
+            loadAdminAdsStatusOnly();
+        } catch (e) {
+            alert("त्रुटी: " + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = "थेट मंजूर जाहिरात पोस्ट करा";
+        }
+    }
+
+    function loadAdminAdsStatusOnly() {
+        db.collection("ad_bookings")
+          .where("postedByAdmin", "==", true)
+          .onSnapshot(snap => {
+            const tbody = document.getElementById("adminAdsStatusTableBody");
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-text">ॲडमिनने अद्याप कोणतीही जाहिरात टाकलेली नाही.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            snap.forEach(doc => {
+                const ad = doc.data();
+                const dateStr = ad.submittedAt ? new Date(ad.submittedAt.toMillis()).toLocaleDateString('mr-IN') : '-';
+                
+                let currentStatusHtml = '<span class="status-badge" style="background:var(--success);color:white;">लाईव्ह (मंजूर)</span>';
+                if(ad.status === 'pending') {
+                    currentStatusHtml = '<span class="status-badge" style="background:var(--warning);color:white;">प्रलंबित</span>';
+                }
+
+                html += `<tr>
+                    <td><strong>${ad.companyName || '-'}</strong></td>
+                    <td>${ad.adType || '-'}</td>
+                    <td>${ad.adDurationDays || '-'} दिवस</td>
+                    <td>${currentStatusHtml}</td>
+                    <td>${dateStr}</td>
+                    <td>
+                        <button class="action-btn btn-delete" onclick="deleteAdBooking('${doc.id}')"><i class="fa-solid fa-trash"></i> डिलीट</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }, error => {
+            console.error("Error loading admin ads:", error);
+            document.getElementById("adminAdsStatusTableBody").innerHTML = `<tr><td colspan="6" class="empty-text" style="color:red;">डेटा लोड करताना त्रुटी: ${error.message}</td></tr>`;
+        });
+    }
+
+    let currentSelectedJobForWA = null;
+
+    function loadJobDropdown() {
+        db.collection("jobs").orderBy("createdAt", "desc").get().then(snap => {
+            const dropdown = document.getElementById("jobSelectDropdown");
+            let options = '<option value="">-- कृपया जॉब निवडा --</option>';
+            snap.forEach(doc => {
+                const job = doc.data();
+                const title = job.title || 'No Title';
+                const comp = job.companyName || job.company || 'Unknown Company';
+                options += `<option value="${doc.id}">🏢 ${comp} - 💼 ${title}</option>`;
+            });
+            dropdown.innerHTML = options;
+        }).catch(err => {
+            console.error("Error loading jobs for dropdown:", err);
+            document.getElementById("jobSelectDropdown").innerHTML = `<option value="">त्रुटी: ${err.message}</option>`;
+        });
+    }
+
+    async function fetchApplicantsForJob(jobId) {
+        const tbody = document.getElementById("jobApplicantsTableBody");
+        const waBtnContainer = document.getElementById("waBtnContainer");
+        const selectAllCheckbox = document.getElementById("selectAllApps");
+        
+        if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        if (waBtnContainer) waBtnContainer.style.display = 'none';
+
+        if (!jobId) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून जॉब निवडा.</td></tr>';
+            currentSelectedJobForWA = null;
+            return;
+        }
+
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-text"><i class="fa-solid fa-spinner fa-spin"></i> अर्ज लोड होत आहेत...</td></tr>';
+
+        try {
+            const jobDoc = await db.collection("jobs").doc(jobId).get();
+            if (!jobDoc.exists) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:red;">जॉब सापडला नाही.</td></tr>';
+                return;
+            }
+            currentSelectedJobForWA = { id: jobDoc.id, ...jobDoc.data() };
+
+            const snap = await db.collection("applications").where("jobId", "==", jobId).get();
+
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:var(--warning);">या नोकरीसाठी अद्याप कोणतेही अर्ज आलेले नाहीत.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            let hasUnsent = false;
+
+            snap.forEach(doc => {
+                const app = doc.data();
+                const appId = doc.id;
+                const timeStr = app.appliedAt ? new Date(app.appliedAt.toMillis()).toLocaleString('mr-IN', { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+                
+                let resumeDisplay = '—';
+                let rawResumeUrl = app.resumeUrl || app.resume || '—';
+                if (rawResumeUrl !== '—') {
+                    if (rawResumeUrl.toLowerCase().includes('.pdf')) {
+                        let downloadUrl = rawResumeUrl;
+                        if (downloadUrl.includes('/upload/')) {
+                            downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+                        }
+                        resumeDisplay = `<a href="${downloadUrl}" target="_blank" style="background:var(--accent); color:white; padding:6px 10px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:700; display:inline-block; white-space:nowrap;"><i class="fa-solid fa-file-pdf"></i> PDF डाऊनलोड</a>`;
+                    } else {
+                        resumeDisplay = `<a href="${rawResumeUrl}" target="_blank" style="color:var(--accent); font-weight:700; white-space:nowrap;"><i class="fa-solid fa-image"></i> फोटो पहा</a>`;
+                    }
+                }
+
+                const isShared = app.sharedOnWhatsApp === true;
+                let checkboxHtml = '';
+                let statusHtml = '';
+                
+                if(isShared) {
+                    statusHtml = '<span class="status-badge" style="background:#10b981;color:white;">✅ सेंड केले</span>';
+                    checkboxHtml = '<input type="checkbox" disabled title="ऑलरेडी सेंड केले आहे">';
+                } else {
+                    statusHtml = '<span class="status-badge" style="background:#f59e0b;color:white;">⏳ पेंडिंग</span>';
+                    checkboxHtml = `<input type="checkbox" class="app-checkbox" value="${appId}" data-name="${app.applicantName || '-'}" data-phone="${app.applicantPhone || '-'}" data-resume="${rawResumeUrl}">`;
+                    hasUnsent = true;
+                }
+
+                html += `<tr>
+                    <td style="text-align:center;">${checkboxHtml}</td>
+                    <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
+                    <td>${app.applicantPhone || '-'}</td>
+                    <td>${timeStr}</td>
+                    <td>${resumeDisplay}</td>
+                    <td>${statusHtml}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+
+            if (waBtnContainer) {
+                waBtnContainer.style.display = hasUnsent ? 'block' : 'none';
+            }
+
+        } catch(err) {
+            console.error("Error fetching applicants:", err);
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`;
+        }
+    }
+
+    function toggleAllApps(source) {
+        const checkboxes = document.querySelectorAll('.app-checkbox');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+    }
+
+    async function sendSelectedViaWhatsApp() {
+        if(!currentSelectedJobForWA) return;
+        
+        const checkboxes = document.querySelectorAll('.app-checkbox:checked');
+        if(checkboxes.length === 0) {
+            alert("कृपया पाठवण्यासाठी किमान एक अर्ज (पेंडिंग) निवडा.");
+            return;
+        }
+        
+        const empPhone = currentSelectedJobForWA.employerPhone || currentSelectedJobForWA.phone;
+        if(!empPhone) {
+            alert("या नोकरीच्या मालकाचा/कंपनीचा मोबाईल नंबर उपलब्ध नाही.");
+            return;
+        }
+
+        let msg = `*कंपनी:* ${currentSelectedJobForWA.companyName || currentSelectedJobForWA.company || '-'}\n`;
+        msg += `*पदाचे नाव:* ${currentSelectedJobForWA.title || '-'}\n`;
+        msg += `खालील उमेदवारांनी नोकरीसाठी अर्ज केला आहे:\n\n`;
+        
+        let updatePromises = [];
+        let i = 1;
+
+        checkboxes.forEach(cb => {
+            const name = cb.getAttribute('data-name');
+            const phone = cb.getAttribute('data-phone');
+            let resume = cb.getAttribute('data-resume');
+            
+            if(resume.includes('/upload/')) {
+                if (resume.toLowerCase().includes('.pdf')) {
+                   resume = resume.replace('/upload/', '/upload/fl_attachment/');
+                }
+            }
+
+            msg += `${i}. *नाव:* ${name}\n   *मोबाईल:* ${phone}\n   *रेझ्युमे:* ${resume !== '—' ? resume : 'उपलब्ध नाही'}\n\n`;
+            i++;
+            
+            const appId = cb.value;
+            updatePromises.push(db.collection("applications").doc(appId).update({ sharedOnWhatsApp: true }));
+        });
+
+        const btn = document.getElementById("btnSendWa");
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> पाठवत आहे...";
+        
+        try {
+            await Promise.all(updatePromises);
+            
+            let formattedPhone = empPhone;
+            if(formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
+            const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
+            
+            window.open(waUrl, '_blank');
+            
+            fetchApplicantsForJob(currentSelectedJobForWA.id);
+            btn.innerHTML = "<i class='fa-brands fa-whatsapp'></i> निवडलेले अर्ज कंपनीला पाठवा";
+            alert("✅ निवडलेले अर्ज यशस्वीरित्या WhatsApp साठी फॉरवर्ड केले आणि सिस्टममध्ये सेव्ह केले!");
+            
+        } catch(e) {
+            alert("स्टेटस अपडेट करताना त्रुटी आली: " + e.message);
+            btn.innerHTML = "<i class='fa-brands fa-whatsapp'></i> निवडलेले अर्ज कंपनीला पाठवा";
+        }
+    }
+
+    let currentSelectedAdminJobForWA = null;
+
+    function loadAdminJobsDropdown() {
+        db.collection("jobs").orderBy("createdAt", "desc").get().then(snap => {
+            const dropdown = document.getElementById("adminJobSelectDropdown");
+            let options = '<option value="">-- कृपया ॲडमिन जॉब निवडा --</option>';
+            snap.forEach(doc => {
+                const job = doc.data();
+                if (job.phone === "9579535290" || job.postedByAdmin === true) {
+                    const title = job.title || 'No Title';
+                    const comp = job.companyName || job.company || 'Unknown Company';
+                    options += `<option value="${doc.id}">🏢 ${comp} - 💼 ${title}</option>`;
+                }
+            });
+            dropdown.innerHTML = options;
+        }).catch(err => {
+            console.error("Error loading admin jobs for dropdown:", err);
+            document.getElementById("adminJobSelectDropdown").innerHTML = `<option value="">त्रुटी: ${err.message}</option>`;
+        });
+    }
+
+    async function fetchApplicantsForAdminJob(jobId) {
+        const tbody = document.getElementById("adminJobApplicantsTableBody");
+        const waBtnContainer = document.getElementById("adminWaBtnContainer");
+        const selectAllCheckbox = document.getElementById("selectAllAdminApps");
+        
+        if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        if (waBtnContainer) waBtnContainer.style.display = 'none';
+
+        if (!jobId) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून ॲडमिन जॉब निवडा.</td></tr>';
+            currentSelectedAdminJobForWA = null;
+            return;
+        }
+
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-text"><i class="fa-solid fa-spinner fa-spin"></i> अर्ज लोड होत आहेत...</td></tr>';
+
+        try {
+            const jobDoc = await db.collection("jobs").doc(jobId).get();
+            if (!jobDoc.exists) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:red;">जॉब सापडला नाही.</td></tr>';
+                return;
+            }
+            currentSelectedAdminJobForWA = { id: jobDoc.id, ...jobDoc.data() };
+
+            const snap = await db.collection("applications").where("jobId", "==", jobId).get();
+
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:var(--warning);">या नोकरीसाठी अद्याप कोणतेही अर्ज आलेले नाहीत.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            let hasUnsent = false;
+
+            snap.forEach(doc => {
+                const app = doc.data();
+                const appId = doc.id;
+                const timeStr = app.appliedAt ? new Date(app.appliedAt.toMillis()).toLocaleString('mr-IN', { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+                
+                let resumeDisplay = '—';
+                let rawResumeUrl = app.resumeUrl || app.resume || '—';
+                if (rawResumeUrl !== '—') {
+                    if (rawResumeUrl.toLowerCase().includes('.pdf')) {
+                        let downloadUrl = rawResumeUrl;
+                        if (downloadUrl.includes('/upload/')) {
+                            downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+                        }
+                        resumeDisplay = `<a href="${downloadUrl}" target="_blank" style="background:var(--accent); color:white; padding:6px 10px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:700; display:inline-block; white-space:nowrap;"><i class="fa-solid fa-file-pdf"></i> PDF डाऊनलोड</a>`;
+                    } else {
+                        resumeDisplay = `<a href="${rawResumeUrl}" target="_blank" style="color:var(--accent); font-weight:700; white-space:nowrap;"><i class="fa-solid fa-image"></i> फोटो पहा</a>`;
+                    }
+                }
+
+                const isShared = app.sharedOnWhatsAppAdmin === true;
+                let checkboxHtml = '';
+                let statusHtml = '';
+                
+                if(isShared) {
+                    statusHtml = '<span class="status-badge" style="background:#10b981;color:white;">✅ सेंड केले</span>';
+                    checkboxHtml = '<input type="checkbox" disabled title="ऑलरेडी सेंड केले आहे">';
+                } else {
+                    statusHtml = '<span class="status-badge" style="background:#f59e0b;color:white;">⏳ पेंडिंग</span>';
+                    checkboxHtml = `<input type="checkbox" class="admin-app-checkbox" value="${appId}" data-name="${app.applicantName || '-'}" data-phone="${app.applicantPhone || '-'}" data-resume="${rawResumeUrl}">`;
+                    hasUnsent = true;
+                }
+
+                html += `<tr>
+                    <td style="text-align:center;">${checkboxHtml}</td>
+                    <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
+                    <td>${app.applicantPhone || '-'}</td>
+                    <td>${timeStr}</td>
+                    <td>${resumeDisplay}</td>
+                    <td>${statusHtml}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+
+            if (waBtnContainer) {
+                waBtnContainer.style.display = hasUnsent ? 'block' : 'none';
+                const defaultNumber = currentSelectedAdminJobForWA.employerPhone || currentSelectedAdminJobForWA.contact || "";
+                if(defaultNumber && defaultNumber !== "9579535290") {
+                    document.getElementById("adminCustomWaNumber").value = defaultNumber;
+                } else {
+                    document.getElementById("adminCustomWaNumber").value = "";
+                }
+            }
+
+        } catch(err) {
+            console.error("Error fetching applicants:", err);
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`;
+        }
+    }
+
+    function toggleAllAdminApps(source) {
+        const checkboxes = document.querySelectorAll('.admin-app-checkbox');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+    }
+
+    async function sendAdminSelectedViaWhatsApp() {
+        if(!currentSelectedAdminJobForWA) return;
+        
+        const checkboxes = document.querySelectorAll('.admin-app-checkbox:checked');
+        if(checkboxes.length === 0) {
+            alert("कृपया पाठवण्यासाठी किमान एक अर्ज (पेंडिंग) निवडा.");
+            return;
+        }
+        
+        const empPhoneInput = document.getElementById("adminCustomWaNumber").value.trim();
+        if(!empPhoneInput || empPhoneInput.length < 10) {
+            alert("कृपया कंपनीच्या मालकाचा 10 अंकी WhatsApp नंबर टाका.");
+            return;
+        }
+
+        let msg = `*कंपनी:* ${currentSelectedAdminJobForWA.companyName || currentSelectedAdminJobForWA.company || '-'}\n`;
+        msg += `*पदाचे नाव:* ${currentSelectedAdminJobForWA.title || '-'}\n`;
+        msg += `खालील उमेदवारांनी तुमच्या नोकरीसाठी अर्ज केला आहे:\n\n`;
+        
+        let updatePromises = [];
+        let i = 1;
+
+        checkboxes.forEach(cb => {
+            const name = cb.getAttribute('data-name');
+            const phone = cb.getAttribute('data-phone');
+            let resume = cb.getAttribute('data-resume');
+            
+            if(resume.includes('/upload/')) {
+                if (resume.toLowerCase().includes('.pdf')) {
+                   resume = resume.replace('/upload/', '/upload/fl_attachment/');
+                }
+            }
+
+            msg += `${i}. *नाव:* ${name}\n   *मोबाईल:* ${phone}\n   *रेझ्युमे:* ${resume !== '—' ? resume : 'उपलब्ध नाही'}\n\n`;
+            i++;
+            
+            const appId = cb.value;
+            updatePromises.push(db.collection("applications").doc(appId).update({ sharedOnWhatsAppAdmin: true }));
+        });
+
+        const btn = document.getElementById("btnSendAdminWa");
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> पाठवत आहे...";
+        
+        try {
+            await Promise.all(updatePromises);
+            
+            let formattedPhone = empPhoneInput;
+            if(formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
+            const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
+            
+            window.open(waUrl, '_blank');
+            
+            fetchApplicantsForAdminJob(currentSelectedAdminJobForWA.id);
+            btn.innerHTML = "<i class='fa-brands fa-whatsapp'></i> निवडलेले अर्ज पाठवा";
+            alert("✅ निवडलेले अर्ज यशस्वीरित्या WhatsApp साठी फॉरवर्ड केले आणि सिस्टममध्ये सेव्ह केले!");
+            
+        } catch(e) {
+            alert("स्टेटस अपडेट करताना त्रुटी आली: " + e.message);
+            btn.innerHTML = "<i class='fa-brands fa-whatsapp'></i> निवडलेले अर्ज पाठवा";
+        }
+    }
+
+    async function runAIAutoFill() {
+        const fileInput = document.getElementById("aiImageInput");
+        const file = fileInput.files[0];
+        if(!file) { alert("कृपया आधी जाहिरातीचा फोटो निवडा!"); return; }
+
+        const btn = document.getElementById("aiAutoFillBtn");
+        btn.disabled = true;
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> AI वाचत आहे...";
+
+        if(!dynamicGeminiApiKey) {
+            alert("कृपया आधी '२३. AI आणि API सेटिंग्ज' मेनूमध्ये जाऊन Gemini API Key सेट करा.");
+            btn.disabled = false;
+            btn.innerHTML = "<i class='fa-solid fa-robot'></i> AI ने फॉर्म भरा (जादू पहा)";
+            return;
+        }
+
+        try {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                try {
+                    const base64Image = reader.result.split(',')[1];
+                    const mimeType = file.type;
+
+                    const payload = {
+                        contents: [{
+                            parts: [
+                                { text: `You are an expert data extractor. Extract the following details from this Marathi government job notification image. Return exactly this JSON structure with the extracted values in Marathi. If a field is not found, leave it blank ("").
+{
+  "department": "Name of department (e.g. स्टाफ सिलेक्शन कमिशन)",
+  "post": "Name of post (e.g. लिपिक)",
+  "vacancies": "Total vacancies (e.g. 376)",
+  "qualification": "Educational qualification",
+  "ageLimit": "Age limit",
+  "fee": "Application fee",
+  "lastDate": "Last date to apply"
+}` },
+                                { inlineData: { mimeType: mimeType, data: base64Image } }
+                            ]
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    };
+
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${dynamicGeminiApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || "API Request Failed");
+                    }
+
+                    if(data && data.candidates && data.candidates.length > 0) {
+                        let aiText = data.candidates[0].content.parts[0].text;
+                        const parsedData = JSON.parse(aiText);
+                        
+                        document.getElementById("govtDept").value = parsedData.department || '';
+                        document.getElementById("govtPost").value = parsedData.post || '';
+                        document.getElementById("govtVacancies").value = parsedData.vacancies || '';
+                        document.getElementById("govtEdu").value = parsedData.qualification || '';
+                        document.getElementById("govtAge").value = parsedData.ageLimit || '';
+                        document.getElementById("govtFee").value = parsedData.fee || '';
+                        document.getElementById("govtLastDate").value = parsedData.lastDate || '';
+                        
+                        alert("✨ AI ने फोटो वाचून माहिती भरली आहे! कृपया एकदा तपासून पहा.");
+                    } else {
+                        alert("AI ला फोटो वाचता आला नाही. (Empty Response)");
+                    }
+                } catch (innerError) {
+                    console.error("Inner Error:", innerError);
+                    alert("AI एरर: " + innerError.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = "<i class='fa-solid fa-robot'></i> AI ने फॉर्म भरा (जादू पहा)";
+                }
+            };
+        } catch (error) {
+            console.error("Outer Error:", error);
+            alert("सिस्टीम एरर: " + error.message);
+            btn.disabled = false;
+            btn.innerHTML = "<i class='fa-solid fa-robot'></i> AI ने फॉर्म भरा (जादू पहा)";
+        }
+    }
+
+    async function postGovtJob() {
+        const dept = document.getElementById("govtDept").value.trim();
+        const post = document.getElementById("govtPost").value.trim();
+        const vac = document.getElementById("govtVacancies").value.trim();
+        const edu = document.getElementById("govtEdu").value.trim();
+        const age = document.getElementById("govtAge").value.trim();
+        const fee = document.getElementById("govtFee").value.trim();
+        const lastDate = document.getElementById("govtLastDate").value.trim();
+        const link = document.getElementById("govtLink").value.trim();
+        const pdfFile = document.getElementById("govtPdf").files[0];
+
+        if(!dept || !post || !lastDate || !link) {
+            alert("कृपया विभागाचे नाव, पदाचे नाव, शेवटची तारीख आणि लिंक नक्की भरा!");
+            return;
+        }
+
+        const btn = document.getElementById("govtSubmitBtn");
+        btn.disabled = true;
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> पब्लिश होत आहे...";
+
+        try {
+            let pdfUrl = '';
+            if (pdfFile) {
+                pdfUrl = await uploadFileToCloudinary(pdfFile);
+            }
+            
+            let descText = "";
+            if(vac) descText += `एकूण जागा: ${vac}\n`;
+            if(edu) descText += `शैक्षणिक पात्रता: ${edu}\n`;
+            if(age) descText += `वयोमर्यादा: ${age}\n`;
+            if(fee) descText += `फी: ${fee}\n`;
+            if(lastDate) descText += `शेवटची तारीख: ${lastDate}`;
+            
+            await db.collection("jobs").add({
+                isGovtJob: true,
+                title: post,
+                company: dept,
+                companyName: dept,
+                location: "Maharashtra", 
+                salary: "Govt Pay Scale",
+                qualification: edu || "Any",
+                experience: "Fresher / Experienced",
+                description: descText.trim(),
+                vacancies: vac,
+                ageLimit: age,
+                fee: fee,
+                lastDate: lastDate,
+                applyLink: link,
+                pdfUrl: pdfUrl,
+                isApproved: true,
+                isPremium: false,
+                isUrgent: false,
+                phone: "9579535290",
+                postedByAdmin: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            alert("✅ सरकारी नोकरी यशस्वीरित्या पब्लिश झाली!");
+            
+            document.getElementById("govtDept").value = '';
+            document.getElementById("govtPost").value = '';
+            document.getElementById("govtVacancies").value = '';
+            document.getElementById("govtEdu").value = '';
+            document.getElementById("govtAge").value = '';
+            document.getElementById("govtFee").value = '';
+            document.getElementById("govtLastDate").value = '';
+            document.getElementById("govtLink").value = '';
+            document.getElementById("govtPdf").value = '';
+            document.getElementById("aiImageInput").value = '';
+            
+            btn.disabled = false;
+            btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> सरकारी नोकरी पब्लिश करा";
+            
+        } catch (e) {
+            alert("त्रुटी: " + e.message);
+            btn.disabled = false;
+            btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> सरकारी नोकरी पब्लिश करा";
+        }
+    }
+
+    function loadTodaysApplications() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+
+        db.collection("applications")
+            .where("appliedAt", ">=", firebase.firestore.Timestamp.fromDate(today))
+            .orderBy("appliedAt", "desc")
+            .onSnapshot(snap => {
+                const tbody = document.getElementById("todaysAppsTableBody");
+                const countSpan = document.getElementById("todaysAppsCount");
+                
+                countSpan.innerText = snap.size;
+
+                if (snap.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-text">आज अद्याप कोणताही अर्ज आलेला नाही.</td></tr>';
+                    return;
+                }
+
+                let html = "";
+                snap.forEach(doc => {
+                    const app = doc.data();
+                    const timeStr = app.appliedAt ? new Date(app.appliedAt.toMillis()).toLocaleTimeString('mr-IN', {hour: '2-digit', minute:'2-digit'}) : '-';
+                    
+                    html += `<tr>
+                        <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
+                        <td>${app.companyName || '-'}</td>
+                        <td>${app.jobTitle || '-'}</td>
+                        <td>${app.applicantPhone || '-'}</td>
+                        <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${timeStr}</span></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            }, error => {
+                console.error("Error fetching today's apps: ", error);
+                document.getElementById("todaysAppsTableBody").innerHTML = `<tr><td colspan="5" class="empty-text" style="color:red;">डेटा लोड करताना त्रुटी: ${error.message}</td></tr>`;
+            });
+    }
+
+    function loadAdminAdBookings(status) {
+        const btnPending = document.getElementById('btnPendingAds');
+        const btnApproved = document.getElementById('btnApprovedAds');
+        const btnAll = document.getElementById('btnAllAds');
+        if(btnPending) btnPending.classList.remove('active');
+        if(btnApproved) btnApproved.classList.remove('active');
+        if(btnAll) btnAll.classList.remove('active');
+        
+        if(status === 'pending' && btnPending) btnPending.classList.add('active');
+        else if(status === 'approved' && btnApproved) btnApproved.classList.add('active');
+        else if(btnAll) btnAll.classList.add('active');
+
+        let query = db.collection("ad_bookings");
+        if (status !== 'all') {
+            query = query.where("status", "==", status);
+        }
+
+        query.onSnapshot(snap => {
+            const tbody = document.getElementById("adminAdBookingsList");
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-text">कोणतीही जाहिरात आढळली नाही.</td></tr>';
+                return;
+            }
+            
+            let docs = [];
+            snap.forEach(d => docs.push({id: d.id, ...d.data()}));
+            docs.sort((a,b) => (b.submittedAt?.toMillis()||0) - (a.submittedAt?.toMillis()||0));
+
+            tbody.innerHTML = docs.map(ad => {
+                const st = ad.status === 'approved' ? '<span class="status-badge" style="background:var(--success);color:white;">मंजूर</span>' : '<span class="status-badge" style="background:var(--warning);color:white;">प्रलंबित</span>';
+                return `<tr>
+                    <td>${ad.companyName || '-'}</td>
+                    <td>${ad.contactNumber || ad.employerPhone || '-'}</td>
+                    <td>${ad.adType || '-'}</td>
+                    <td>${ad.adDurationDays || '-'}</td>
+                    <td>${st}</td>
+                    <td>${ad.mediaUrl ? `<a href="${ad.mediaUrl}" target="_blank" style="color:var(--accent);">पहा</a>` : '—'}</td>
+                    <td>
+                        ${ad.status === 'pending' ? `<button class="action-btn btn-approve" onclick="approvePayment('${ad.id}','ad_booking')">मंजूर</button>` : ''}
+                        <button class="action-btn btn-delete" onclick="deleteAdBooking('${ad.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        });
+    }
+
+    async function deleteAdBooking(id) {
+        if(confirm("ही जाहिरात डिलीट करायची का?")) {
+            await db.collection("ad_bookings").doc(id).delete();
+        }
+    }
+
+    function listenAdRates() {
+        db.collection("settings").doc("rates").onSnapshot(doc => {
+            if (doc.exists) {
+                const d = doc.data();
+                document.getElementById("valSplash").value = d.splashPrice || '';
+                document.getElementById("valSplashDays").value = d.splashDays || '';
+                document.getElementById("valSticky").value = d.stickyPrice || '';
+                document.getElementById("valStickyDays").value = d.stickyDays || '';
+                document.getElementById("valCategory").value = d.categoryPrice || '';
+                document.getElementById("valCategoryDays").value = d.categoryDays || '';
+                document.getElementById("valUrgent").value = d.urgentPrice || '';
+                document.getElementById("valUrgentDays").value = d.urgentDays || '';
+                document.getElementById("valVideoRate").value = d.videoPrice || '';
+                document.getElementById("valVideoDays").value = d.videoDays || '';
+                document.getElementById("valPremiumPlan1Price").value = d.plan1Price || '';
+                document.getElementById("valPremiumPlan1Days").value = d.plan1Days || '';
+                document.getElementById("valPremiumPlan2Price").value = d.plan2Price || '';
+                document.getElementById("valPremiumPlan2Days").value = d.plan2Days || '';
+                document.getElementById("valPremiumPlan3Price").value = d.plan3Price || '';
+                document.getElementById("valPremiumPlan3Days").value = d.plan3Days || '';
+                document.getElementById("valCommissionPercentage").value = d.commissionPercentage || '';
+            }
+        });
+    }
+
+    async function saveAdRates() {
+        const data = {
+            splashPrice: document.getElementById("valSplash").value,
+            splashDays: document.getElementById("valSplashDays").value,
+            stickyPrice: document.getElementById("valSticky").value,
+            stickyDays: document.getElementById("valStickyDays").value,
+            categoryPrice: document.getElementById("valCategory").value,
+            categoryDays: document.getElementById("valCategoryDays").value,
+            urgentPrice: document.getElementById("valUrgent").value,
+            urgentDays: document.getElementById("valUrgentDays").value,
+            videoPrice: document.getElementById("valVideoRate").value,
+            videoDays: document.getElementById("valVideoDays").value,
+            plan1Price: document.getElementById("valPremiumPlan1Price").value,
+            plan1Days: document.getElementById("valPremiumPlan1Days").value,
+            plan2Price: document.getElementById("valPremiumPlan2Price").value,
+            plan2Days: document.getElementById("valPremiumPlan2Days").value,
+            plan3Price: document.getElementById("valPremiumPlan3Price").value,
+            plan3Days: document.getElementById("valPremiumPlan3Days").value,
+            commissionPercentage: document.getElementById("valCommissionPercentage").value
+        };
+        try {
+            await db.collection("settings").doc("rates").set(data, { merge: true });
+            alert("✅ सर्व दर यशस्वीरित्या सेव्ह झाले!");
+        } catch (e) {
+            alert("दर सेव्ह करताना त्रुटी: " + e.message);
+        }
+    }
+
     function loadAllMembershipStatus() {
         db.collection("users").onSnapshot(snap => {
             const tbody = document.getElementById("allMembershipTableBody");
@@ -888,7 +1921,6 @@
         });
     }
 
-    // ================== हायरिंग ट्रॅकर ==================
     function loadHiringTracker() {
         db.collection("applications").orderBy("appliedAt","desc").onSnapshot(snap => {
             allHiringTrackerRows = [];
@@ -962,7 +1994,6 @@
         } catch (e) { alert("त्रुटी: " + e.message); }
     }
 
-    // ================== मेंबरशिप विनंत्या ==================
     function listenMembershipRequests() {
         db.collection("users").where("membershipStatus","==","pending_admin_approval").onSnapshot(snap => {
             const tbody = document.getElementById("membershipRequestsBody");
@@ -988,41 +2019,72 @@
             }).join('');
         });
     }
+    
     async function approveMembershipUpgrade(phone) {
         if (!confirm("मेंबरशिप अपग्रेड मंजूर करायची?")) return;
-        const userDoc = await db.collection("users").doc(phone).get();
-        const user = userDoc.data();
-        const plan = user.membershipUpgradeRequestedPlan || 'silver';
-        const expiry = new Date(); expiry.setMonth(expiry.getMonth()+1);
-        await db.collection("users").doc(phone).update({
-            membershipPlan: plan,
-            membershipExpiry: firebase.firestore.Timestamp.fromDate(expiry),
-            membershipStatus: 'active',
-            membershipUpgradeRequestedPlan: firebase.firestore.FieldValue.delete()
-        });
-        await db.collection("notifications").add({
-            recipientPhone: phone, recipientRole: 'employer', type: 'membership_approved',
-            title: 'मेंबरशिप अपग्रेड मंजूर', message: `तुमची ${plan} मेंबरशिप मंजूर झाली आहे.`,
-            isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("✅ मेंबरशिप मंजूर!");
+        try {
+            const userDoc = await db.collection("users").doc(phone).get();
+            if (!userDoc.exists) { alert("वापरकर्ता सापडला नाही."); return; }
+            const user = userDoc.data();
+            const plan = user.membershipUpgradeRequestedPlan || user.membershipPlan || 'silver';
+            const expiry = new Date();
+            expiry.setMonth(expiry.getMonth() + 1);
+            
+            await db.collection("users").doc(phone).set({
+                membershipPlan: plan,
+                membershipExpiry: firebase.firestore.Timestamp.fromDate(expiry),
+                membershipStatus: 'active',
+                membershipUpgradeRequestedPlan: "",
+                membershipUpgradeRequestedAt: "",
+                membershipPaymentScreenshot: ""
+            }, { merge: true });
+            
+            await db.collection("notifications").add({
+                recipientPhone: phone,
+                recipientRole: user.role || 'employer',
+                type: 'membership_approved',
+                title: '✅ मेंबरशिप अपग्रेड मंजूर',
+                message: `तुमची ${plan} मेंबरशिप मंजूर झाली आहे.`,
+                isRead: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("✅ मेंबरशिप मंजूर!");
+        } catch (e) {
+            console.error("Approve error:", e);
+            alert("त्रुटी: " + e.message);
+        }
     }
+    
     async function rejectMembershipUpgrade(phone) {
         if (!confirm("मेंबरशिप विनंती नाकारायची?")) return;
-        await db.collection("users").doc(phone).update({
-            membershipStatus: 'active',
-            membershipUpgradeRequestedPlan: firebase.firestore.FieldValue.delete(),
-            membershipPaymentScreenshot: firebase.firestore.FieldValue.delete()
-        });
-        await db.collection("notifications").add({
-            recipientPhone: phone, recipientRole: 'employer', type: 'membership_rejected',
-            title: 'मेंबरशिप विनंती नाकारली', message: 'तुमची मेंबरशिप अपग्रेड विनंती नाकारण्यात आली.',
-            isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("नाकारली.");
+        try {
+            const userDoc = await db.collection("users").doc(phone).get();
+            if (!userDoc.exists) { alert("वापरकर्ता सापडला नाही."); return; }
+            const user = userDoc.data();
+            
+            await db.collection("users").doc(phone).set({
+                membershipStatus: 'active',
+                membershipUpgradeRequestedPlan: "",
+                membershipUpgradeRequestedAt: "",
+                membershipPaymentScreenshot: ""
+            }, { merge: true });
+            
+            await db.collection("notifications").add({
+                recipientPhone: phone,
+                recipientRole: user.role || 'employer',
+                type: 'membership_rejected',
+                title: 'मेंबरशिप विनंती नाकारली',
+                message: 'तुमची मेंबरशिप अपग्रेड विनंती नाकारण्यात आली.',
+                isRead: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("नाकारली.");
+        } catch (e) {
+            console.error("Reject error:", e);
+            alert("त्रुटी: " + e.message);
+        }
     }
 
-    // ================== बॅज सेटिंग्ज ==================
     function listenBadgeSettings() {
         db.collection("settings").doc("badges").onSnapshot(doc => {
             if (doc.exists) {
@@ -1053,7 +2115,6 @@
         alert("✅ बॅज सेटिंग्ज सेव्ह झाल्या!");
     }
 
-    // ================== मेंबरशिप सेटिंग्ज ==================
     function listenMembershipSettings() {
         db.collection("settings").doc("membership").onSnapshot(doc => {
             if (doc.exists) {
@@ -1100,7 +2161,6 @@
         alert("✅ मेंबरशिप सेटिंग्ज सेव्ह झाल्या!");
     }
 
-    // ================== रेफरल पेमेंट ट्रॅकर ==================
     function loadReferralPayments() {
         db.collection("referrals").orderBy("createdAt","desc").onSnapshot(snap => {
             allReferralPaymentRows = [];
@@ -1147,7 +2207,6 @@
         alert("↩ अनपेड मार्क केलं.");
     }
 
-    // ================== सर्व जॉब्स लोड ==================
     function loadAllJobs() {
         db.collection("jobs").orderBy("createdAt", "desc").onSnapshot(snap => {
             allJobsArray = [];
@@ -1215,7 +2274,6 @@
         }
     }
 
-    // ================== अॅनालिटिक्स ==================
     function loadAnalytics() {
         db.collection("users").where("role","==","seeker").onSnapshot(s => document.getElementById("countSeekers").innerText = s.size);
         db.collection("users").where("role","==","employer").onSnapshot(s => document.getElementById("countEmployers").innerText = s.size);
@@ -1228,7 +2286,6 @@
     }
     function updatePending(u,p) { document.getElementById("countPending").innerText = u+p; }
 
-    // ================== UPI सेटिंग्ज ==================
     async function loadUpiId() {
         const doc = await db.collection("settings").doc("upi").get();
         if(doc.exists) document.getElementById("upiIdInput").value = doc.data().id || '';
@@ -1240,7 +2297,6 @@
         alert("UPI ID सेव्ह झाली!");
     }
 
-    // ================== पिन कॅम्पेन ==================
     async function savePinCampaign() {
         const paidDays = parseInt(document.getElementById("campPaidDays").value);
         const freeDays = parseInt(document.getElementById("campFreeDays").value);
@@ -1284,7 +2340,6 @@
     }
     async function deleteCampaign(id) { if(confirm("कॅम्पेन हटवायचा?")) { await db.collection("pin_campaigns").doc(id).delete(); } }
 
-    // ================== पॉपअप मेसेज ==================
     function handlePopupMediaSelect(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1315,9 +2370,13 @@
         }, 'image/png');
     }
     async function uploadFileToCloudinary(file) {
-        const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", "satara_jobs");
-        const res = await fetch("https://api.cloudinary.com/v1_1/dkv5qenbu/auto/upload", { method: "POST", body: fd });
-        const data = await res.json(); if (data.error) throw new Error(data.error.message);
+        const fd = new FormData(); 
+        fd.append("file", file); 
+        fd.append("upload_preset", "satara_jobs");
+        const resourceType = file.type.startsWith('video/') ? 'video' : 'auto';
+        const res = await fetch(`https://api.cloudinary.com/v1_1/dkv5qenbu/${resourceType}/upload`, { method: "POST", body: fd });
+        const data = await res.json(); 
+        if (data.error) throw new Error(data.error.message);
         return data.secure_url;
     }
     async function savePopupMessage() {
@@ -1354,7 +2413,6 @@
     }
     async function deletePopupMessage(id) { if(confirm("मेसेज डिलीट करायचा?")) { await db.collection("popup_messages").doc(id).delete(); } }
 
-    // ================== पेमेंट व्हेरिफिकेशन ==================
     function listenPaymentVerification() {
         const renderAll = () => {
             let allRows = [];
@@ -1414,7 +2472,7 @@
         } else if(type === 'pin_job') {
             await db.collection("pendingPayments").doc(id).update({ status:"rejected" });
             const req = (await db.collection("pendingPayments").doc(id).get()).data();
-            if (req && req.employerPhone) await db.collection("notifications").add({ recipientPhone: req.employerPhone, recipientRole: 'employer', type: 'pin_rejected', title: 'पिन जॉब नाकारले', message: 'तुमची पिन जॉब विनंती नाकारण्यात आली आहे.', relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            if (req && req.employerPhone) await db.collection("notifications").add({ recipientPhone: req.employerPhone, recipientRole: 'employer', type: 'pin_rejected', title: 'पिन जॉब नाकारले', message: 'तुमची पिन जॉब विनंती नाकारण्यात आली.', relatedId: id, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         } else {
             await db.collection("ad_bookings").doc(id).update({ status:"rejected" });
             const adDoc = await db.collection("ad_bookings").doc(id).get(); const ad = adDoc.data();
@@ -1423,18 +2481,6 @@
         listenPaymentVerification();
     }
 
-    function updateTotalNotif() {
-        const emp = parseInt(document.getElementById("badgeEmp").innerText)||0;
-        const premium = parseInt(document.getElementById("badgePremium").innerText)||0;
-        const ads = parseInt(document.getElementById("badgeAds").innerText)||0;
-        const pay = parseInt(document.getElementById("badgePayment").innerText)||0;
-        const mem = parseInt(document.getElementById("badgeMembership").innerText)||0;
-        const total = emp+premium+ads+pay+mem;
-        document.getElementById("totalNotifCount").innerText = total;
-        document.getElementById("totalNotifCount").style.display = total>0?'flex':'none';
-    }
-
-    // ================== मालक पडताळणी ==================
     function listenEmployers() {
         db.collection("users").where("isVerified","==","pending").onSnapshot(snap => {
             allEmployerRows = []; snap.forEach(doc => allEmployerRows.push({ id:doc.id, ...doc.data() }));
@@ -1447,7 +2493,22 @@
     function renderEmployerTable(rows) {
         const tbody = document.getElementById("employerTableBody");
         if(!rows.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-text">कोणतीही प्रलंबित रिक्वेस्ट नाही.</td></tr>'; return; }
-        tbody.innerHTML = rows.map(u => `<tr><td>${u.name||'नाही'}</td><td><strong>${u.phone}</strong></td><td>${u.verificationDocType||'Other'}</td><td>${u.verificationDocDesc||'-'}</td><td><a href="${u.verificationDocUrl}" target="_blank" style="color:var(--accent);">पहा</a></td><td><button class="action-btn btn-approve" onclick="verifyEmp('${u.id}')">मंजूर करा</button></td></tr>`).join('');
+        
+        tbody.innerHTML = rows.map(u => {
+            let docLink = '—';
+            if (u.verificationDocUrl && u.verificationDocUrl !== '—') {
+                if (u.verificationDocUrl.toLowerCase().includes('.pdf')) {
+                    let downloadUrl = u.verificationDocUrl;
+                    if (downloadUrl.includes('/upload/')) {
+                        downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+                    }
+                    docLink = `<a href="${downloadUrl}" target="_blank" style="background:var(--accent); color:white; padding:6px 10px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:700; display:inline-block; white-space:nowrap;"><i class="fa-solid fa-file-pdf"></i> PDF डाऊनलोड</a>`;
+                } else {
+                    docLink = `<a href="${u.verificationDocUrl}" target="_blank" style="color:var(--accent); font-weight:700; white-space:nowrap;"><i class="fa-solid fa-image"></i> फोटो पहा</a>`;
+                }
+            }
+            return `<tr><td>${u.name||'नाही'}</td><td><strong>${u.phone}</strong></td><td>${u.verificationDocType||'Other'}</td><td>${u.verificationDocDesc||'-'}</td><td>${docLink}</td><td><button class="action-btn btn-approve" onclick="verifyEmp('${u.id}')">मंजूर करा</button></td></tr>`;
+        }).join('');
     }
     async function verifyEmp(uid) {
         if(confirm("मंजूर करायचे?")) {
@@ -1511,77 +2572,6 @@
         alert("पोस्ट झाली!");
     }
 
-    // ================== जाहिरात बुकिंग ==================
-    function loadAdminAdBookings(filter = 'pending') {
-        document.querySelectorAll('#uploadAdsTabSection .tab-btn').forEach(b => b.classList.remove('active'));
-        if (filter === 'pending') document.getElementById('btnPendingAds').classList.add('active');
-        else if (filter === 'approved') document.getElementById('btnApprovedAds').classList.add('active');
-        else document.getElementById('btnAllAds').classList.add('active');
-        const listDiv = document.getElementById('adminAdBookingsList');
-        listDiv.innerHTML = '<tr><td colspan="7" class="empty-text">लोड होत आहे...</td></tr>';
-        let query = db.collection("ad_bookings").orderBy("submittedAt", "desc");
-        if (filter === 'pending') query = query.where("status", "==", "pending");
-        else if (filter === 'approved') query = query.where("status", "==", "approved");
-        query.get().then(snapshot => {
-            listDiv.innerHTML = '';
-            if (snapshot.empty) { listDiv.innerHTML = '<tr><td colspan="7" class="empty-text">कोणतीही जाहिरात नाही.</td></tr>'; return; }
-            snapshot.forEach(doc => {
-                const ad = doc.data(); const adId = doc.id;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td><strong>${ad.companyName || '-'}</strong></td><td>${ad.contactNumber || '-'}</td><td>${ad.adType || '-'}</td><td>${ad.adDurationDays || '-'} दिवस</td><td><span class="status-badge" style="background:${ad.status==='approved'?'#10b981':'#f59e0b'}; color:white;">${ad.status}</span></td><td>${ad.mediaUrl ? `<a href="${ad.mediaUrl}" target="_blank">पहा</a>` : '—'}</td><td>${ad.status === 'pending' ? `<button class="action-btn btn-approve" onclick="approveAdBooking('${adId}')">✅ मंजूर</button>` : ''}<button class="action-btn btn-delete" onclick="deleteAdBooking('${adId}')">🗑 डिलीट</button></td>`;
-                listDiv.appendChild(tr);
-            });
-        }).catch(err => { listDiv.innerHTML = `<tr><td colspan="7" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`; });
-    }
-    async function approveAdBooking(adId) {
-        if (!confirm('ही जाहिरात मंजूर करायची का?')) return;
-        try {
-            await db.collection("ad_bookings").doc(adId).update({ status: "approved", approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
-            const adDoc = await db.collection("ad_bookings").doc(adId).get(); const ad = adDoc.data();
-            if (ad && ad.employerPhone) await db.collection("notifications").add({ recipientPhone: ad.employerPhone, recipientRole: 'employer', type: 'ad_approved', title: 'जाहिरात मंजूर', message: `तुमची '${ad.adType || 'जाहिरात'}' मंजूर झाली आहे.`, relatedId: adId, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            alert("✅ जाहिरात मंजूर झाली!"); loadAdminAdBookings('pending');
-        } catch (e) { alert("त्रुटी: " + e.message); }
-    }
-    async function deleteAdBooking(adId) {
-        if (!confirm('ही जाहिरात कायमची डिलीट करायची का?')) return;
-        try {
-            const adDoc = await db.collection("ad_bookings").doc(adId).get(); const ad = adDoc.data();
-            await db.collection("ad_bookings").doc(adId).delete();
-            if (ad && ad.employerPhone) await db.collection("notifications").add({ recipientPhone: ad.employerPhone, recipientRole: 'employer', type: 'ad_deleted', title: 'जाहिरात डिलीट', message: `तुमची '${ad.adType || 'जाहिरात'}' ॲडमिनने डिलीट केली आहे.`, relatedId: adId, isRead: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            alert("🗑 जाहिरात डिलीट झाली."); loadAdminAdBookings('all');
-        } catch (e) { alert("त्रुटी: " + e.message); }
-    }
-
-    function listenAdRates() {
-        db.collection("ad_rates").doc("current").onSnapshot(doc => {
-            if(doc.exists) {
-                const d=doc.data();
-                document.getElementById("valSplash").value=d.splashAd||''; document.getElementById("valSplashDays").value=d.splashDays||'';
-                document.getElementById("valSticky").value=d.stickyAd||''; document.getElementById("valStickyDays").value=d.stickyDays||'';
-                document.getElementById("valCategory").value=d.categoryAd||''; document.getElementById("valCategoryDays").value=d.categoryDays||'';
-                document.getElementById("valUrgent").value=d.urgentBadge||''; document.getElementById("valUrgentDays").value=d.urgentDays||'';
-                document.getElementById("valVideoRate").value=d.videoRate||''; document.getElementById("valVideoDays").value=d.videoDays||'';
-                document.getElementById("valPremiumPlan1Price").value=d.premiumPlan1Price||''; document.getElementById("valPremiumPlan1Days").value=d.premiumPlan1Days||'';
-                document.getElementById("valPremiumPlan2Price").value=d.premiumPlan2Price||''; document.getElementById("valPremiumPlan2Days").value=d.premiumPlan2Days||'';
-                document.getElementById("valPremiumPlan3Price").value=d.premiumPlan3Price||''; document.getElementById("valPremiumPlan3Days").value=d.premiumPlan3Days||'';
-            }
-        });
-    }
-    async function saveAdRates() {
-        const data={ 
-            splashAd:document.getElementById("valSplash").value, splashDays:document.getElementById("valSplashDays").value, 
-            stickyAd:document.getElementById("valSticky").value, stickyDays:document.getElementById("valStickyDays").value, 
-            categoryAd:document.getElementById("valCategory").value, categoryDays:document.getElementById("valCategoryDays").value, 
-            urgentBadge:document.getElementById("valUrgent").value, urgentDays:document.getElementById("valUrgentDays").value, 
-            videoRate:document.getElementById("valVideoRate").value, videoDays:document.getElementById("valVideoDays").value,
-            premiumPlan1Price:document.getElementById("valPremiumPlan1Price").value, premiumPlan1Days:document.getElementById("valPremiumPlan1Days").value,
-            premiumPlan2Price:document.getElementById("valPremiumPlan2Price").value, premiumPlan2Days:document.getElementById("valPremiumPlan2Days").value,
-            premiumPlan3Price:document.getElementById("valPremiumPlan3Price").value, premiumPlan3Days:document.getElementById("valPremiumPlan3Days").value
-        };
-        await db.collection("ad_rates").doc("current").set(data,{merge:true});
-        alert("सर्व दर सेव्ह झाले!");
-    }
-
     function listenInquiries() {
         db.collection("inquiries").where("status","==","Pending").onSnapshot(snap => {
             const tbody=document.getElementById("inquiriesTableBody");
@@ -1603,7 +2593,38 @@
     function listenAllSeekers() {
         db.collection("users").where("role","==","seeker").onSnapshot(snap => {
             const tbody = document.getElementById("allSeekersTableBody");
-            tbody.innerHTML = snap.docs.map(doc => { const u = doc.data(); return `<tr><td><strong>${u.name || 'अपूर्ण'}</strong></td><td>${u.email || '-'}</td><td>${u.phone || '-'}</td><td><button class="action-btn btn-delete" onclick="deleteUser('${doc.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`; }).join('');
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-text">कोणताही उमेदवार नाही.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = snap.docs.map(doc => { 
+                const u = doc.data(); 
+                const resumeUrl = u.resumeUrl || u.resume || '—';
+                
+                let resumeDisplay = '—';
+                if (resumeUrl !== '—') {
+                    if (resumeUrl.toLowerCase().includes('.pdf')) {
+                        let downloadUrl = resumeUrl;
+                        if (downloadUrl.includes('/upload/')) {
+                            downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+                        }
+                        resumeDisplay = `<a href="${downloadUrl}" target="_blank" style="background:var(--accent); color:white; padding:6px 10px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:700; display:inline-block; white-space:nowrap;"><i class="fa-solid fa-file-pdf"></i> PDF डाऊनलोड</a>`;
+                    } else {
+                        resumeDisplay = `<a href="${resumeUrl}" target="_blank" style="color:var(--accent); font-weight:700; white-space:nowrap;"><i class="fa-solid fa-image"></i> फोटो पहा</a>`;
+                    }
+                }
+
+                return `<tr>
+                    <td><strong>${u.name || 'अपूर्ण'}</strong></td>
+                    <td>${u.phone || doc.id || '-'}</td>
+                    <td>${u.email || '-'}</td>
+                    <td>${u.qualification || '-'}</td>
+                    <td>${u.experience || '-'}</td>
+                    <td>${u.location || u.city || '-'}</td>
+                    <td data-csv="${resumeUrl}">${resumeDisplay}</td>
+                    <td><button class="action-btn btn-delete" onclick="deleteUser('${doc.id}')"><i class="fa-solid fa-trash"></i> डिलीट</button></td>
+                </tr>`; 
+            }).join('');
         });
     }
 
@@ -1671,9 +2692,19 @@
             listenAllEmployers(); listenAllSeekers(); loadAnalytics(); loadAllJobs();
         } catch (err) { alert("डिलीट करताना त्रुटी: " + err.message); }
     }
+
+    function updateTotalNotif() {
+        const e = document.getElementById("badgeEmp").innerText === '0' ? 0 : parseInt(document.getElementById("badgeEmp").innerText);
+        const p = document.getElementById("badgePremium").innerText === '0' ? 0 : parseInt(document.getElementById("badgePremium").innerText);
+        const a = document.getElementById("badgeAds").innerText === '0' ? 0 : parseInt(document.getElementById("badgeAds").innerText);
+        const m = document.getElementById("badgeMembership").innerText === '0' ? 0 : parseInt(document.getElementById("badgeMembership").innerText);
+        const pay = document.getElementById("badgePayment").innerText === '0' ? 0 : parseInt(document.getElementById("badgePayment").innerText);
+        const total = e + p + a + m + pay;
+        document.getElementById("totalNotifCount").innerText = total;
+        document.getElementById("totalNotifCount").style.display = total > 0 ? 'flex' : 'none';
+    }
 </script>
 
-<!-- Service Worker Registration -->
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')

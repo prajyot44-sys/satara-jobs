@@ -60,13 +60,24 @@
 </head>
 <body>
 
+    <div id="installBanner" style="display: none; position: fixed; top: 75px; left: 16px; right: 16px; background: linear-gradient(135deg, var(--secondary), var(--primary)); color: white; padding: 14px 16px; border-radius: 16px; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); align-items: center; justify-content: space-between; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fa-solid fa-mobile-screen-button" style="font-size: 22px;"></i>
+            <div>
+                <h4 style="font-size: 13px; font-weight: 700; margin: 0;">सातारा जॉब्स ॲप इन्स्टॉल करा</h4>
+                <p style="font-size: 11px; opacity: 0.85; margin: 2px 0 0 0;">थेट स्क्रीनवरून नोकऱ्या पाहण्यासाठी</p>
+            </div>
+        </div>
+        <button onclick="triggerInstall()" style="background: white; color: var(--primary); border: none; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">इन्स्टॉल</button>
+    </div>
+
     <div id="loader">
         <i class="fa-solid fa-circle-notch fa-spin"></i>
         <p style="font-size:13px;color:#64748b;">नोकरीचा सविस्तर तपशील उघडत आहे...</p>
     </div>
 
     <div class="header">
-        <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+        <i class="fa-solid fa-arrow-left" onclick="goBackOrHome()"></i>
         <h3>नोकरीची माहिती (Job Details)</h3>
     </div>
 
@@ -110,7 +121,6 @@
         </button>
     </div>
 
-    <!-- लपलेल्या लिंक -->
     <div class="hidden-links">
         <a href="https://mahabharti.in">महाभरती सरकारी नोकरी भरती पोर्टल</a>
         <a href="https://www.majhinaukri.in">माझी नोकरी लेटेस्ट जॉब अपडेट्स</a>
@@ -119,9 +129,9 @@
         <a href="https://mahajobs.maharashtra.gov.in">MahaJobs महाराष्ट्र सरकार</a>
         <a href="https://mahaswayam.gov.in">महास्वयंम रोजगार पोर्टल</a>
         <a href="https://ssc.nic.in">SSC स्टाफ सिलेक्शन कमिशन भरती</a>
-        <a href="https://satarajobs.com">सातारा जॉब्स सरकारी नोकरी</a>
-        <a href="https://www.satarajobs.com/job-details">सातारा जॉब्स नोकरी तपशील</a>
-        <a href="https://www.satarajobs.com/home">सातारा जॉब्स होम पेज</a>
+        <a href="https://satara-jobs-ed6ab.web.app">सातारा जॉब्स सरकारी नोकरी</a>
+        <a href="https://satara-jobs-ed6ab.web.app/job-details.html">सातारा जॉब्स नोकरी तपशील</a>
+        <a href="https://satara-jobs-ed6ab.web.app/home.html">सातारा जॉब्स होम पेज</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -144,7 +154,24 @@
         let userPhone = localStorage.getItem("user_phone");
         let jobDataGlobal = {};
         let jobId = null;
-        let referrerPhone = null; // URL वरून आलेला रेफरर
+        let referrerPhone = null;
+
+        function isGovtJobExpired(dateStr) {
+            if (!dateStr) return false;
+            const marathiMonths = { 
+                "जानेवारी": "Jan", "फेब्रुवारी": "Feb", "मार्च": "Mar", "एप्रिल": "Apr", "मे": "May", "जून": "Jun", 
+                "जुलै": "Jul", "ऑगस्ट": "Aug", "सप्टेंबर": "Sep", "ऑक्टोबर": "Oct", "नोव्हेंबर": "Nov", "डिसेंबर": "Dec" 
+            };
+            let engDateStr = String(dateStr).trim();
+            for (let key in marathiMonths) {
+                engDateStr = engDateStr.replace(new RegExp(key, 'g'), marathiMonths[key]);
+            }
+            const parsedDate = new Date(engDateStr);
+            if (isNaN(parsedDate.getTime())) return false; 
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return parsedDate < today;
+        }
 
         function extractJobId() {
             const params = new URLSearchParams(window.location.search);
@@ -159,7 +186,10 @@
         jobId = extractJobId();
         referrerPhone = extractReferrer();
 
-        // रेफररचे व्ह्यू पॉईंट्स वाढवा (जर रेफरल लिंक असेल तर)
+        function goBackOrHome() {
+            window.location.href = "home.html?fromJob=true";
+        }
+
         async function incrementReferrerViews() {
             if (!referrerPhone) return;
             try {
@@ -170,7 +200,7 @@
             } catch (e) { console.log("Referrer view increment error:", e); }
         }
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             jobId = extractJobId();
             referrerPhone = extractReferrer();
             if (user) {
@@ -178,6 +208,8 @@
                     userPhone = user.phoneNumber.replace("+91", "");
                     localStorage.setItem("user_phone", userPhone);
                 }
+                
+                // 15 सेकंदाचा रीडायरेक्ट कोड येथून काढून टाकला आहे, जेणेकरून युझर जॉब डिटेल्स वाचू शकेल.
             }
             incrementReferrerViews();
             loadJobDetails();
@@ -201,6 +233,10 @@
 
                 const job = doc.data();
                 jobDataGlobal = job;
+                
+                db.collection("jobs").doc(jobId).update({
+                    views: firebase.firestore.FieldValue.increment(1)
+                }).catch(err => console.log("Views update error:", err));
 
                 document.getElementById("jobTitle").innerText = job.title || "No Title";
                 document.getElementById("jobCompany").innerHTML = `<i class="fa-solid fa-building"></i> ${job.company || job.companyName || "Verified Employer"}`;
@@ -208,23 +244,40 @@
                 document.getElementById("jobSalary").innerText = job.salary ? `₹ ${job.salary}` : "Negotiable";
                 document.getElementById("jobQual").innerText = job.qualification || "Any";
                 document.getElementById("jobExp").innerText = job.experience || "Fresher";
-                document.getElementById("jobDescription").innerText = job.description || "माहिती उपलब्ध नाही.";
+                
+                if(job.isGovtJob && job.lastDate) {
+                    document.getElementById("jobDescription").innerHTML = `<strong style="color:var(--danger);">अंतिम तारीख: ${job.lastDate}</strong><br><br>${job.description || "माहिती उपलब्ध नाही."}`;
+                } else {
+                    document.getElementById("jobDescription").innerText = job.description || "माहिती उपलब्ध नाही.";
+                }
 
                 const isPremiumLive = job.isPremium === true || job.isPremium === "true";
                 const badgeArea = document.getElementById("badgeArea");
                 const mainCard = document.getElementById("mainJobCard");
 
-                // जॉब बंद आहे का तपासा
+                const isGovtExpired = job.isGovtJob && isGovtJobExpired(job.lastDate);
+
                 if (job.status === 'closed') {
                     badgeArea.innerHTML = `<div class="closed-tag">🔒 बंद</div>`;
                     document.getElementById("mainApplyBtn").disabled = true;
                     document.getElementById("mainApplyBtn").innerHTML = '<i class="fa-solid fa-lock"></i> ही जॉब बंद झाली आहे';
-                    // बंद असल्याचा मेसेज दाखवा
+                    
                     const container = document.querySelector('.container');
                     const closedAlert = document.createElement('div');
                     closedAlert.className = 'closed-alert';
                     closedAlert.innerHTML = '<i class="fa-solid fa-circle-info"></i> ही नोकरी बंद करण्यात आली आहे. कृपया इतर सक्रिय नोकऱ्या पहा.';
                     container.insertBefore(closedAlert, container.firstChild);
+                } 
+                else if (isGovtExpired) {
+                    badgeArea.innerHTML = `<div class="closed-tag" style="background:#94a3b8;">🔒 मुदत संपली</div>`;
+                    document.getElementById("mainApplyBtn").disabled = true;
+                    document.getElementById("mainApplyBtn").innerHTML = '<i class="fa-solid fa-calendar-xmark"></i> मुदत संपली (Expired)';
+                    document.getElementById("mainApplyBtn").style.background = '#cbd5e1';
+                    document.getElementById("mainApplyBtn").style.color = '#475569';
+                }
+                else if (job.isGovtJob) {
+                    badgeArea.innerHTML = `<div class="urgent-tag" style="background:var(--govt-purple); animation:none;">🏛️ Govt Job</div>`;
+                    document.getElementById("mainApplyBtn").innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> ऑनलाईन अर्ज करा (Apply Now)';
                 } else if (job.isUrgent === true) {
                     badgeArea.innerHTML = `<div class="urgent-tag"><i class="fa-solid fa-bolt"></i> Urgent</div>`;
                 } else if (isPremiumLive) {
@@ -232,7 +285,6 @@
                     mainCard.classList.add("premium-card");
                 }
 
-                // हायरिंग गॅरंटी बॅज
                 if (job.isCommissionModel === true) {
                     const guaranteeTag = document.createElement('div');
                     guaranteeTag.className = 'guarantee-tag';
@@ -241,20 +293,26 @@
                     mainCard.appendChild(guaranteeTag);
                 }
 
-                // शेअर बटण — URL मध्ये रेफरल कोड जोडा
                 document.getElementById("shareBtn").onclick = () => {
                     const sharePhone = userPhone || '';
-                    const shareLink = `https://satara-jobs-ed6ab.firebaseapp.com/job-details.html?id=${jobId}&ref=${sharePhone}`;
-                    const text = `*नव्या नोकरीची संधी!* 🚀\n\n*पद:* ${job.title}\n*कंपनी:* ${job.company || job.companyName || 'माहिती नाही'}\n\nलिंक: ${shareLink}`;
+                    const shareLink = `https://satara-jobs-ed6ab.web.app/job-details.html?id=${jobId}&ref=${sharePhone}`;
                     
-                    // शेअर स्टॅट्स अपडेट करा
+                    let text = '';
+                    if (job.isGovtJob) {
+                        text = `🏛️ *सरकारी नोकरीची मोठी संधी!* 🏛️\n\n🇮🇳 *विभाग (Dept):* ${job.company || 'माहिती नाही'}\n📌 *पद (Post):* ${job.title || 'माहिती नाही'}\n🎓 *शिक्षण:* ${job.qualification || 'Any'}\n🗓️ *अंतिम तारीख:* ${job.lastDate || 'लवकरच'}\n\nसविस्तर माहिती आणि थेट ऑनलाईन अर्ज करण्यासाठी खालील लिंकवर क्लिक करा:\n👉 ${shareLink}`;
+                    } else {
+                        const compName = job.company || job.companyName || 'Verified Employer';
+                        const salAmt = job.salary ? `₹ ${job.salary}` : "Negotiable";
+                        const loc = job.location || "Satara";
+                        text = `*नव्या नोकरीची सुवर्णसंधी!* 🚀\n\n📌 *पद (Post):* ${job.title}\n🏢 *कंपनी (Company):* ${compName}\n💰 *पगार (Salary):* ${salAmt}\n📍 *लोकेशन (Location):* ${loc}\n\nसविस्तर माहिती पाहण्यासाठी आणि अर्ज करण्यासाठी खालील लिंकवर क्लिक करा:\n👉 ${shareLink}`;
+                    }
+                    
                     if (sharePhone) {
                         db.collection("users").doc(sharePhone).set({
                             totalShares: firebase.firestore.FieldValue.increment(1),
                             weeklyShares: firebase.firestore.FieldValue.increment(1),
                             totalPoints: firebase.firestore.FieldValue.increment(1)
                         }, { merge: true }).then(() => {
-                            // बॅज चेक करा
                             db.collection("users").doc(sharePhone).get().then(userDoc => {
                                 if (userDoc.exists) {
                                     const u = userDoc.data();
@@ -281,8 +339,7 @@
                     }
                 };
 
-                // आधीच अर्ज केला आहे का तपासा
-                if (auth.currentUser && userPhone && job.status !== 'closed') {
+                if (auth.currentUser && userPhone && job.status !== 'closed' && !job.isGovtJob) {
                     db.collection("applications")
                         .where("applicantPhone", "==", userPhone)
                         .where("jobId", "==", jobId)
@@ -316,6 +373,11 @@
         }
 
         async function applyForJob() {
+            if (jobDataGlobal && jobDataGlobal.isGovtJob && jobDataGlobal.applyLink) {
+                window.open(jobDataGlobal.applyLink, '_blank');
+                return;
+            }
+
             const user = auth.currentUser;
             if (!user) {
                 alert("कृपया आधी लॉगिन करा.");
@@ -326,12 +388,11 @@
                 userPhone = localStorage.getItem("user_phone");
                 if (!userPhone) {
                     alert("प्रोफाइल माहिती गहाळ. कृपया प्रोफाइल पूर्ण करा.");
-                    window.location.href = "profile.html";
+                    window.location.replace("profile.html?compulsory=true");
                     return;
                 }
             }
 
-            // जॉब बंद असेल तर अर्ज करू नका
             if (jobDataGlobal.status === 'closed') {
                 alert("ही जॉब बंद झाली आहे. कृपया इतर सक्रिय नोकऱ्यांसाठी अर्ज करा.");
                 return;
@@ -343,11 +404,11 @@
 
             try {
                 const userDoc = await db.collection("users").doc(userPhone).get();
-                if (!userDoc.exists || !userDoc.data().profileCompleted) {
-                    alert("कृपया आधी तुमचे प्रोफाइल पूर्ण करा.");
-                    window.location.href = "profile.html";
-                    btn.disabled = false;
-                    btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> नोकरीसाठी अर्ज करा (Apply Now)";
+                const userData = userDoc.data() || {};
+                
+                if (userData.role !== 'employer' && !userData.profileCompleted) {
+                    alert("नोकरीसाठी अर्ज करण्यासाठी कृपया तुमची प्रोफाईल आणि रेझ्युमे पूर्ण करा."); // बदल केलेला मेसेज
+                    window.location.replace("profile.html?compulsory=true");
                     return;
                 }
 
@@ -362,38 +423,38 @@
                     return;
                 }
 
-                const profile = userDoc.data();
                 const job = jobDataGlobal;
+                const refPhone = referrerPhone || localStorage.getItem('jobReferrerPhone') || '';
 
-                // रेफरर फोन URL वरून किंवा स्टोअर केलेला
-                const refPhone = referrerPhone || '';
-
-                await db.collection("applications").add({
+                const appData = {
                     jobId: jobId,
                     applicantUid: user.uid,
                     applicantPhone: userPhone,
-                    applicantName: profile.name || '',
-                    applicantEmail: profile.email || '',
-                    applicantQualification: profile.qualification || '',
-                    applicantExperience: profile.experience || '',
-                    applicantSkills: profile.skills || '',
-                    applicantCity: profile.city || '',
-                    applicantResume: profile.resumeUrl || '',
+                    applicantName: userData.name || 'उमेदवार',
+                    applicantEmail: userData.email || '',
+                    applicantQualification: userData.qualification || '',
+                    applicantExperience: userData.experience || '',
+                    applicantSkills: userData.skills || '',
+                    applicantCity: userData.city || '',
+                    resumeUrl: userData.resumeUrl || userData.resume || '—', 
+                    applicantResume: userData.resumeUrl || userData.resume || '—', 
                     jobTitle: job.title || '',
                     companyName: job.company || job.companyName || '',
                     companyId: job.companyId || '',
+                    employerPhone: job.phone || job.employerPhone || '',
+                    realHrPhone: job.realHrPhone || '', 
                     referrerPhone: refPhone,
                     applicationSource: refPhone ? 'referral' : 'direct',
                     status: "Pending",
                     appliedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                };
 
-                // रेफररचे अर्ज पॉईंट्स वाढवा
-                if (refPhone) {
+                if (refPhone && refPhone !== userPhone) {
                     db.collection("users").doc(refPhone).set({
                         totalApplicationsViaReferral: firebase.firestore.FieldValue.increment(1)
                     }, { merge: true }).catch(() => {});
-                    // बॅज चेक
+                    localStorage.removeItem('jobReferrerPhone');
+                    
                     db.collection("users").doc(refPhone).get().then(uDoc => {
                         if (uDoc.exists) {
                             const apps = (uDoc.data().totalApplicationsViaReferral || 0) + 1;
@@ -412,6 +473,22 @@
                     });
                 }
 
+                await db.collection("applications").add(appData);
+
+                const empPhone = job.phone || job.employerPhone || '';
+                if (empPhone !== "9579535290" && !job.postedByAdmin) {
+                    await db.collection("notifications").add({
+                        recipientPhone: empPhone,
+                        recipientRole: 'employer',
+                        type: 'new_application',
+                        title: 'नवीन अर्ज आला आहे! 🚀',
+                        message: `${userData.name || 'एका उमेदवाराने'} तुमच्या '${job.title || 'नोकरी'}' साठी अर्ज केला आहे.`,
+                        relatedId: jobId,
+                        isRead: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
                 alert("🎉 अभिनंदन! तुमचा अर्ज यशस्वीरित्या पाठवला गेला.");
                 btn.innerText = "आधीच अर्ज केला आहे (Applied)";
                 btn.disabled = true;
@@ -422,9 +499,29 @@
                 btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> नोकरीसाठी अर्ज करा (Apply Now)";
             }
         }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').style.display = 'flex';
+        });
+
+        function triggerInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        window.location.href = "index.html";
+                    }
+                    document.getElementById('installBanner').style.display = 'none';
+                    deferredPrompt = null;
+                });
+            }
+        }
     </script>
 
-    <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js')

@@ -257,7 +257,7 @@
         </div>
         <div class="sidebar-menu">
             <button class="tab-btn active" id="tabEmpBtn" onclick="handleMenuClick('employers')"><i class="fa-solid fa-building-circle-check"></i><span>१. मालक/ HR मंजुरी</span><span class="badge" id="badgeEmp" style="display:none;">0</span></button>
-            <button class="tab-btn" id="tabPremiumBtn" onclick="handleMenuClick('premium')"><i class="fa-solid fa-star"></i><span>२. प्रीमियम नोकऱ्या</span><span class="badge" id="badgePremium" style="display:none;">0</span></button>
+            <button class="tab-btn" id="tabPremiumBtn" onclick="handleMenuClick('premium')"><i class="fa-solid fa-star"></i><span>२. प्रीमियम نوकऱ्या</span><span class="badge" id="badgePremium" style="display:none;">0</span></button>
             <button class="tab-btn" id="tabAddJobBtn" onclick="handleMenuClick('add_job')"><i class="fa-solid fa-briefcase"></i><span>३. नवीन जॉब पोस्ट करा</span></button>
             <button class="tab-btn" id="tabUploadAdsBtn" onclick="handleMenuClick('upload_ads')"><i class="fa-solid fa-rectangle-ad"></i><span>४. जाहिरात बुकिंग</span><span class="badge" id="badgeAds" style="display:none;">0</span></button>
             <button class="tab-btn" id="tabRatesBtn" onclick="handleMenuClick('rates')"><i class="fa-solid fa-indian-rupee-sign"></i><span>५. दर व्यवस्थापन</span></button>
@@ -1617,6 +1617,39 @@
         }
     }
 
+    // --- नवीन कॉम्प्रेशन फंक्शन (Huge Image Size Fix) ---
+    function compressImage(file, maxWidth = 1000) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // इमेज लहान करून Base64 मध्ये बदलणे
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                    resolve(compressedBase64);
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    }
+
     async function runAIAutoFill() {
         const fileInput = document.getElementById("aiImageInput");
         const file = fileInput.files[0];
@@ -1648,141 +1681,132 @@
         }
 
         try {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                try {
-                    const base64Image = reader.result.split(',')[1];
-                    const mimeType = file.type;
-                    
-                    let parsedData = null;
+            // येथे आपण नवीन compressImage फंक्शन वापरत आहोत ज्यामुळे एरर येणार नाही
+            const base64Image = await compressImage(file);
+            const mimeType = 'image/jpeg'; // कॉम्प्रेशन नंतर फॉरमॅट jpeg होईल
+            
+            let parsedData = null;
 
-                    if (currentActiveAiProvider === 'gemini') {
-                        // GEMINI LOGIC
-                        const payload = {
-                            contents: [{
-                                parts: [
-                                    { text: `You are an expert data extractor. Extract the following details from this Marathi government job notification image. Return exactly this JSON structure with the extracted values in Marathi. If a field is not found, leave it blank ("").\n{\n  "department": "Name of department (e.g. स्टाफ सिलेक्शन कमिशन)",\n  "post": "Name of post (e.g. लिपिक)",\n  "vacancies": "Total vacancies (e.g. 376)",\n  "qualification": "Educational qualification",\n  "ageLimit": "Age limit",\n  "fee": "Application fee",\n  "lastDate": "Last date to apply"\n}` },
-                                    { inlineData: { mimeType: mimeType, data: base64Image } }
-                                ]
-                            }],
-                            generationConfig: {
-                                responseMimeType: "application/json"
-                            }
-                        };
-
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${dynamicGeminiApiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-
-                        const data = await response.json();
-                        
-                        if (!response.ok) {
-                            throw new Error(data.error?.message || "Gemini API Request Failed");
-                        }
-
-                        if(data && data.candidates && data.candidates.length > 0) {
-                            let aiText = data.candidates[0].content.parts[0].text;
-                            aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                            parsedData = JSON.parse(aiText);
-                        } else {
-                            throw new Error("Empty Response from Gemini");
-                        }
-                    } 
-                    else if (currentActiveAiProvider === 'groq') {
-                        // GROQ LOGIC
-                        const promptText = `Extract the following details from this Marathi government job notification image and return strictly valid JSON (no markdown formatting, no backticks, only raw JSON):\n{\n  "department": "Name of department (in Marathi)",\n  "post": "Name of post (in Marathi)",\n  "vacancies": "Total vacancies",\n  "qualification": "Educational qualification",\n  "ageLimit": "Age limit",\n  "fee": "Application fee",\n  "lastDate": "Last date to apply"\n}`;
-                        
-                        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                            method: "POST",
-                            headers: {
-                                "Authorization": `Bearer ${dynamicGroqApiKey}`,
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                model: "llama-3.2-90b-vision-instruct",
-                                messages: [
-                                    {
-                                        role: "user",
-                                        content: [
-                                            { type: "text", text: promptText },
-                                            { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64Image}` } }
-                                        ]
-                                    }
-                                ],
-                                temperature: 0.1,
-                                response_format: { type: "json_object" }
-                            })
-                        });
-
-                        const data = await response.json();
-                        if (!response.ok) {
-                            throw new Error(data.error?.message || "Groq API Request Failed");
-                        }
-                        
-                        let aiText = data.choices[0].message.content;
-                        aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                        parsedData = JSON.parse(aiText);
+            if (currentActiveAiProvider === 'gemini') {
+                // GEMINI LOGIC (Updated to gemini-2.0-flash)
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: `You are an expert data extractor. Extract the following details from this Marathi government job notification image. Return exactly this JSON structure with the extracted values in Marathi. If a field is not found, leave it blank ("").\n{\n  "department": "Name of department (e.g. स्टाफ सिलेक्शन कमिशन)",\n  "post": "Name of post (e.g. लिपिक)",\n  "vacancies": "Total vacancies (e.g. 376)",\n  "qualification": "Educational qualification",\n  "ageLimit": "Age limit",\n  "fee": "Application fee",\n  "lastDate": "Last date to apply"\n}` },
+                            { inlineData: { mimeType: mimeType, data: base64Image } }
+                        ]
+                    }],
+                    generationConfig: {
+                        responseMimeType: "application/json"
                     }
-                    else if (currentActiveAiProvider === 'openrouter') {
-                        // OPENROUTER LOGIC
-                        const promptText = `Extract the following details from this Marathi government job notification image and return strictly valid JSON (no markdown formatting, no backticks, only raw JSON):\n{\n  "department": "Name of department (in Marathi)",\n  "post": "Name of post (in Marathi)",\n  "vacancies": "Total vacancies",\n  "qualification": "Educational qualification",\n  "ageLimit": "Age limit",\n  "fee": "Application fee",\n  "lastDate": "Last date to apply"\n}`;
-                        
-                        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                            method: "POST",
-                            headers: {
-                                "Authorization": `Bearer ${dynamicOpenRouterApiKey}`,
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                model: "meta-llama/llama-3.2-11b-vision-instruct:free",
-                                messages: [
-                                    {
-                                        role: "user",
-                                        content: [
-                                            { type: "text", text: promptText },
-                                            { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64Image}` } }
-                                        ]
-                                    }
-                                ]
-                            })
-                        });
+                };
 
-                        const data = await response.json();
-                        if (!response.ok) {
-                            throw new Error(data.error?.message || "OpenRouter API Request Failed");
-                        }
-                        
-                        let aiText = data.choices[0].message.content;
-                        aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
-                        parsedData = JSON.parse(aiText);
-                    }
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${dynamicGeminiApiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-                    // Populate the form if data is extracted successfully
-                    if (parsedData) {
-                        document.getElementById("govtDept").value = parsedData.department || '';
-                        document.getElementById("govtPost").value = parsedData.post || '';
-                        document.getElementById("govtVacancies").value = parsedData.vacancies || '';
-                        document.getElementById("govtEdu").value = parsedData.qualification || '';
-                        document.getElementById("govtAge").value = parsedData.ageLimit || '';
-                        document.getElementById("govtFee").value = parsedData.fee || '';
-                        document.getElementById("govtLastDate").value = parsedData.lastDate || '';
-                        
-                        alert(`✨ ${aiNameDisplay} ने फोटो वाचून माहिती भरली आहे! कृपया एकदा तपासून पहा.`);
-                    }
-
-                } catch (innerError) {
-                    console.error("Inner Error:", innerError);
-                    alert("AI एरर: " + innerError.message);
-                } finally {
-                    resetAiBtn();
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error?.message || "Gemini API Request Failed");
                 }
-            };
+
+                if(data && data.candidates && data.candidates.length > 0) {
+                    let aiText = data.candidates[0].content.parts[0].text;
+                    aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                    parsedData = JSON.parse(aiText);
+                } else {
+                    throw new Error("Empty Response from Gemini");
+                }
+            } 
+            else if (currentActiveAiProvider === 'groq') {
+                // GROQ LOGIC
+                const promptText = `Extract the following details from this Marathi government job notification image and return strictly valid JSON (no markdown formatting, no backticks, only raw JSON):\n{\n  "department": "Name of department (in Marathi)",\n  "post": "Name of post (in Marathi)",\n  "vacancies": "Total vacancies",\n  "qualification": "Educational qualification",\n  "ageLimit": "Age limit",\n  "fee": "Application fee",\n  "lastDate": "Last date to apply"\n}`;
+                
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${dynamicGroqApiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.2-90b-vision-instruct",
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    { type: "text", text: promptText },
+                                    { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64Image}` } }
+                                ]
+                            }
+                        ],
+                        temperature: 0.1,
+                        response_format: { type: "json_object" }
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error?.message || "Groq API Request Failed");
+                }
+                
+                let aiText = data.choices[0].message.content;
+                aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                parsedData = JSON.parse(aiText);
+            }
+            else if (currentActiveAiProvider === 'openrouter') {
+                // OPENROUTER LOGIC
+                const promptText = `Extract the following details from this Marathi government job notification image and return strictly valid JSON (no markdown formatting, no backticks, only raw JSON):\n{\n  "department": "Name of department (in Marathi)",\n  "post": "Name of post (in Marathi)",\n  "vacancies": "Total vacancies",\n  "qualification": "Educational qualification",\n  "ageLimit": "Age limit",\n  "fee": "Application fee",\n  "lastDate": "Last date to apply"\n}`;
+                
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${dynamicOpenRouterApiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "meta-llama/llama-3.2-11b-vision-instruct:free",
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    { type: "text", text: promptText },
+                                    { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64Image}` } }
+                                ]
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error?.message || "OpenRouter API Request Failed");
+                }
+                
+                let aiText = data.choices[0].message.content;
+                aiText = aiText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                parsedData = JSON.parse(aiText);
+            }
+
+            // Populate the form if data is extracted successfully
+            if (parsedData) {
+                document.getElementById("govtDept").value = parsedData.department || '';
+                document.getElementById("govtPost").value = parsedData.post || '';
+                document.getElementById("govtVacancies").value = parsedData.vacancies || '';
+                document.getElementById("govtEdu").value = parsedData.qualification || '';
+                document.getElementById("govtAge").value = parsedData.ageLimit || '';
+                document.getElementById("govtFee").value = parsedData.fee || '';
+                document.getElementById("govtLastDate").value = parsedData.lastDate || '';
+                
+                alert(`✨ ${aiNameDisplay} ने फोटो वाचून माहिती भरली आहे! कृपया एकदा तपासून पहा.`);
+            }
+
         } catch (error) {
-            console.error("Outer Error:", error);
-            alert("सिस्टीम एरर: " + error.message);
+            console.error("System Error:", error);
+            alert("सिस्टीम एरर किंवा फोटो खूप मोठा आहे: " + error.message);
+        } finally {
             resetAiBtn();
         }
     }

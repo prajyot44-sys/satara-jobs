@@ -296,13 +296,13 @@
             color: white; 
             border: none; 
             border-radius: 16px; 
-            padding: 7px 12px; 
-            font-size: 14px; 
+            padding: 7px 10px; 
+            font-size: 11px; 
             font-weight: 700; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
-            justify-content: center;
+            gap: 4px; 
         }
         .premium-tag { position: absolute; top: 8px; right: 8px; background: var(--premium); color: #5d4300; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 800; }
         .urgent-tag { position: absolute; top: 8px; right: 8px; background: var(--urgent); color: white; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 800; }
@@ -515,6 +515,20 @@
 <body>
 
     <div id="loader"><i class="fa-solid fa-circle-notch fa-spin"></i><p style="font-size:13px; color:#64748b; font-weight:600;">नोकऱ्या शोधत आहे...</p></div>
+
+    <!-- पद निवडण्यासाठीचा पॉपअप (Post Selection Modal) -->
+    <div id="postSelectModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(3px);">
+        <div style="background:white; width:90%; max-width:350px; padding:25px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+            <h3 style="font-size:16px; color:#0f172a; margin-bottom:8px;">कोणत्या पदासाठी अर्ज करायचा आहे?</h3>
+            <p style="font-size:11px; color:#64748b; margin-bottom:15px; line-height:1.5;">जर जाहिरातीत अनेक पदे (उदा. Sales, Manager, Clerk) असतील, तर तुमचे पद खाली टाईप करा.</p>
+            <input type="text" id="customPostInput" placeholder="पदाचे नाव लिहा (उदा. Technician)" style="width:100%; padding:12px; border-radius:10px; border:1px solid #cbd5e1; font-size:14px; margin-bottom:15px; outline:none;">
+            <input type="hidden" id="hiddenJobIdToApply">
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('postSelectModal').style.display='none'" style="flex:1; padding:12px; border-radius:10px; border:none; background:#f1f5f9; color:#475569; font-weight:700; cursor:pointer;">रद्द करा</button>
+                <button onclick="proceedWithApply()" style="flex:1; padding:12px; border-radius:10px; border:none; background:#00A3FF; color:white; font-weight:700; cursor:pointer;">कन्फर्म करा</button>
+            </div>
+        </div>
+    </div>
 
     <div id="inappBrowser" class="inapp-browser">
         <div class="inapp-header">
@@ -853,7 +867,7 @@
                     } else {
                         actionHtml = `
                             <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">पहा</button>
-                            <button class="action-btn" style="background:#8b5cf6; color:white;" onclick="event.stopPropagation(); window.open('${job.applyLink || '#'}', '_blank')">अप्लाय</button>
+                            <button id="applyBtn_${job.id}" class="action-btn apply-btn" onclick="event.stopPropagation(); quickApply('${job.id}')">अप्लाय</button>
                             <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i></button>
                         `;
                     }
@@ -916,7 +930,7 @@
 
         function openDetails(id) { if (id && id !== "undefined" && id !== "null") { window.location.href = "job-details.html?id=" + id; } }
 
-        // ── नवीन आणि अत्यंत कडक प्रोफाईल तपासणीसह Quick Apply फंक्शन ──
+        // ── नवीन आणि अत्यंत कडक प्रोफाईल तपासणीसह Quick Apply फंक्शन (सरकारी आणि खाजगी दोन्हीसाठी) ──
         async function quickApply(jobId) {
             const user = auth.currentUser;
             if (!user) {
@@ -947,7 +961,7 @@
                     document.getElementById('loader').style.display = 'none';
                     alert("⚠️ तुमची प्रोफाईल अपूर्ण आहे!\n\nनोकरीला अप्लाय करण्यासाठी कृपया आधी तुमचे 'नाव', 'शिक्षण' आणि 'रेझ्युमे (Resume)' नक्की अपलोड करा.");
                     window.location.href = "profile.html?compulsory=true";
-                    return; // जोपर्यंत प्रोफाईल अपडेट होत नाही, इथून पुढे कोड जाणारच नाही!
+                    return; 
                 }
 
                 // २. जॉबची माहिती घेणे
@@ -960,13 +974,6 @@
                     return;
                 }
 
-                if (job.isGovtJob) {
-                    document.getElementById('loader').style.display = 'none';
-                    if (job.applyLink) window.open(job.applyLink, '_blank');
-                    else alert("लिंक उपलब्ध नाही.");
-                    return;
-                }
-
                 // ३. आधीच अर्ज केला आहे का ते तपासणे
                 const already = await db.collection("applications")
                     .where("applicantPhone", "==", currentUserPhone)
@@ -975,14 +982,42 @@
                     
                 if (!already.empty) {
                     document.getElementById('loader').style.display = 'none';
-                    alert("आपण यापूर्वीच या नोकरीसाठी अर्ज केला आहे.");
+                    alert("आपण यापूर्वीच या नोकरीसाठी अर्ज केला आहे / लिंक उघडली आहे.");
                     return;
                 }
+
+                document.getElementById('loader').style.display = 'none';
+                
+                // जर प्रोफाईल पूर्ण असेल, तर पद विचारण्यासाठी पॉपअप उघडा
+                document.getElementById("hiddenJobIdToApply").value = jobId;
+                document.getElementById("customPostInput").value = "";
+                document.getElementById("postSelectModal").style.display = "flex";
+
+            } catch (err) {
+                document.getElementById('loader').style.display = 'none';
+                alert("अर्ज करताना त्रुटी: " + err.message);
+            }
+        }
+
+        // पॉपअपमध्ये पद टाईप करून 'कन्फर्म' केल्यावर हा कोड रन होईल
+        async function proceedWithApply() {
+            document.getElementById("postSelectModal").style.display = "none";
+            document.getElementById('loader').style.display = 'flex';
+
+            const jobId = document.getElementById("hiddenJobIdToApply").value;
+            const customPostName = document.getElementById("customPostInput").value.trim();
+            const currentUserPhone = localStorage.getItem("user_phone");
+
+            try {
+                const userDoc = await db.collection("users").doc(currentUserPhone).get();
+                const userData = userDoc.data() || {};
+                const jobDoc = await db.collection("jobs").doc(jobId).get();
+                const job = jobDoc.data();
 
                 // ४. अर्ज डेटाबेसमध्ये सेव्ह करणे
                 const appData = {
                     jobId: jobId,
-                    applicantUid: user.uid,
+                    applicantUid: auth.currentUser.uid,
                     applicantPhone: currentUserPhone,
                     applicantName: userData.name || 'उमेदवार',
                     applicantEmail: userData.email || '',
@@ -993,16 +1028,39 @@
                     resumeUrl: userData.resumeUrl || userData.resume || '—', 
                     applicantResume: userData.resumeUrl || userData.resume || '—', 
                     jobTitle: job.title || '',
+                    appliedForPost: customPostName || job.title, // <--- नवीन फिल्ड (युजरने टाईप केलेले पद)
                     companyName: job.company || job.companyName || '',
                     employerPhone: job.phone || job.employerPhone || '',
                     realHrPhone: job.hrWhatsapp || job.contact || job.employerPhone || '', 
-                    status: "Pending",
+                    status: job.isGovtJob ? "Govt Link Clicked" : "Pending",
                     appliedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
+                // ५. डेटाबेसमध्ये सेव्ह करा
                 await db.collection("applications").add(appData);
 
-                // ५. HR ला ॲपमध्ये नोटिफिकेशन पाठवणे
+                // ६. जर सरकारी नोकरी असेल, तर इथेच थांबवा आणि लिंकवर पाठवा
+                if (job.isGovtJob) {
+                    document.getElementById('loader').style.display = 'none';
+                    
+                    // बटण अपडेट करा
+                    const applyBtn = document.getElementById('applyBtn_' + jobId) || document.getElementById('mainApplyBtn');
+                    if(applyBtn) {
+                        applyBtn.innerText = "लिंक उघडली (Opened)";
+                        applyBtn.disabled = true;
+                        applyBtn.style.background = "#cbd5e1";
+                    }
+
+                    if (job.applyLink) {
+                        alert("तुमची माहिती ॲपमध्ये सेव्ह झाली आहे. आता तुम्हाला अधिकृत सरकारी वेबसाईटवर पाठवले जात आहे.");
+                        window.open(job.applyLink, '_blank');
+                    } else {
+                        alert("या नोकरीची अधिकृत लिंक उपलब्ध नाही.");
+                    }
+                    return; 
+                }
+
+                // ७. जर खाजगी नोकरी असेल, तर HR ला ॲपमध्ये नोटिफिकेशन पाठवणे
                 const hrPhone = job.hrWhatsapp || job.contact || job.employerPhone || job.phone || '';
                 
                 if (hrPhone && hrPhone !== "9579535290" && !job.postedByAdmin) {
@@ -1011,7 +1069,7 @@
                         recipientRole: 'employer',
                         type: 'new_application',
                         title: 'नवीन अर्ज आला आहे! 🚀',
-                        message: `${userData.name || 'एका उमेदवाराने'} तुमच्या '${job.title || 'नोकरी'}' साठी अर्ज केला आहे.`,
+                        message: `${userData.name || 'एका उमेदवाराने'} तुमच्या '${customPostName || job.title}' साठी अर्ज केला आहे.`,
                         relatedId: jobId,
                         isRead: false,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1021,11 +1079,11 @@
                 document.getElementById('loader').style.display = 'none';
                 alert("🎉 अभिनंदन! तुमचा अर्ज यशस्वीरित्या पाठवला गेला.");
 
-                // ६. HR ला थेट WhatsApp मेसेज पाठवणे (रेझ्युमे सहित)
+                // ८. HR ला थेट WhatsApp मेसेज पाठवणे (रेझ्युमे सहित)
                 if (hrPhone && hrPhone !== "9579535290") {
                     let waMsg = `*नमस्कार! मी 'सातारा जॉब्स' (Satara Jobs) ॲपवरून अर्ज करत आहे.* 🚀\n\n`;
                     waMsg += `🏢 *कंपनी:* ${job.companyName || job.company || '-'}\n`;
-                    waMsg += `💼 *पदाचे नाव:* ${job.title || '-'}\n\n`;
+                    waMsg += `💼 *पदासाठी अर्ज:* ${customPostName || job.title}\n\n`;
                     waMsg += `*माझी माहिती खालीलप्रमाणे आहे:*\n`;
                     waMsg += `👤 *नाव:* ${userData.name}\n`;
                     waMsg += `📱 *मोबाईल:* ${currentUserPhone}\n`;
@@ -1048,7 +1106,7 @@
                 }
 
                 // बटण डिसेबल करणे
-                const applyBtn = document.getElementById('applyBtn_' + jobId);
+                const applyBtn = document.getElementById('applyBtn_' + jobId) || document.getElementById('mainApplyBtn');
                 if(applyBtn) {
                     applyBtn.innerText = "Applied";
                     applyBtn.disabled = true;

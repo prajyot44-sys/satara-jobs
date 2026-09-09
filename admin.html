@@ -358,7 +358,7 @@
                         </label>
                     </div>
                 </div>
-                <button class="admin-save-btn" onclick="adminPostJob()" style="margin-top:16px;">थेट लाईव्ह पोस्ट करा</button>
+                <button class="admin-save-btn" onclick="adminPostJob()" style="margin-top:16px;">थेट लाईव्ह پست करा</button>
             </div>
 
             <div id="govtJobsTabSection" class="main-card" style="display:none;">
@@ -1369,14 +1369,20 @@
                     checkboxHtml = '<input type="checkbox" disabled title="ऑलरेडी सेंड केले आहे">';
                 } else {
                     statusHtml = '<span class="status-badge" style="background:#f59e0b;color:white;">⏳ पेंडिंग</span>';
-                    checkboxHtml = `<input type="checkbox" class="app-checkbox" value="${appId}" data-name="${app.applicantName || '-'}" data-phone="${app.applicantPhone || '-'}" data-resume="${rawResumeUrl}">`;
+                    
+                    // NEW: Added data-post attribute for the custom post typed by the user
+                    const actualPostName = app.appliedForPost || app.jobTitle || currentSelectedJobForWA.title || '-';
+                    checkboxHtml = `<input type="checkbox" class="app-checkbox" value="${appId}" data-name="${app.applicantName || '-'}" data-phone="${app.applicantPhone || '-'}" data-resume="${rawResumeUrl}" data-post="${actualPostName}">`;
                     hasUnsent = true;
                 }
 
                 html += `<tr>
                     <td style="text-align:center;">${checkboxHtml}</td>
                     <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
-                    <td><span style="color:var(--secondary); font-weight:700;">${app.jobTitle || currentSelectedJobForWA.title || '-'}</span></td>
+                    
+                    <!-- NEW: Display the custom post typed by user here -->
+                    <td><span style="color:var(--secondary); font-weight:700;">${app.appliedForPost ? app.appliedForPost + ' <span style="font-size:9px;color:red;">(निवडलेले)</span>' : (app.jobTitle || '-')}</span></td>
+                    
                     <td>${app.applicantPhone || '-'}</td>
                     <td>${timeStr}</td>
                     <td>${resumeDisplay}</td>
@@ -1418,7 +1424,7 @@
         let msg = `*नमस्कार! 'सातारा जॉब्स' (Satara Jobs) कडून...*\n\n`;
         msg += `तुमच्या कंपनीत सुरू असलेल्या भरतीसाठी आमच्या ॲपवरून खालील उमेदवारांनी अर्ज केले आहेत:\n\n`;
         msg += `🏢 *कंपनी:* ${currentSelectedJobForWA.companyName || currentSelectedJobForWA.company || '-'}\n`;
-        msg += `💼 *पदाचे नाव:* ${currentSelectedJobForWA.title || '-'}\n\n`;
+        msg += `💼 *मूळ जाहिरात:* ${currentSelectedJobForWA.title || '-'}\n\n`;
         msg += `*उमेदवारांची यादी:*\n`;
         
         let updatePromises = [];
@@ -1429,13 +1435,16 @@
             const phone = cb.getAttribute('data-phone');
             let resume = cb.getAttribute('data-resume');
             
+            // NEW: Extract the custom post selected by the user
+            const appliedPost = cb.getAttribute('data-post');
+            
             if(resume.includes('/upload/')) {
                 if (resume.toLowerCase().includes('.pdf')) {
                    resume = resume.replace('/upload/', '/upload/fl_attachment/');
                 }
             }
 
-            msg += `${i}. *नाव:* ${name}\n   *मोबाईल:* ${phone}\n   *रेझ्युमे:* ${resume !== '—' ? resume : 'उपलब्ध नाही'}\n\n`;
+            msg += `${i}. *नाव:* ${name}\n   *पदासाठी अर्ज:* ${appliedPost}\n   *मोबाईल:* ${phone}\n   *रेझ्युमे:* ${resume !== '—' ? resume : 'उपलब्ध नाही'}\n\n`;
             i++;
             
             const appId = cb.value;
@@ -1547,14 +1556,20 @@
                     checkboxHtml = '<input type="checkbox" disabled title="ऑलरेडी सेंड केले आहे">';
                 } else {
                     statusHtml = '<span class="status-badge" style="background:#f59e0b;color:white;">⏳ पेंडिंग</span>';
-                    checkboxHtml = `<input type="checkbox" class="admin-app-checkbox" value="${appId}" data-name="${app.applicantName || '-'}" data-phone="${app.applicantPhone || '-'}" data-resume="${rawResumeUrl}">`;
+                    
+                    // NEW: Added data-post attribute for the custom post typed by the user
+                    const actualPostName = app.appliedForPost || app.jobTitle || currentSelectedAdminJobForWA.title || '-';
+                    checkboxHtml = `<input type="checkbox" class="admin-app-checkbox" value="${appId}" data-name="${app.applicantName || '-'}" data-phone="${app.applicantPhone || '-'}" data-resume="${rawResumeUrl}" data-post="${actualPostName}">`;
                     hasUnsent = true;
                 }
 
                 html += `<tr>
                     <td style="text-align:center;">${checkboxHtml}</td>
                     <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
-                    <td><span style="color:var(--secondary); font-weight:700;">${app.jobTitle || currentSelectedAdminJobForWA.title || '-'}</span></td>
+                    
+                    <!-- NEW: Display the custom post typed by user here -->
+                    <td><span style="color:var(--secondary); font-weight:700;">${app.appliedForPost ? app.appliedForPost + ' <span style="font-size:9px;color:red;">(निवडलेले)</span>' : (app.jobTitle || '-')}</span></td>
+                    
                     <td>${app.applicantPhone || '-'}</td>
                     <td>${timeStr}</td>
                     <td>${resumeDisplay}</td>
@@ -1602,7 +1617,7 @@
         let msg = `*नमस्कार! 'सातारा जॉब्स' (Satara Jobs) कडून...*\n\n`;
         msg += `तुमच्या कंपनीत सुरू असलेल्या भरतीसाठी आमच्या ॲपवरून खालील उमेदवारांनी अर्ज केले आहेत:\n\n`;
         msg += `🏢 *कंपनी:* ${currentSelectedAdminJobForWA.companyName || currentSelectedAdminJobForWA.company || '-'}\n`;
-        msg += `💼 *पदाचे नाव:* ${currentSelectedAdminJobForWA.title || '-'}\n\n`;
+        msg += `💼 *मूळ जाहिरात:* ${currentSelectedAdminJobForWA.title || '-'}\n\n`;
         msg += `*उमेदवारांची यादी:*\n`;
         
         let updatePromises = [];
@@ -1613,13 +1628,16 @@
             const phone = cb.getAttribute('data-phone');
             let resume = cb.getAttribute('data-resume');
             
+            // NEW: Extract the custom post selected by the user
+            const appliedPost = cb.getAttribute('data-post');
+            
             if(resume.includes('/upload/')) {
                 if (resume.toLowerCase().includes('.pdf')) {
                    resume = resume.replace('/upload/', '/upload/fl_attachment/');
                 }
             }
 
-            msg += `${i}. *नाव:* ${name}\n   *मोबाईल:* ${phone}\n   *रेझ्युमे:* ${resume !== '—' ? resume : 'उपलब्ध नाही'}\n\n`;
+            msg += `${i}. *नाव:* ${name}\n   *पदासाठी अर्ज:* ${appliedPost}\n   *मोबाईल:* ${phone}\n   *रेझ्युमे:* ${resume !== '—' ? resume : 'उपलब्ध नाही'}\n\n`;
             i++;
             
             const appId = cb.value;

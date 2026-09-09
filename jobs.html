@@ -296,13 +296,13 @@
             color: white; 
             border: none; 
             border-radius: 16px; 
-            padding: 7px 10px; 
-            font-size: 11px; 
+            padding: 7px 12px; 
+            font-size: 14px; 
             font-weight: 700; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
-            gap: 4px; 
+            justify-content: center;
         }
         .premium-tag { position: absolute; top: 8px; right: 8px; background: var(--premium); color: #5d4300; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 800; }
         .urgent-tag { position: absolute; top: 8px; right: 8px; background: var(--urgent); color: white; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 800; }
@@ -702,8 +702,6 @@
                     if (job.status === 'closed') return;
                     allJobs.push(job);
                 });
-                // Regular jobs filter: keep non-premium or expired premium (already set to false)
-                // पण manageViralMatchingVisibility मध्ये allJobs वापरते त्यामुळे तशीच ठेवू.
                 manageViralMatchingVisibility();
                 applyFiltersAndRender();
                 document.getElementById('loader').style.display = 'none';
@@ -854,9 +852,9 @@
                         actionHtml = `<button class="action-btn" style="background:#e2e8f0; color:#64748b; border:1px solid #cbd5e1; cursor:not-allowed;" disabled>मुदत संपली</button>`;
                     } else {
                         actionHtml = `
-                            <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">View</button>
-                            <button class="action-btn" style="background:#8b5cf6; color:white;" onclick="event.stopPropagation(); window.open('${job.applyLink || '#'}', '_blank')">Apply Now</button>
-                            <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i> शेअर</button>
+                            <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">पहा</button>
+                            <button class="action-btn" style="background:#8b5cf6; color:white;" onclick="event.stopPropagation(); window.open('${job.applyLink || '#'}', '_blank')">अप्लाय</button>
+                            <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i></button>
                         `;
                     }
 
@@ -889,6 +887,7 @@
                     specialCardStyle = 'border-left:4px solid #16a34a; background:#f0fdf4;';
                     aiMatchCount++;
                 }
+                
                 html += `
                 <div class="job-card" style="${specialCardStyle}" data-id="${job.id}" onclick="openDetails(this.dataset.id)">
                     ${badgeHtml}
@@ -904,8 +903,9 @@
                         </div>
                         <div class="action-row">
                             <div class="job-date">पोस्ट: ${formattedDate}</div>
-                            <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">View</button>
-                            <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i> शेअर</button>
+                            <button class="action-btn view-btn" onclick="event.stopPropagation(); openDetails('${job.id}')">पहा</button>
+                            <button id="applyBtn_${job.id}" class="action-btn apply-btn" onclick="event.stopPropagation(); quickApply('${job.id}')">अप्लाय</button>
+                            <button class="share-wa-btn" onclick="event.stopPropagation(); shareJob('${job.id}')"><i class="fa-brands fa-whatsapp"></i></button>
                         </div>
                     </div>
                     <div class="save-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${job.id}', this)"><i class="fa-solid fa-heart"></i></div>
@@ -916,6 +916,152 @@
 
         function openDetails(id) { if (id && id !== "undefined" && id !== "null") { window.location.href = "job-details.html?id=" + id; } }
 
+        // ── नवीन आणि अत्यंत कडक प्रोफाईल तपासणीसह Quick Apply फंक्शन ──
+        async function quickApply(jobId) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("कृपया नोकरीसाठी अर्ज करण्यापूर्वी लॉगिन करा.");
+                window.location.href = "index.html";
+                return;
+            }
+            
+            let currentUserPhone = localStorage.getItem("user_phone");
+            if (!currentUserPhone) {
+                alert("⚠️ तुमची प्रोफाईल अपूर्ण आहे!\n\nनोकरीला अप्लाय करण्यासाठी कृपया आधी तुमची प्रोफाईल अपडेट करा.");
+                window.location.href = "profile.html?compulsory=true";
+                return;
+            }
+
+            document.getElementById('loader').style.display = 'flex';
+
+            try {
+                // १. प्रोफाईल पूर्ण तपासणी (STRICT CHECK)
+                const userDoc = await db.collection("users").doc(currentUserPhone).get();
+                const userData = userDoc.data() || {};
+                
+                const hasName = userData.name && userData.name.trim() !== "";
+                const hasQual = userData.qualification && userData.qualification.trim() !== "";
+                const hasResume = userData.resumeUrl && userData.resumeUrl.trim() !== "" && userData.resumeUrl !== "—";
+
+                if (userData.role !== 'employer' && (!hasName || !hasQual || !hasResume)) {
+                    document.getElementById('loader').style.display = 'none';
+                    alert("⚠️ तुमची प्रोफाईल अपूर्ण आहे!\n\nनोकरीला अप्लाय करण्यासाठी कृपया आधी तुमचे 'नाव', 'शिक्षण' आणि 'रेझ्युमे (Resume)' नक्की अपलोड करा.");
+                    window.location.href = "profile.html?compulsory=true";
+                    return; // जोपर्यंत प्रोफाईल अपडेट होत नाही, इथून पुढे कोड जाणारच नाही!
+                }
+
+                // २. जॉबची माहिती घेणे
+                const jobDoc = await db.collection("jobs").doc(jobId).get();
+                const job = jobDoc.data();
+
+                if (job.status === 'closed') {
+                    document.getElementById('loader').style.display = 'none';
+                    alert("ही नोकरी आता बंद झाली आहे.");
+                    return;
+                }
+
+                if (job.isGovtJob) {
+                    document.getElementById('loader').style.display = 'none';
+                    if (job.applyLink) window.open(job.applyLink, '_blank');
+                    else alert("लिंक उपलब्ध नाही.");
+                    return;
+                }
+
+                // ३. आधीच अर्ज केला आहे का ते तपासणे
+                const already = await db.collection("applications")
+                    .where("applicantPhone", "==", currentUserPhone)
+                    .where("jobId", "==", jobId)
+                    .get();
+                    
+                if (!already.empty) {
+                    document.getElementById('loader').style.display = 'none';
+                    alert("आपण यापूर्वीच या नोकरीसाठी अर्ज केला आहे.");
+                    return;
+                }
+
+                // ४. अर्ज डेटाबेसमध्ये सेव्ह करणे
+                const appData = {
+                    jobId: jobId,
+                    applicantUid: user.uid,
+                    applicantPhone: currentUserPhone,
+                    applicantName: userData.name || 'उमेदवार',
+                    applicantEmail: userData.email || '',
+                    applicantQualification: userData.qualification || '',
+                    applicantExperience: userData.experience || '',
+                    applicantSkills: userData.skills || '',
+                    applicantCity: userData.city || '',
+                    resumeUrl: userData.resumeUrl || userData.resume || '—', 
+                    applicantResume: userData.resumeUrl || userData.resume || '—', 
+                    jobTitle: job.title || '',
+                    companyName: job.company || job.companyName || '',
+                    employerPhone: job.phone || job.employerPhone || '',
+                    realHrPhone: job.hrWhatsapp || job.contact || job.employerPhone || '', 
+                    status: "Pending",
+                    appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection("applications").add(appData);
+
+                // ५. HR ला ॲपमध्ये नोटिफिकेशन पाठवणे
+                const hrPhone = job.hrWhatsapp || job.contact || job.employerPhone || job.phone || '';
+                
+                if (hrPhone && hrPhone !== "9579535290" && !job.postedByAdmin) {
+                    await db.collection("notifications").add({
+                        recipientPhone: hrPhone,
+                        recipientRole: 'employer',
+                        type: 'new_application',
+                        title: 'नवीन अर्ज आला आहे! 🚀',
+                        message: `${userData.name || 'एका उमेदवाराने'} तुमच्या '${job.title || 'नोकरी'}' साठी अर्ज केला आहे.`,
+                        relatedId: jobId,
+                        isRead: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                document.getElementById('loader').style.display = 'none';
+                alert("🎉 अभिनंदन! तुमचा अर्ज यशस्वीरित्या पाठवला गेला.");
+
+                // ६. HR ला थेट WhatsApp मेसेज पाठवणे (रेझ्युमे सहित)
+                if (hrPhone && hrPhone !== "9579535290") {
+                    let waMsg = `*नमस्कार! मी 'सातारा जॉब्स' (Satara Jobs) ॲपवरून अर्ज करत आहे.* 🚀\n\n`;
+                    waMsg += `🏢 *कंपनी:* ${job.companyName || job.company || '-'}\n`;
+                    waMsg += `💼 *पदाचे नाव:* ${job.title || '-'}\n\n`;
+                    waMsg += `*माझी माहिती खालीलप्रमाणे आहे:*\n`;
+                    waMsg += `👤 *नाव:* ${userData.name}\n`;
+                    waMsg += `📱 *मोबाईल:* ${currentUserPhone}\n`;
+                    waMsg += `🎓 *शिक्षण:* ${userData.qualification || '-'}\n`;
+                    waMsg += `⏳ *अनुभव:* ${userData.experience || '-'}\n`;
+                    
+                    let resumeLink = userData.resumeUrl || userData.resume || '—';
+                    if(resumeLink.includes('/upload/') && resumeLink.toLowerCase().includes('.pdf')) {
+                        resumeLink = resumeLink.replace('/upload/', '/upload/fl_attachment/');
+                    }
+                    waMsg += `📄 *माझा रेझ्युमे (Resume):* ${resumeLink}\n\n`;
+                    waMsg += `------------------------\n`;
+                    waMsg += `*अशाच दर्जेदार उमेदवारांसाठी 'सातारा जॉब्स' ॲप वापरा:*\n🌐 https://satara-jobs-ed6ab.web.app`;
+
+                    let formattedPhone = hrPhone;
+                    if(formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
+                    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(waMsg)}`;
+                    
+                    window.open(waUrl, '_blank');
+                }
+
+                // बटण डिसेबल करणे
+                const applyBtn = document.getElementById('applyBtn_' + jobId);
+                if(applyBtn) {
+                    applyBtn.innerText = "Applied";
+                    applyBtn.disabled = true;
+                    applyBtn.style.background = "#cbd5e1";
+                }
+
+            } catch (err) {
+                document.getElementById('loader').style.display = 'none';
+                alert("अर्ज करताना त्रुटी: " + err.message);
+            }
+        }
+
+        // ── शेअर बटणचे लॉजिक ──
         function shareJob(jobId) {
             const job = allJobs.find(j => String(j.id) === String(jobId)) || {};
             const sharePhone = localStorage.getItem("user_phone") || '';

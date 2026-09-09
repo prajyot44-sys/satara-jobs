@@ -2,7 +2,7 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>नोकरीचा तपशील - सातारा जॉब्स</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -208,8 +208,6 @@
                     userPhone = user.phoneNumber.replace("+91", "");
                     localStorage.setItem("user_phone", userPhone);
                 }
-                
-                // 15 सेकंदाचा रीडायरेक्ट कोड येथून काढून टाकला आहे, जेणेकरून युझर जॉब डिटेल्स वाचू शकेल.
             }
             incrementReferrerViews();
             loadJobDetails();
@@ -245,10 +243,29 @@
                 document.getElementById("jobQual").innerText = job.qualification || "Any";
                 document.getElementById("jobExp").innerText = job.experience || "Fresher";
                 
+                // --- Hide Venue Logic ---
+                let finalDescriptionHtml = "";
+                if(job.hideVenueDetails === true) {
+                    if(!auth.currentUser) {
+                        finalDescriptionHtml += `<div style="background:#fffbeb; padding:12px; border-radius:10px; border:1px solid #fde68a; margin-bottom:15px;">
+                            <p style="font-size:12px; font-weight:700; color:#b45309; margin-bottom:5px;">📍 इंटरव्ह्यूचे ठिकाण व संपर्क:</p>
+                            <p style="font-size:13px; font-weight:800; color:var(--primary);">पत्ता आणि HR चा नंबर पाहण्यासाठी कृपया ॲपमध्ये लॉगिन करून 'Apply' बटण दाबा.</p>
+                        </div>`;
+                    } else {
+                        // User is logged in
+                        finalDescriptionHtml += `<div style="background:#ecfccb; padding:12px; border-radius:10px; border:1px solid #bef264; margin-bottom:15px;">
+                            <p style="font-size:12px; font-weight:700; color:#4d7c0f; margin-bottom:5px;">📍 इंटरव्ह्यूचे ठिकाण (Venue):</p>
+                            <p style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:10px;">${job.venue || 'माहिती उपलब्ध नाही'}</p>
+                            <p style="font-size:12px; font-weight:700; color:#4d7c0f; margin-bottom:5px;">📞 HR संपर्क (Contact):</p>
+                            <p style="font-size:13px; font-weight:800; color:var(--primary);">${job.hrWhatsapp || job.contact || job.employerPhone || 'माहिती उपलब्ध नाही'}</p>
+                        </div>`;
+                    }
+                }
+
                 if(job.isGovtJob && job.lastDate) {
-                    document.getElementById("jobDescription").innerHTML = `<strong style="color:var(--danger);">अंतिम तारीख: ${job.lastDate}</strong><br><br>${job.description || "माहिती उपलब्ध नाही."}`;
+                    document.getElementById("jobDescription").innerHTML = finalDescriptionHtml + `<strong style="color:var(--danger);">अंतिम तारीख: ${job.lastDate}</strong><br><br>${job.description || "माहिती उपलब्ध नाही."}`;
                 } else {
-                    document.getElementById("jobDescription").innerText = job.description || "माहिती उपलब्ध नाही.";
+                    document.getElementById("jobDescription").innerHTML = finalDescriptionHtml + (job.description || "माहिती उपलब्ध नाही.").replace(/\n/g, '<br>');
                 }
 
                 const isPremiumLive = job.isPremium === true || job.isPremium === "true";
@@ -380,14 +397,14 @@
 
             const user = auth.currentUser;
             if (!user) {
-                alert("कृपया आधी लॉगिन करा.");
+                alert("कृपया नोकरीसाठी अर्ज करण्यापूर्वी लॉगिन करा.");
                 window.location.href = "index.html";
                 return;
             }
             if (!userPhone) {
                 userPhone = localStorage.getItem("user_phone");
                 if (!userPhone) {
-                    alert("प्रोफाइल माहिती गहाळ. कृपया प्रोफाइल पूर्ण करा.");
+                    alert("⚠️ तुमची प्रोफाईल अपूर्ण आहे!\n\nनोकरीला अप्लाय करण्यासाठी कृपया आधी तुमची प्रोफाईल (तुमचे नाव, शिक्षण आणि रेझ्युमे) अपडेट करा.");
                     window.location.replace("profile.html?compulsory=true");
                     return;
                 }
@@ -406,8 +423,13 @@
                 const userDoc = await db.collection("users").doc(userPhone).get();
                 const userData = userDoc.data() || {};
                 
-                if (userData.role !== 'employer' && !userData.profileCompleted) {
-                    alert("नोकरीसाठी अर्ज करण्यासाठी कृपया तुमची प्रोफाईल आणि रेझ्युमे पूर्ण करा."); // बदल केलेला मेसेज
+                // --- STRICT MANDATORY PROFILE CHECK ---
+                const hasName = userData.name && userData.name.trim() !== "";
+                const hasQual = userData.qualification && userData.qualification.trim() !== "";
+                const hasResume = userData.resumeUrl && userData.resumeUrl.trim() !== "" && userData.resumeUrl !== "—";
+
+                if (userData.role !== 'employer' && (!hasName || !hasQual || !hasResume)) {
+                    alert("⚠️ तुमची प्रोफाईल अपूर्ण आहे!\n\nनोकरीला अप्लाय करण्यासाठी कृपया आधी तुमची प्रोफाईल (तुमचे नाव, शिक्षण आणि रेझ्युमे) अपडेट करा.");
                     window.location.replace("profile.html?compulsory=true");
                     return;
                 }
@@ -416,6 +438,7 @@
                     .where("applicantPhone", "==", userPhone)
                     .where("jobId", "==", jobId)
                     .get();
+                    
                 if (!already.empty) {
                     alert("आपण यापूर्वीच अर्ज केला आहे.");
                     btn.innerText = "आधीच अर्ज केला आहे (Applied)";
@@ -442,13 +465,14 @@
                     companyName: job.company || job.companyName || '',
                     companyId: job.companyId || '',
                     employerPhone: job.phone || job.employerPhone || '',
-                    realHrPhone: job.realHrPhone || '', 
+                    realHrPhone: job.hrWhatsapp || job.realHrPhone || '', 
                     referrerPhone: refPhone,
                     applicationSource: refPhone ? 'referral' : 'direct',
                     status: "Pending",
                     appliedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
+                // Badge Logic for referrer
                 if (refPhone && refPhone !== userPhone) {
                     db.collection("users").doc(refPhone).set({
                         totalApplicationsViaReferral: firebase.firestore.FieldValue.increment(1)
@@ -473,12 +497,16 @@
                     });
                 }
 
+                // 1. Save Application to Firestore (so it shows in admin panel)
                 await db.collection("applications").add(appData);
 
-                const empPhone = job.phone || job.employerPhone || '';
-                if (empPhone !== "9579535290" && !job.postedByAdmin) {
+                // 2. Direct HR WhatsApp Message Logic
+                const hrPhone = job.hrWhatsapp || job.employerPhone || job.phone || job.contact || '';
+                
+                if (hrPhone && hrPhone !== "9579535290" && !job.postedByAdmin) {
+                    // Send normal internal app notification if it's a regular employer
                     await db.collection("notifications").add({
-                        recipientPhone: empPhone,
+                        recipientPhone: hrPhone,
                         recipientRole: 'employer',
                         type: 'new_application',
                         title: 'नवीन अर्ज आला आहे! 🚀',
@@ -487,6 +515,33 @@
                         isRead: false,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                }
+
+                if (hrPhone && hrPhone !== "9579535290") {
+                    // Send WhatsApp directly from user's phone to HR
+                    let waMsg = `*नमस्कार! मी 'सातारा जॉब्स' (Satara Jobs) ॲपवरून अर्ज करत आहे.* 🚀\n\n`;
+                    waMsg += `🏢 *कंपनी:* ${job.companyName || job.company || '-'}\n`;
+                    waMsg += `💼 *पदाचे नाव:* ${job.title || '-'}\n\n`;
+                    waMsg += `*माझी माहिती खालीलप्रमाणे आहे:*\n`;
+                    waMsg += `👤 *नाव:* ${userData.name}\n`;
+                    waMsg += `📱 *मोबाईल:* ${userPhone}\n`;
+                    waMsg += `🎓 *शिक्षण:* ${userData.qualification || '-'}\n`;
+                    waMsg += `⏳ *अनुभव:* ${userData.experience || '-'}\n`;
+                    
+                    let resumeLink = userData.resumeUrl || userData.resume || '—';
+                    if(resumeLink.includes('/upload/') && resumeLink.toLowerCase().includes('.pdf')) {
+                        resumeLink = resumeLink.replace('/upload/', '/upload/fl_attachment/');
+                    }
+                    waMsg += `📄 *माझा रेझ्युमे (Resume):* ${resumeLink}\n\n`;
+                    waMsg += `------------------------\n`;
+                    waMsg += `*अशाच दर्जेदार उमेदवारांसाठी 'सातारा जॉब्स' ॲप वापरा:*\n🌐 https://satara-jobs-ed6ab.web.app`;
+
+                    let formattedPhone = hrPhone;
+                    if(formattedPhone.length === 10) formattedPhone = "91" + formattedPhone;
+                    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(waMsg)}`;
+                    
+                    // Open WhatsApp
+                    window.open(waUrl, '_blank');
                 }
 
                 alert("🎉 अभिनंदन! तुमचा अर्ज यशस्वीरित्या पाठवला गेला.");

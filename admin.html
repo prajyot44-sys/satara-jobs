@@ -317,10 +317,10 @@
             </div>
 
             <div id="premiumTabSection" class="main-card" style="display:none;">
-                <div class="section-header-card"><div class="section-title">प्रलंबित प्रीमियम जॉब्स</div><div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchPremium" placeholder="कंपनी / मोबाईल शोधा..." oninput="filterTable('premium')"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('premiumTableBody','premium_pending')"><i class="fa-solid fa-download"></i> CSV</button></div></div>
-                <div class="table-responsive" style="margin-bottom: 30px;"><table><thead><tr><th>कंपनी</th><th>पद</th><th>पगार</th><th>प्लॅन</th><th>कृती</th></tr></thead><tbody id="premiumTableBody"></tbody></table></div>
+                <div class="section-header-card"><div class="section-title">प्रलंबित प्रीमियम जॉब्स</div><div style="display:flex; gap:10px;"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchPremium" placeholder="COMPANY / मोबाईल शोधा..." oninput="filterTable('premium')"></div><button class="csv-download-btn" onclick="downloadTableAsCSV('premiumTableBody','premium_pending')"><i class="fa-solid fa-download"></i> CSV</button></div></div>
+                <div class="table-responsive" style="margin-bottom: 30px;"><table><thead><tr><th>COMPANY</th><th>पद</th><th>पगार</th><th>प्लॅन</th><th>कृती</th></tr></thead><tbody id="premiumTableBody"></tbody></table></div>
                 <div class="section-header-card"><div class="section-title" style="color:var(--success);">सध्या चालू असलेले (Active) प्रीमियम जॉब्स</div><button class="csv-download-btn" onclick="downloadTableAsCSV('activePremiumTableBody','premium_active')"><i class="fa-solid fa-download"></i> CSV</button></div>
-                <div class="table-responsive"><table><thead><tr><th>कंपनी</th><th>पद</th><th>पगार</th><th>प्लॅन</th><th>कृती</th></tr></thead><tbody id="activePremiumTableBody"></tbody></table></div>
+                <div class="table-responsive"><table><thead><tr><th>COMPANY</th><th>पद</th><th>पगार</th><th>प्लॅन</th><th>कृती</th></tr></thead><tbody id="activePremiumTableBody"></tbody></table></div>
             </div>
 
             <div id="addJobTabSection" class="main-card" style="display:none;">
@@ -471,6 +471,7 @@
                             <tr>
                                 <th style="width: 40px; text-align:center;"><input type="checkbox" id="selectAllApps" onclick="toggleAllApps(this)" title="सर्व पेंडिंग निवडा"></th>
                                 <th>उमेदवाराचे नाव</th>
+                                <th>पदाचे नाव (Job)</th> <!-- ADDED COLUMN -->
                                 <th>मोबाईल नंबर</th>
                                 <th>अर्ज केल्याची तारीख/वेळ</th>
                                 <th>रेझ्युमे / प्रोफाईल</th>
@@ -478,7 +479,7 @@
                             </tr>
                         </thead>
                         <tbody id="jobApplicantsTableBody">
-                            <tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून जॉब निवडा.</td></tr>
+                            <tr><td colspan="7" class="empty-text">कृपया वरील लिस्टमधून जॉब निवडा.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -513,6 +514,7 @@
                             <tr>
                                 <th style="width: 40px; text-align:center;"><input type="checkbox" id="selectAllAdminApps" onclick="toggleAllAdminApps(this)" title="सर्व पेंडिंग निवडा"></th>
                                 <th>उमेदवाराचे नाव</th>
+                                <th>पदाचे नाव (Job)</th> <!-- ADDED COLUMN -->
                                 <th>मोबाईल नंबर</th>
                                 <th>अर्ज केल्याची तारीख/वेळ</th>
                                 <th>रेझ्युमे / प्रोफाईल</th>
@@ -520,7 +522,7 @@
                             </tr>
                         </thead>
                         <tbody id="adminJobApplicantsTableBody">
-                            <tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून ॲडमिन जॉब निवडा.</td></tr>
+                            <tr><td colspan="7" class="empty-text">कृपया वरील लिस्टमधून ॲडमिन जॉब निवडा.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1314,17 +1316,17 @@
         if (waBtnContainer) waBtnContainer.style.display = 'none';
 
         if (!jobId) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून जॉब निवडा.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-text">कृपया वरील लिस्टमधून जॉब निवडा.</td></tr>';
             currentSelectedJobForWA = null;
             return;
         }
 
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-text"><i class="fa-solid fa-spinner fa-spin"></i> अर्ज लोड होत आहेत...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-text"><i class="fa-solid fa-spinner fa-spin"></i> अर्ज लोड होत आहेत...</td></tr>';
 
         try {
             const jobDoc = await db.collection("jobs").doc(jobId).get();
             if (!jobDoc.exists) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:red;">जॉब सापडला नाही.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-text" style="color:red;">जॉब सापडला नाही.</td></tr>';
                 return;
             }
             currentSelectedJobForWA = { id: jobDoc.id, ...jobDoc.data() };
@@ -1332,7 +1334,7 @@
             const snap = await db.collection("applications").where("jobId", "==", jobId).get();
 
             if (snap.empty) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:var(--warning);">या नोकरीसाठी अद्याप कोणतेही अर्ज आलेले नाहीत.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-text" style="color:var(--warning);">या नोकरीसाठी अद्याप कोणतेही अर्ज आलेले नाहीत.</td></tr>';
                 return;
             }
 
@@ -1374,6 +1376,7 @@
                 html += `<tr>
                     <td style="text-align:center;">${checkboxHtml}</td>
                     <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
+                    <td><span style="color:var(--secondary); font-weight:700;">${app.jobTitle || currentSelectedJobForWA.title || '-'}</span></td>
                     <td>${app.applicantPhone || '-'}</td>
                     <td>${timeStr}</td>
                     <td>${resumeDisplay}</td>
@@ -1388,7 +1391,7 @@
 
         } catch(err) {
             console.error("Error fetching applicants:", err);
-            tbody.innerHTML = `<tr><td colspan="6" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`;
         }
     }
 
@@ -1491,17 +1494,17 @@
         if (waBtnContainer) waBtnContainer.style.display = 'none';
 
         if (!jobId) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-text">कृपया वरील लिस्टमधून ॲडमिन जॉब निवडा.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-text">कृपया वरील लिस्टमधून ॲडमिन जॉब निवडा.</td></tr>';
             currentSelectedAdminJobForWA = null;
             return;
         }
 
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-text"><i class="fa-solid fa-spinner fa-spin"></i> अर्ज लोड होत आहेत...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-text"><i class="fa-solid fa-spinner fa-spin"></i> अर्ज लोड होत आहेत...</td></tr>';
 
         try {
             const jobDoc = await db.collection("jobs").doc(jobId).get();
             if (!jobDoc.exists) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:red;">जॉब सापडला नाही.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-text" style="color:red;">जॉब सापडला नाही.</td></tr>';
                 return;
             }
             currentSelectedAdminJobForWA = { id: jobDoc.id, ...jobDoc.data() };
@@ -1509,7 +1512,7 @@
             const snap = await db.collection("applications").where("jobId", "==", jobId).get();
 
             if (snap.empty) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-text" style="color:var(--warning);">या नोकरीसाठी अद्याप कोणतेही अर्ज आलेले नाहीत.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-text" style="color:var(--warning);">या नोकरीसाठी अद्याप कोणतेही अर्ज आलेले नाहीत.</td></tr>';
                 return;
             }
 
@@ -1551,6 +1554,7 @@
                 html += `<tr>
                     <td style="text-align:center;">${checkboxHtml}</td>
                     <td><strong>${app.applicantName || 'नाव उपलब्ध नाही'}</strong></td>
+                    <td><span style="color:var(--secondary); font-weight:700;">${app.jobTitle || currentSelectedAdminJobForWA.title || '-'}</span></td>
                     <td>${app.applicantPhone || '-'}</td>
                     <td>${timeStr}</td>
                     <td>${resumeDisplay}</td>
@@ -1571,7 +1575,7 @@
 
         } catch(err) {
             console.error("Error fetching applicants:", err);
-            tbody.innerHTML = `<tr><td colspan="6" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="empty-text" style="color:red;">त्रुटी: ${err.message}</td></tr>`;
         }
     }
 
